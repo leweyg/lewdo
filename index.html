@@ -1,5 +1,13 @@
 <html>
     <head><title>Lewdo</title></head>
+    <style>
+        .page_top {
+            position: relative;
+        }
+        .page_slice {
+            position: absolute;
+        }
+    </style>
     <body>
         <h3>Lewdo console</h3>
         <script>
@@ -37,11 +45,13 @@
                     return string3_utils.fromString(str);
                 },
                 toHTML : function() {
-                    var ans = "";
+                    var ans = "<div><p><pre><code>";
                     var x=0, y=0, z=0;
                     this.visitEach((c,fx,fy,fz) => { 
                         if (z != fz) {
+
                             ans += "\n--layer--\n";
+
                             z = fz;
                             y = fy;
                         }
@@ -51,10 +61,34 @@
                         }
                         ans += c; 
                     });
+                    ans += "</code></pre></p></div>";
+                    
+
+                    ans += "<div class='page_top' >";
+                    x=-1; y=-1; z=-1;
+                    for (var fz=0; fz < this.depth; fz++) {
+                        var clr = (fz == 0) ? 'black' : 'lightgray';
+
+                        ans += "<div class='page_slice' style='color:" + clr + "' onmousemove='string3_ui.onMouseMove(event,this," + fz + ")' ><p><pre><code>";
+                        for (var fy=0; fy<this.height; fy++) {
+                            for (var fx=0; fx<this.width; fx++) {
+                                var c = this.array1d[this.indexFromXYZ(fx,fy,fz)];
+                                ans += c;
+                            }
+                            ans += "<br/>";
+                        }
+                        ans += "</code></pre></p></div>";
+                    }
+                    ans += "</div>";
+                    for (var fy=0; fy<this.height; fy++) {
+                        ans += "<br/><br/>";
+                    }
+                    
                     return ans;
                 },
                 
             };
+            
             var string3_utils = {
                 xyz : function(x,y,z) {
                     return { x:x, y:y, z:z };
@@ -140,13 +174,19 @@
                 ans = ans.resize(w, h, d);
                 return ans;
             }
+
+            var string3_ui = {
+                onMouseMove : function(event,element,z_depth) {
+                    var dx = event.offsetX * (0.1 * z_depth);
+                    var dy = event.offsetY * (0.1 * z_depth);
+                    console.log(event.offsetX);
+                    element.style.left = dx + "px";
+                    element.style.top = dy + "px";
+                }
+            };
         </script>
-        <div>
-            <p>
-                <pre><code><span id="main_lewdo">
-first test
-                </span></code></pre>
-            </p>
+        <div id="main_lewdo"> 
+            <p>Loading...</p>
         </div>
         <h3>Javascript</h3>
         <div>
