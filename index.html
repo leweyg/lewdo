@@ -4,7 +4,7 @@
         <h3>Lewdo console</h3>
         <script>
             var string3_prototype = {
-                text : "",
+                array1d : "",
                 width : 0,
                 height : 0,
                 depth : 0,
@@ -13,7 +13,7 @@
                     this.width = w;
                     this.height = h;
                     this.depth = d;
-                    this.text = string3_utils.repeat_string(fill?fill:" ", w * h * d);
+                    this.array1d = string3_utils.repeat_array(fill?fill:":", w * h * d);
                     return this;
                 },
                 indexFromXYZ : function(x,y,z) {
@@ -23,7 +23,7 @@
                     for (var d=0; d<this.depth; d++) {
                         for (var h=0; h<this.height; h++) {
                             for (var w=0; w<this.width; w++) {
-                                var let = this.text[this.indexFromXYZ(w,h,d)];
+                                var let = this.array1d[this.indexFromXYZ(w,h,d)];
                                 cb(let, w, h, d);
                             }
                         }
@@ -56,10 +56,17 @@
                 xyz : function(x,y,z) {
                     return { x:x, y:y, z:z };
                 },
-                repeat_string : function(c,n) {
-                    var ans = "";
+                repeat_array : function(c,n) {
+                    var ans = [];
                     for (var i=0; i<n; i++) {
-                        ans += c;
+                        ans.push(c);
+                    }
+                    return ans;
+                },
+                arrayFromString : function(str) {
+                    var ans = [];
+                    for (var i=0; i<str.length; i++) {
+                        ans.push(str[i]);
                     }
                     return ans;
                 },
@@ -71,7 +78,7 @@
                 fromString : function(text) {
                     var page_lines = string3_utils.split_page_lines(text);
                     var size = string3_utils.max_page_lines(page_lines);
-                    var ans = string3().resize( size.x, size.y, size.z, " " );
+                    var ans = string3().resize( size.x, size.y, size.z, ":" );
                     for (var pi=0; pi<page_lines.length; pi++) {
                         var pages = page_lines[pi];
                         for (var li=0; li<pages.length; li++) {
@@ -79,9 +86,9 @@
                             for (var ci=0; ci<line.length; ci++) {
                                 var c = line[ci];
                                 var to = ans.indexFromXYZ(ci,li,pi);
-                                ans.text[to] = c;
-                                var test = ans.text[to];
-                                console.log(test);
+                                ans.array1d[to] = c;
+                                //var test = ans.array1d[to];
+                                //console.log(test);
                             }
                         }
                     }
@@ -104,8 +111,13 @@
                     var pages = str.split("\v");
                     for (var d=0; d<pages.length; d++) {
                         var from = pages[d];
-                        var to = from.split("\n");
-                        pages[d] = to;
+                        var lines = from.split("\n");
+                        for (var l=0; l<lines.length; l++) {
+                            var line = lines[l];
+                            line = string3_utils.arrayFromString(line);
+                            lines[l] = line;
+                        }
+                        pages[d] = lines;
                     }
                     return pages;
                 },
