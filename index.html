@@ -9,7 +9,12 @@
                 height : 0,
                 depth : 0,
 
-                resize : function(w,h,d) {
+                resize : function(w,h,d,fill) {
+                    this.width = w;
+                    this.height = h;
+                    this.depth = d;
+                    this.text = string3_utils.repeat_string(fill?fill:" ", w * h * d);
+                    return this;
                 },
                 indexFromXYZ : function(x,y,z) {
                     return (x + (y * this.width) + (z * this.width * this.height));
@@ -23,28 +28,101 @@
                             }
                         }
                     }
+                    return this;
                 },
-                toHtml : function() {
+                fromString : function(str) {
+                    return string3_utils.fromString(str);
+                },
+                toHTML : function() {
                     var ans = "";
-                    this.visitEach((c) => { 
+                    var x=0, y=0, z=0;
+                    this.visitEach((c,fx,fy,fz) => { 
+                        if (z != fz) {
+                            ans += "\n--layer--\n";
+                            z = fz;
+                            y = fy;
+                        }
+                        else if (y != fy) {
+                            ans += "\n";
+                            y = fy;
+                        }
                         ans += c; 
                     });
                     return ans;
+                },
+                
+            };
+            var string3_utils = {
+                xyz : function(x,y,z) {
+                    return { x:x, y:y, z:z };
+                },
+                repeat_string : function(c,n) {
+                    var ans = "";
+                    for (var i=0; i<n; i++) {
+                        ans += c;
+                    }
+                    return ans;
+                },
+                max2 : function(a,b) {
+                    a *= 1;
+                    b *= 1;
+                    return ((a > b) ? a : b);
+                },
+                fromString : function(text) {
+                    var page_lines = string3_utils.split_page_lines(text);
+                    var size = string3_utils.max_page_lines(page_lines);
+                    var ans = string3().resize( size.x, size.y, size.z, " " );
+                    for (var pi=0; pi<page_lines.length; pi++) {
+                        var pages = page_lines[pi];
+                        for (var li=0; li<pages.length; li++) {
+                            var line = pages[li];
+                            for (var ci=0; ci<line.length; ci++) {
+                                var c = line[ci];
+                                var to = ans.indexFromXYZ(ci,li,pi);
+                                ans.text[to] = c;
+                                var test = ans.text[to];
+                                console.log(test);
+                            }
+                        }
+                    }
+                    return ans;
+                },
+                max_page_lines : function(page_lines) {
+                    var ans = string3_utils.xyz(0,0,0);
+                    for (var page_i in page_lines) {
+                        ans.z = string3_utils.max2(ans.z, page_i*1 + 1);
+                        var page = page_lines[page_i];
+                        for (var line_i in page) {
+                            ans.y = string3_utils.max2(ans.y, line_i*1 + 1);
+                            var line = page[line_i];
+                            ans.x = string3_utils.max2(ans.x, line.length);
+                        }
+                    }
+                    return ans;
+                },
+                split_page_lines : function(str) {
+                    var pages = str.split("\v");
+                    for (var d=0; d<pages.length; d++) {
+                        var from = pages[d];
+                        var to = from.split("\n");
+                        pages[d] = to;
+                    }
+                    return pages;
                 },
             };
             function string3(initial,w,h,d) {
                 var ans = Object.create(string3_prototype);
                 if (initial) {
                     if (typeof(initial) == "string") {
-                        ans.text = initial;
-                        ans.width = initial.length;
-                        ans.height = 1;
-                        ans.depth = 1;
+                        ans = ans.fromString(initial);
+                        if (!w) {
+                            return ans;
+                        }
+                        ans = ans.resize(w, h, d);
+                        return ans;
                     }
                 }
-                if (w) ans.width = w;
-                if (h) ans.height = h;
-                if (d) ans.depth = d;
+                ans = ans.resize(w, h, d);
                 return ans;
             }
         </script>
@@ -72,8 +150,8 @@ function output_code()
         function onTextChange(newText) {
             main_lewdo.innerHTML = newText;
         }
-        var front = string3("Hello World.\nNew Line.");
-        main_lewdo.innerHTML = front.toHtml();
+        var front = string3("Hello World.\nNew Line.\vNew Layer");
+        main_lewdo.innerHTML = front.toHTML();
         </script>
     </body>
 
