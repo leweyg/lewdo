@@ -64,12 +64,12 @@
                     ans += "</code></pre></p></div>";
                     
 
-                    ans += "<div class='page_top' >";
+                    ans += "<div class='page_top' onmousemove='string3_ui.onMouseMoveTop(event,this)' >";
                     x=-1; y=-1; z=-1;
-                    for (var fz=0; fz < this.depth; fz++) {
+                    for (var fz=this.depth-1; fz>=0; fz--) {
                         var clr = (fz == 0) ? 'black' : 'lightgray';
 
-                        ans += "<div class='page_slice' style='color:" + clr + "' onmousemove='string3_ui.onMouseMove(event,this," + fz + ")' ><p><pre><code>";
+                        ans += "<div class='page_slice' data-zdepth=" + fz + " style='color:" + clr + "' ><p><pre><code>";
                         for (var fy=0; fy<this.height; fy++) {
                             for (var fx=0; fx<this.width; fx++) {
                                 var c = this.array1d[this.indexFromXYZ(fx,fy,fz)];
@@ -176,13 +176,28 @@
             }
 
             var string3_ui = {
+                topChildren : {},
+                onMouseMoveTop : function(event,element) {
+                    var layers = this.topChildren[element];
+                    if (!layers) {
+                        layers = document.getElementsByClassName('page_slice');
+                        this.topChildren[element] = layers;
+                    }
+                    var dx = (event.offsetX * (0.1 * 1));
+                    var dy = (event.offsetY * (0.1 * 1));
+                    for (var i=0; i<layers.length; i++) {
+                        var el = layers[i];
+                        el.style.left = (dx * el.dataset.zdepth ) + "px";
+                        el.style.top = (dy * el.dataset.zdepth ) + "px";
+                    }
+                },
                 onMouseMove : function(event,element,z_depth) {
                     var dx = event.offsetX * (0.1 * z_depth);
                     var dy = event.offsetY * (0.1 * z_depth);
                     console.log(event.offsetX);
                     element.style.left = dx + "px";
                     element.style.top = dy + "px";
-                }
+                },
             };
         </script>
         <div id="main_lewdo"> 
@@ -205,7 +220,7 @@ function output_code()
         function onTextChange(newText) {
             main_lewdo.innerHTML = string3(newText).toHTML();
         }
-        var front = string3("Hello World.\nNew Line.\vNew Layer");
+        var front = string3("Hello World.\nNew Line.\vNew Layer\v\nBack layer");
         main_lewdo.innerHTML = front.toHTML();
         </script>
     </body>
