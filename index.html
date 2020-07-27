@@ -3,7 +3,50 @@
     <body>
         <h3>Lewdo console</h3>
         <script>
+            var string3_prototype = {
+                text : "",
+                width : 0,
+                height : 0,
+                depth : 0,
 
+                resize : function(w,h,d) {
+                },
+                indexFromXYZ : function(x,y,z) {
+                    return (x + (y * this.width) + (z * this.width * this.height));
+                },
+                visitEach : function(cb) {
+                    for (var d=0; d<this.depth; d++) {
+                        for (var h=0; h<this.height; h++) {
+                            for (var w=0; w<this.width; w++) {
+                                var let = this.text[this.indexFromXYZ(w,h,d)];
+                                cb(let, w, h, d);
+                            }
+                        }
+                    }
+                },
+                toHtml : function() {
+                    var ans = "";
+                    this.visitEach((c) => { 
+                        ans += c; 
+                    });
+                    return ans;
+                },
+            };
+            function string3(initial,w,h,d) {
+                var ans = Object.create(string3_prototype);
+                if (initial) {
+                    if (typeof(initial) == "string") {
+                        ans.text = initial;
+                        ans.width = initial.length;
+                        ans.height = 1;
+                        ans.depth = 1;
+                    }
+                }
+                if (w) ans.width = w;
+                if (h) ans.height = h;
+                if (d) ans.depth = d;
+                return ans;
+            }
         </script>
         <div>
             <p>
@@ -27,9 +70,10 @@ function output_code()
         <textarea id="main_textarea" onchange="onTextChange(main_textarea.value)" ></textarea>
         <script>
         function onTextChange(newText) {
-            main_lewdo.innerText = newText;
+            main_lewdo.innerHTML = newText;
         }
-        main_lewdo.innerText = "Hello World.";
+        var front = string3("Hello World.\nNew Line.");
+        main_lewdo.innerHTML = front.toHtml();
         </script>
     </body>
 
