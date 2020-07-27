@@ -9,12 +9,15 @@
                 height : 0,
                 depth : 0,
 
-                resize : function(w,h,d,fill) {
+                setSize : function(w,h,d,fill) {
                     this.width = w;
                     this.height = h;
                     this.depth = d;
                     this.array1d = string3_utils.repeat_array(fill?fill:":", w * h * d);
                     return this;
+                },
+                resize : function(w,h,d,fill) {
+                    return this.setSize(w,h,d,fill);
                 },
                 indexFromXYZ : function(x,y,z) {
                     return (x + (y * this.width) + (z * this.width * this.height));
@@ -160,7 +163,7 @@ function output_code()
         <textarea id="main_textarea" onchange="onTextChange(main_textarea.value)" ></textarea>
         <script>
         function onTextChange(newText) {
-            main_lewdo.innerHTML = newText;
+            main_lewdo.innerHTML = string3(newText).toHTML();
         }
         var front = string3("Hello World.\nNew Line.\vNew Layer");
         main_lewdo.innerHTML = front.toHTML();
