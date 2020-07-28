@@ -1,4 +1,24 @@
 
+function string3(initial,w,h,d) {
+    var ans = Object.create(string3_prototype);
+    if (initial) {
+        if (typeof(initial) == "string") {
+            ans = ans.fromString(initial);
+            if (!w) {
+                return ans;
+            }
+            ans = ans.resize(w, h, d);
+            return ans;
+        }
+    } else if (!w) {
+        w = 1;
+        h = 1;
+        d = 1;
+    }
+    ans = ans.resize(w, h, d);
+    return ans;
+}
+
 var string3_prototype = {
     array1d : "",
     width : 0,
@@ -6,23 +26,62 @@ var string3_prototype = {
     depth : 0,
 
     setSize : function(w,h,d,fill) {
-        this.width = w;
-        this.height = h;
-        this.depth = d;
+        if (w) this.width = w;
+        if (h) this.height = h;
+        if (d) this.depth = d;
         this.array1d = string3_utils.repeat_array(fill?fill:":", w * h * d);
         return this;
     },
     resize : function(w,h,d,fill) {
         return this.setSize(w,h,d,fill);
     },
-    indexFromXYZ : function(x,y,z) {
-        return (x + (y * this.width) + (z * this.width * this.height));
+    indexFromSeperateXYZ : function(x,y,z) {
+        var ix = (x * 1);
+        var iy = (y * this.width);
+        var iz = (z * this.width * this.height);
+        var i = ix + iy + iz;
+        return i;
+    },
+    indexFromXYZ : function(v) {
+        return this.indexFromSeperateXYZ(v.x,v.y,v.z);
+    },
+    isValidXYZ : function(v) {
+        return ( true
+            && ((v.x >= 0) && (v.x < this.width))
+            && ((v.y >= 0) && (v.y < this.height))
+            && ((v.z >= 0) && (v.z < this.depth))
+        );
+    },
+    setByXYZ : function(val, xyz) {
+        if (this.isValidXYZ(xyz)) {
+            var i = this.indexFromXYZ(xyz);
+            this.array1d[i] = val;
+        }
+    },
+    _setRangeXYZ_tempVec : null,
+    setRangeXYZ : function(val, vFrom, vTo) {
+        var t = this._setRangeXYZ_tempVec;
+        if (!t) {
+            this._setRangeXYZ_tempVec = string3_utils.xyz();
+            t = this._setRangeXYZ_tempVec;
+        }
+        for (var d=0; d<(vTo.z-vFrom.z); d++) {
+            t.z = (vFrom.z + d);
+            for (var h=0; h<(vTo.y-vFrom.y); h++) {
+                t.y = (vFrom.y + h);
+                for (var w=0; w<(vTo.x-vFrom.x); w++) {
+                    t.x = (vFrom.x + w);
+                    this.setByXYZ(val, t);
+                }
+            }
+        }
     },
     visitEach : function(cb) {
+        
         for (var d=0; d<this.depth; d++) {
             for (var h=0; h<this.height; h++) {
                 for (var w=0; w<this.width; w++) {
-                    var let = this.array1d[this.indexFromXYZ(w,h,d)];
+                    var let = this.array1d[this.indexFromSeperateXYZ(w,h,d)];
                     cb(let, w, h, d);
                 }
             }
@@ -60,7 +119,7 @@ var string3_prototype = {
             ans += "<div class='page_slice' data-zdepth=" + fz + " style='color:" + clr + "' ><p><pre><code>";
             for (var fy=0; fy<this.height; fy++) {
                 for (var fx=0; fx<this.width; fx++) {
-                    var c = this.array1d[this.indexFromXYZ(fx,fy,fz)];
+                    var c = this.array1d[this.indexFromSeperateXYZ(fx,fy,fz)];
                     ans += c;
                 }
                 ans += "<br/>";
@@ -79,7 +138,7 @@ var string3_prototype = {
 
 var string3_utils = {
     xyz : function(x,y,z) {
-        return { x:x, y:y, z:z };
+        return { x:(x||0), y:(y||0), z:(z||0) };
     },
     repeat_array : function(c,n) {
         var ans = [];
@@ -110,7 +169,7 @@ var string3_utils = {
                 var line = pages[li];
                 for (var ci=0; ci<line.length; ci++) {
                     var c = line[ci];
-                    var to = ans.indexFromXYZ(ci,li,pi);
+                    var to = ans.indexFromSeperateXYZ(ci,li,pi);
                     ans.array1d[to] = c;
                     //var test = ans.array1d[to];
                     //console.log(test);
@@ -147,21 +206,6 @@ var string3_utils = {
         return pages;
     },
 };
-function string3(initial,w,h,d) {
-    var ans = Object.create(string3_prototype);
-    if (initial) {
-        if (typeof(initial) == "string") {
-            ans = ans.fromString(initial);
-            if (!w) {
-                return ans;
-            }
-            ans = ans.resize(w, h, d);
-            return ans;
-        }
-    }
-    ans = ans.resize(w, h, d);
-    return ans;
-}
 
 var string3_ui = {
     topChildren : {},

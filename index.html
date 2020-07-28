@@ -11,6 +11,27 @@
     <body>
         <h3>Lewdo console</h3>
         <script src="string3.js"></script>
+        <script>
+            var lewdo_console = function() {
+                var ans = Object.create(lewdo_console_prototype);
+                ans.setup();
+                return ans;
+            };
+
+            var lewdo_console_prototype = {
+                console3 : string3(),
+
+                setup : function() {
+                    var xyz = string3_utils.xyz;
+                    this.console3.resize(16,9,2);
+                    this.console3.setRangeXYZ("*",xyz(0,0,0),xyz(this.console3.width,this.console3.height,1));
+                },
+                
+            };
+
+            var main_console = lewdo_console();
+
+        </script>
         <div id="main_lewdo"> 
             <p>Loading...</p>
         </div>
