@@ -23,8 +23,12 @@
 
                 setup : function() {
                     var xyz = string3_utils.xyz;
-                    this.console3.resize(16,9,2);
-                    this.console3.setRangeXYZ("*",xyz(0,0,0),xyz(this.console3.width,this.console3.height,1));
+                    this.console3.resize(16,9,3);
+                    this.console3.clearPlane(2,'*');
+                    this.console3.clearPlane(1,' ');
+                    this.console3.drawTextXYZ('lewdo',xyz(0,0,1));
+                    this.console3.clearPlane(0,' ');
+                    this.console3.drawTextXYZ('>',xyz(5,0,0));
                 },
                 
             };
@@ -53,7 +57,7 @@ function output_code()
             main_lewdo.innerHTML = string3(newText).toHTML();
         }
         var front = string3("Hello World.\nNew Line.\vNew Layer\v\nBack layer");
-        main_lewdo.innerHTML = front.toHTML();
+        main_lewdo.innerHTML = front.toHTML() + "<br/>" + main_console.console3.toHTML();
         </script>
     </body>
 

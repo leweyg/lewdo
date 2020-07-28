@@ -58,13 +58,17 @@ var string3_prototype = {
             this.array1d[i] = val;
         }
     },
-    _setRangeXYZ_tempVec : null,
-    setRangeXYZ : function(val, vFrom, vTo) {
-        var t = this._setRangeXYZ_tempVec;
+    _tempVec_data1 : null,
+    _tempVec1 : function() {
+        var t = string3_prototype._tempVec_data1;
         if (!t) {
-            this._setRangeXYZ_tempVec = string3_utils.xyz();
-            t = this._setRangeXYZ_tempVec;
+            string3_prototype._tempVec_data1 = string3_utils.xyz();
+            t = string3_prototype._tempVec_data1;
         }
+        return t;
+    },
+    drawRangeXYZ : function(val, vFrom, vTo) {
+        var t = this._tempVec1();
         for (var d=0; d<(vTo.z-vFrom.z); d++) {
             t.z = (vFrom.z + d);
             for (var h=0; h<(vTo.y-vFrom.y); h++) {
@@ -73,6 +77,20 @@ var string3_prototype = {
                     t.x = (vFrom.x + w);
                     this.setByXYZ(val, t);
                 }
+            }
+        }
+    },
+    drawTextXYZ : function(text,xyz) {
+        string3_utils.drawString(this, text, xyz);
+    },
+    clearPlane : function(plane,val) {
+        var t = this._tempVec1();
+        t.z = plane;
+        for (var h=0; h<this.height; h++) {
+            t.y = h;
+            for (var w=0; w<this.width; w++) {
+                t.x = w;
+                this.setByXYZ(val, t);
             }
         }
     },
@@ -92,46 +110,7 @@ var string3_prototype = {
         return string3_utils.fromString(str);
     },
     toHTML : function() {
-        var ans = "<div><p><pre><code>";
-        var x=0, y=0, z=0;
-        this.visitEach((c,fx,fy,fz) => { 
-            if (z != fz) {
-
-                ans += "\n--layer--\n";
-
-                z = fz;
-                y = fy;
-            }
-            else if (y != fy) {
-                ans += "\n";
-                y = fy;
-            }
-            ans += c; 
-        });
-        ans += "</code></pre></p></div>";
-        
-
-        ans += "<div class='page_top' onmousemove='string3_ui.onMouseMoveTop(event,this)' >";
-        x=-1; y=-1; z=-1;
-        for (var fz=this.depth-1; fz>=0; fz--) {
-            var clr = (fz == 0) ? 'black' : 'lightgray';
-
-            ans += "<div class='page_slice' data-zdepth=" + fz + " style='color:" + clr + "' ><p><pre><code>";
-            for (var fy=0; fy<this.height; fy++) {
-                for (var fx=0; fx<this.width; fx++) {
-                    var c = this.array1d[this.indexFromSeperateXYZ(fx,fy,fz)];
-                    ans += c;
-                }
-                ans += "<br/>";
-            }
-            ans += "</code></pre></p></div>";
-        }
-        ans += "</div>";
-        for (var fy=0; fy<this.height; fy++) {
-            ans += "<br/><br/>";
-        }
-        
-        return ans;
+        return string3_ui.toHTML(this);
     },
     
 };
@@ -163,20 +142,35 @@ var string3_utils = {
         var page_lines = string3_utils.split_page_lines(text);
         var size = string3_utils.max_page_lines(page_lines);
         var ans = string3().resize( size.x, size.y, size.z, ":" );
+        string3_utils.drawString(ans, page_lines);
+        return ans;
+    },
+    _tempVec_data1 : null,
+    _tempVec1 : function() {
+        if (this._tempVec_data1)
+            return this._tempVec_data1;
+        this._tempVec_data1 = string3_utils.xyz();
+        return this._tempVec_data1;
+    },
+    drawString : function(onto,text,offset) {
+        var page_lines = text;
+        if (typeof(text) == "string")
+            page_lines = string3_utils.split_page_lines(text);
+        var t = this._tempVec1();
         for (var pi=0; pi<page_lines.length; pi++) {
             var pages = page_lines[pi];
+            t.z = pi + ((offset && offset.z) ? offset.z : 0);
             for (var li=0; li<pages.length; li++) {
                 var line = pages[li];
+                t.y = li + ((offset && offset.y) ? offset.y : 0);
                 for (var ci=0; ci<line.length; ci++) {
                     var c = line[ci];
-                    var to = ans.indexFromSeperateXYZ(ci,li,pi);
-                    ans.array1d[to] = c;
-                    //var test = ans.array1d[to];
-                    //console.log(test);
+                    t.x = ci + ((offset && offset.x) ? offset.x : 0);
+                    onto.setByXYZ(c, t);
                 }
             }
         }
-        return ans;
+        return onto;
     },
     max_page_lines : function(page_lines) {
         var ans = string3_utils.xyz(0,0,0);
@@ -209,6 +203,49 @@ var string3_utils = {
 
 var string3_ui = {
     topChildren : {},
+    toHTML : function(str3) {
+        var ans = "";   
+        ans += "<div class='page_top' onmousemove='string3_ui.onMouseMoveTop(event,this)' >";
+        x=-1; y=-1; z=-1;
+        for (var fz=str3.depth-1; fz>=0; fz--) {
+            var clr = (fz == 0) ? 'black' : 'lightgray';
+
+            ans += "<div class='page_slice' data-zdepth=" + fz + " style='color:" + clr + "' ><p><pre><code>";
+            for (var fy=0; fy<str3.height; fy++) {
+                for (var fx=0; fx<str3.width; fx++) {
+                    var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
+                    ans += c;
+                }
+                ans += "<br/>";
+            }
+            ans += "</code></pre></p></div>";
+        }
+        ans += "</div>";
+        for (var fy=0; fy<str3.height; fy++) {
+            ans += "<br/><br/>";
+        }
+        return ans;
+    },
+    toHTML_Text : function(str3) {
+        var ans = "<div><p><pre><code>";
+        var x=0, y=0, z=0;
+        str3.visitEach((c,fx,fy,fz) => { 
+            if (z != fz) {
+
+                ans += "\n--layer--\n";
+
+                z = fz;
+                y = fy;
+            }
+            else if (y != fy) {
+                ans += "\n";
+                y = fy;
+            }
+            ans += c; 
+        });
+        ans += "</code></pre></p></div>";
+        return ans;
+    },
     onMouseMoveTop : function(event,element) {
         var layers = this.topChildren[element];
         if (!layers) {
