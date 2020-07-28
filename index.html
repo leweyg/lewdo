@@ -183,20 +183,16 @@
                         layers = document.getElementsByClassName('page_slice');
                         this.topChildren[element] = layers;
                     }
-                    var dx = (event.offsetX * (0.1 * 1));
-                    var dy = (event.offsetY * (0.1 * 1));
+                    var centerX = 150; // hack
+                    var centerY = 50; //hack
+                    var scl = -0.1;
+                    var dx = ((event.offsetX - centerX) * scl);
+                    var dy = ((event.offsetY - centerY) * scl);
                     for (var i=0; i<layers.length; i++) {
                         var el = layers[i];
                         el.style.left = (dx * el.dataset.zdepth ) + "px";
                         el.style.top = (dy * el.dataset.zdepth ) + "px";
                     }
-                },
-                onMouseMove : function(event,element,z_depth) {
-                    var dx = event.offsetX * (0.1 * z_depth);
-                    var dy = event.offsetY * (0.1 * z_depth);
-                    console.log(event.offsetX);
-                    element.style.left = dx + "px";
-                    element.style.top = dy + "px";
                 },
             };
         </script>
