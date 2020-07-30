@@ -15,12 +15,12 @@ var string3_ui = {
         if (nameGetter) nameGetter(myname);
 
         var events = " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
-        ans += "<div id='" + myname + "' class='page_top' " + events + " >";
+        ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
         for (var fz=str3.depth-1; fz>=0; fz--) {
             var clr = (fz == 0) ? 'black' : 'lightgray';
 
-            ans += "<div class='page_slice' data-zdepth=" + fz + " style='color:" + clr + "' ><p><pre><code>";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute; color:" + clr + "' ><p><pre><code>";
             for (var fy=0; fy<str3.height; fy++) {
                 for (var fx=0; fx<str3.width; fx++) {
                     var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];

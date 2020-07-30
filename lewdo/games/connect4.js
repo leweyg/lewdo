@@ -22,12 +22,12 @@ var lewdo_connect4_prototype = {
         this.board = string3();
         this.board.resize(4,4,5);
         this.board.clear(' ');
-        this.board.clearPlane(4, "*");
+        this.board.clearPlane(4, '#');
 
         this.app_out.drawString3XYZ( this.board, xyz(4,0,0) );
 
         this.app_out.drawTextXYZ('X',xyz(5,5,4));
-        this.app_out.drawTextXYZ('O',xyz(6,5,1));
+        this.app_out.drawTextXYZ('O',xyz(6,5,0));
 
         this.app.app_in.subscribe(() => {
             console.log("Terminal input frame...");

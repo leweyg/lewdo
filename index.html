@@ -1,48 +1,32 @@
 <html>
     <head><title>Lewdo</title></head>
-    <style>
-        .page_top {
-            position: relative;
-        }
-        .page_slice {
-            position: absolute;
-        }
-    </style>
     <body>
         <h3>Lewdo console</h3>
+
         <script src="lewdo/system/string3.js"></script>
         <script src="lewdo/system/string3_ui_html.js"></script>
         <script src="lewdo/system/app.js"></script>
         <script src="lewdo/apps/terminal.js"></script>
         <script src="lewdo/games/connect4.js"></script>
-        <script>
-            if (!lewdo_this_app) lewdo_this_app = lewdo_app();
-            //lewdo_terminal( lewdo_this_app );
-            lewdo_connect4( lewdo_this_app );
-        </script>
+
         <div id="main_lewdo"> 
             <p>Loading...</p>
         </div>
-        <h3>Javascript</h3>
-        <div>
-            <p>
-                <pre><code><span id="main_javascript">
-function output_code()
-{
-    indented;
-}
-</span></code></pre>
-            </p>
-        </div>
-        <p>Lewdo v0.1 - by Lewey Geselowitz @ <a href="http://lewcid.com/">lewcid.com</a> </p>
-        <textarea id="main_textarea" onchange="onTextChange(main_textarea.value)" ></textarea>
+
         <script>
-        function onTextChange(newText) {
-            main_lewdo.innerHTML = string3(newText).toHTML();
-        }
-        var front = string3("Hello World.\nNew Line.\vNew Layer\v\nBack layer");
-        string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
+
+            // App instance
+            if (!lewdo_this_app) lewdo_this_app = lewdo_app();
+            //lewdo_terminal( lewdo_this_app );
+            lewdo_connect4( lewdo_this_app );
+
+            // Connect to web page UI:
+            string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
+
         </script>
+        
+        <p>Lewdo v0.1 - by Lewey Geselowitz @ <a href="http://lewcid.com/">lewcid.com</a> </p>
+
     </body>
 
 </html>
