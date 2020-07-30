@@ -62,9 +62,14 @@ var lewdo_connect4_prototype = {
         return this.sides_names[ this.sides_turn ];
     },
 
-    best_height_for_xy : function(xy) {
+    _best_height_temp : string3_utils.xyz(),
+    best_height_for_xyz : function(v) {
+        var t = this._best_height_temp;
+        t.copy(v);
         for (var z=4; z>=0; z--) {
-            if (this.board.getBySeperateXYZ(xy.x, xy.y, z) == " ") {
+            t.z = z;
+            if ( this.board.isValidXYZ(t) && 
+                (this.board.getByXYZ(t) == " ")) {
                 return z;
             }
         }
@@ -73,13 +78,17 @@ var lewdo_connect4_prototype = {
 
     take_turn : function() {
         var t = this.cursor.clone();
-        t.z = this.best_height_for_xy(t);
+        t.z = this.best_height_for_xyz(t);
         if (!this.board.isValidXYZ(t)) {
             console.log("Invalid drop location:" + t);
             return;
         }
         this.board.setByXYZ(this.sides_turn_icon(), t);
         this.sides_turn = (this.sides_turn + 1) % 2;
+        this.cursor.z = this.best_height_for_xyz(this.cursor);
+        if (!this.board.isValidXYZ(this.cursor)) {
+            this.cursor.set(1,1,1);
+        }
         this.redraw();
     },
 
@@ -97,6 +106,7 @@ var lewdo_connect4_prototype = {
             var t = string3_utils._tempVec1;
             t.copy(this.cursor);
             t.add(this.app.app_in.scroll);
+            t.z = this.best_height_for_xyz(t);
             if (this.cursor_display.isValidXYZ(t)) {
                 this.cursor.copy(t);
                 this.redraw();
