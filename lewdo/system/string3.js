@@ -203,9 +203,21 @@ var string3_utils = {
 
 var string3_ui = {
     topChildren : {},
-    toHTML : function(str3) {
-        var ans = "";   
-        ans += "<div class='page_top' onmousemove='string3_ui.onMouseMoveTop(event,this)' >";
+    setInnerString3 : function(parent,str3) {
+        var name = "";
+        var html = string3_ui.toHTML(str3, function(elName){name = elName;});
+        parent.innerHTML = html;
+        var element = document.getElementById(name);
+        string3_ui._setup_element(element);
+        return element;
+    },
+    toHTML : function(str3, nameGetter) {
+        var ans = "";  
+        var myname = "string3_element_" + (string3_ui._global_elementCount++);
+        if (nameGetter) nameGetter(myname);
+
+        var events = " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
+        ans += "<div id='" + myname + "' class='page_top' " + events + " >";
         x=-1; y=-1; z=-1;
         for (var fz=str3.depth-1; fz>=0; fz--) {
             var clr = (fz == 0) ? 'black' : 'lightgray';
@@ -226,6 +238,13 @@ var string3_ui = {
         }
         return ans;
     },
+    _setup_element : function(element) {
+        document.onkeydown = (event) => { 
+            string3_ui.onKeyChange(true,event,element); };
+        document.onkeyup = (event) => { 
+            string3_ui.onKeyChange(true,event,element); };
+    },
+    _global_elementCount : 0,
     toHTML_Text : function(str3) {
         var ans = "<div><p><pre><code>";
         var x=0, y=0, z=0;
@@ -245,6 +264,9 @@ var string3_ui = {
         });
         ans += "</code></pre></p></div>";
         return ans;
+    },
+    onKeyChange : function(isDown,event,element) {
+        console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
     },
     onMouseMoveTop : function(event,element) {
         var layers = this.topChildren[element];
