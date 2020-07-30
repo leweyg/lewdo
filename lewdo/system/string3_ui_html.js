@@ -63,11 +63,24 @@ var string3_ui = {
         ans += "</code></pre></p></div>";
         return ans;
     },
+    keyDirectionToXYZ : {
+        "ArrowLeft":string3_utils.xyz(-1,0,0),
+        "ArrowRight":string3_utils.xyz(1,0,0),
+        "ArrowUp":string3_utils.xyz(0,-1,0),
+        "ArrowDown":string3_utils.xyz(0,1,0),
+    },
     doAppKeyInput : function(isDown,key) {
         var app = lewdo_this_app;
-        app.app_in_reset(1);
-        app.app_in.array1d[0] = key;
-        app.app_in.stepFrame();
+
+        if (key in string3_ui.keyDirectionToXYZ) {
+            app.app_in_reset(0);
+            app.app_in.scroll.copy( string3_ui.keyDirectionToXYZ[key] );
+            app.app_in.frameStep();
+        } else {
+            app.app_in_reset(1);
+            app.app_in.array1d[0] = key;
+            app.app_in.frameStep();
+        }
     },
     onKeyChange : function(isDown,event,element) {
         //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);

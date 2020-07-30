@@ -29,7 +29,7 @@ var string3_prototype = {
     subscribers : [],
     _outOfBoundsWarnings : null,
 
-    stepFrame : function() {
+    frameStep : function() {
         this.frame = this.frame + 1;
         for (var si in this.subscribers) {
             var sub = this.subscribers[si];
@@ -187,6 +187,12 @@ var string3_utils = {
             this.x = _x;
             this.y = _y;
             this.z = _z;
+        },
+        copy : function(other) {
+            this.set(other.x, other.y, other.z);
+        },
+        add : function(other) {
+            this.set( this.x + other.x, this.y + other.y, this.z + other.z );
         },
         toZero : function() {
             this.set(0,0,0);
