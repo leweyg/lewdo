@@ -47,9 +47,9 @@ var string3_prototype = {
         this.subscribers.push(callback);
     },
     setSize : function(w,h,d,fill) {
-        if (w) this.width = w;
-        if (h) this.height = h;
-        if (d) this.depth = d;
+        this.width = w || 0;
+        this.height = h || 0;
+        this.depth = d || 0;
         this.array1d = string3_utils.repeat_array(fill?fill:":", w * h * d);
         return this;
     },
@@ -196,6 +196,9 @@ var string3_utils = {
         },
         add : function(other) {
             this.set( this.x + other.x, this.y + other.y, this.z + other.z );
+        },
+        isZero : function() {
+            return ((this.x==0)&&(this.y==0)&&(this.z==0));
         },
         toZero : function() {
             this.set(0,0,0);
