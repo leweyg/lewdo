@@ -1,6 +1,7 @@
 
 function string3(initial,w,h,d) {
     var ans = Object.create(string3_prototype);
+    ans.subscribers = []; 
     if (initial) {
         if (typeof(initial) == "string") {
             ans = ans.fromString(initial);
@@ -11,9 +12,9 @@ function string3(initial,w,h,d) {
             return ans;
         }
     } else if (!w) {
-        w = 1;
-        h = 1;
-        d = 1;
+        w = 0;
+        h = 0;
+        d = 0;
     }
     ans = ans.resize(w, h, d);
     return ans;
@@ -24,7 +25,23 @@ var string3_prototype = {
     width : 0,
     height : 0,
     depth : 0,
+    frame : 0,
+    subscribers : [],
 
+    stepFrame : function() {
+        this.frame = this.frame + 1;
+        for (var si in this.subscribers) {
+            var sub = this.subscribers[si];
+            try {
+                sub();
+            } catch (ex) {
+                console.log(ex);
+            }
+        }
+    },
+    subscribe : function(callback) {
+        this.subscribers.push(callback);
+    },
     setSize : function(w,h,d,fill) {
         if (w) this.width = w;
         if (h) this.height = h;
@@ -117,7 +134,25 @@ var string3_prototype = {
 
 var string3_utils = {
     xyz : function(x,y,z) {
-        return { x:(x||0), y:(y||0), z:(z||0) };
+        var ans = Object.create( string3_utils._xyz_prototype );
+        ans.setIf(x,y,z);
+        return ans;
+    },
+    _xyz_prototype : {
+        x : 0, y : 0, z : 0,
+        setIf : function(_x,_y,_z) {
+            if (_x) this.x = _x;
+            if (_y) this.y = _y;
+            if (_z) this.z = _z;
+        },
+        set : function(_x,_y,_z) {
+            this.x = _x;
+            this.y = _y;
+            this.z = _z;
+        },
+        toZero : function() {
+            this.set(0,0,0);
+        }
     },
     repeat_array : function(c,n) {
         var ans = [];
@@ -265,10 +300,16 @@ var string3_ui = {
         ans += "</code></pre></p></div>";
         return ans;
     },
+    doAppKeyInput : function(isDown,key) {
+        var app = lewdo_this_app;
+        app.app_in_reset(1);
+        app.app_in.array1d[0] = key;
+        app.app_in.stepFrame();
+    },
     onKeyChange : function(isDown,event,element) {
         //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
-        var letter = event.key;
-        
+        if (isDown)
+            this.doAppKeyInput(isDown,event.key);
     },
     onMouseMoveTop : function(event,element) {
         var layers = this.topChildren[element];

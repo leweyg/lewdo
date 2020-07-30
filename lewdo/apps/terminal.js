@@ -19,6 +19,15 @@ var lewdo_terminal_prototype = {
         this.console3.drawTextXYZ('lewdo',xyz(0,0,1));
         this.console3.clearPlane(0,' ');
         this.console3.drawTextXYZ('>',xyz(5,0,0));
+
+        this.app.app_in.subscribe(() => {
+            console.log("Terminal input frame...");
+            var input = this.app.app_in;
+            if (input.width > 0) {
+                var letter = input.array1d[0];
+                console.log("Terminal got input '" + letter + "' !");
+            }
+        });
     },
     
 };
