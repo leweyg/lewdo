@@ -27,6 +27,7 @@ var string3_prototype = {
     depth : 0,
     frame : 0,
     subscribers : [],
+    _outOfBoundsWarnings : null,
 
     stepFrame : function() {
         this.frame = this.frame + 1;
@@ -69,23 +70,26 @@ var string3_prototype = {
             && ((v.z >= 0) && (v.z < this.depth))
         );
     },
+    
+    getByXYZ : function(xyz) {
+        if (this.isValidXYZ(xyz)) {
+            var i = this.indexFromXYZ(xyz);
+            var val = this.array1d[i];
+            return val;
+        } else if (_outOfBoundsWarnings) {
+            _outOfBoundsWarnings(xyz);
+        }
+    },
     setByXYZ : function(val, xyz) {
         if (this.isValidXYZ(xyz)) {
             var i = this.indexFromXYZ(xyz);
             this.array1d[i] = val;
+        } else if (_outOfBoundsWarnings) {
+            _outOfBoundsWarnings(xyz);
         }
-    },
-    _tempVec_data1 : null,
-    _tempVec1 : function() {
-        var t = string3_prototype._tempVec_data1;
-        if (!t) {
-            string3_prototype._tempVec_data1 = string3_utils.xyz();
-            t = string3_prototype._tempVec_data1;
-        }
-        return t;
     },
     drawRangeXYZ : function(val, vFrom, vTo) {
-        var t = this._tempVec1();
+        var t = string3_utils._tempVec1;
         for (var d=0; d<(vTo.z-vFrom.z); d++) {
             t.z = (vFrom.z + d);
             for (var h=0; h<(vTo.y-vFrom.y); h++) {
@@ -97,11 +101,37 @@ var string3_prototype = {
             }
         }
     },
+    drawString3XYZ : function(other,xyz) {
+        xyz = ( xyz || string3_utils._xyz_zero );
+        var f = string3_utils._tempVec1;
+        var t = string3_utils._tempVec2;
+        for (var d=0; d<other.depth; d++) {
+            f.z = d;
+            t.z = (d + xyz.z);
+            for (var h=0; h<other.height; h++) {
+                f.y = h;
+                t.y = (h + xyz.y);
+                for (var w=0; w<other.width; w++) {
+                    f.x = w;
+                    t.x = (w + xyz.x);
+                    var val = other.getByXYZ(f);
+                    this.setByXYZ(val, t);
+                }
+            }
+        }
+    },
     drawTextXYZ : function(text,xyz) {
         string3_utils.drawString(this, text, xyz);
     },
+    clear : function(fill) {
+        fill = ( fill || " " );
+        var c = this.array1d.length;
+        for (var i=0; i<c; i++)  {
+            this.array1d[i] = fill;
+        }
+    },
     clearPlane : function(plane,val) {
-        var t = this._tempVec1();
+        var t = string3_utils._tempVec1;
         t.z = plane;
         for (var h=0; h<this.height; h++) {
             t.y = h;
@@ -133,6 +163,14 @@ var string3_prototype = {
 };
 
 var string3_utils = {
+    _xyz_zero : null, // xyz()
+    _tempVec1 : null, // xyz()
+    _tempVec2 : null, // xyz()
+    _internal_setup : function() {
+        string3_utils._tempVec1 = string3_utils.xyz();
+        string3_utils._tempVec2 = string3_utils.xyz();
+        string3_utils._xyz_zero = string3_utils.xyz();
+    },
     xyz : function(x,y,z) {
         var ans = Object.create( string3_utils._xyz_prototype );
         ans.setIf(x,y,z);
@@ -180,18 +218,12 @@ var string3_utils = {
         string3_utils.drawString(ans, page_lines);
         return ans;
     },
-    _tempVec_data1 : null,
-    _tempVec1 : function() {
-        if (this._tempVec_data1)
-            return this._tempVec_data1;
-        this._tempVec_data1 = string3_utils.xyz();
-        return this._tempVec_data1;
-    },
+    
     drawString : function(onto,text,offset) {
         var page_lines = text;
         if (typeof(text) == "string")
             page_lines = string3_utils.split_page_lines(text);
-        var t = this._tempVec1();
+        var t = this._tempVec1;
         for (var pi=0; pi<page_lines.length; pi++) {
             var pages = page_lines[pi];
             t.z = pi + ((offset && offset.z) ? offset.z : 0);
@@ -234,4 +266,10 @@ var string3_utils = {
         }
         return pages;
     },
+
 };
+
+string3_utils._internal_setup();
+
+
+

@@ -14,9 +14,11 @@
         <script src="lewdo/system/string3_ui_html.js"></script>
         <script src="lewdo/system/app.js"></script>
         <script src="lewdo/apps/terminal.js"></script>
+        <script src="lewdo/games/connect4.js"></script>
         <script>
             if (!lewdo_this_app) lewdo_this_app = lewdo_app();
-            var lewdo_this_terminal = lewdo_terminal( lewdo_this_app );
+            //lewdo_terminal( lewdo_this_app );
+            lewdo_connect4( lewdo_this_app );
         </script>
         <div id="main_lewdo"> 
             <p>Loading...</p>
