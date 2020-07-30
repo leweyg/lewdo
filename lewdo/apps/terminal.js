@@ -10,9 +10,9 @@ var lewdo_terminal_prototype = {
     app : null,
 
     setup : function(_app) {
-        this.app = _app; 
+        this.app = _app || lewdo_app(); 
         var xyz = string3_utils.xyz;
-        this.console3 = string3();
+        this.console3 = this.app.app_out;
         this.console3.resize(16,9,3);
         this.console3.clearPlane(2,'*');
         this.console3.clearPlane(1,' ');
