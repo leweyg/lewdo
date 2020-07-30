@@ -10,32 +10,8 @@
     </style>
     <body>
         <h3>Lewdo console</h3>
-        <script src="string3.js"></script>
-        <script>
-            var lewdo_console = function() {
-                var ans = Object.create(lewdo_console_prototype);
-                ans.setup();
-                return ans;
-            };
-
-            var lewdo_console_prototype = {
-                console3 : string3(),
-
-                setup : function() {
-                    var xyz = string3_utils.xyz;
-                    this.console3.resize(16,9,3);
-                    this.console3.clearPlane(2,'*');
-                    this.console3.clearPlane(1,' ');
-                    this.console3.drawTextXYZ('lewdo',xyz(0,0,1));
-                    this.console3.clearPlane(0,' ');
-                    this.console3.drawTextXYZ('>',xyz(5,0,0));
-                },
-                
-            };
-
-            var main_console = lewdo_console();
-
-        </script>
+        <script src="lewdo/system/string3.js"></script>
+        <script src="lewdo/apps/terminal.js"></script>
         <div id="main_lewdo"> 
             <p>Loading...</p>
         </div>
@@ -57,7 +33,7 @@ function output_code()
             main_lewdo.innerHTML = string3(newText).toHTML();
         }
         var front = string3("Hello World.\nNew Line.\vNew Layer\v\nBack layer");
-        main_lewdo.innerHTML = front.toHTML() + "<br/>" + main_console.console3.toHTML();
+        main_lewdo.innerHTML = front.toHTML() + "<br/>" + lewdo_this_terminal.console3.toHTML();
         </script>
     </body>
 
