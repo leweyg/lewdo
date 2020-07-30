@@ -22,6 +22,7 @@ var lewdo_connect4_prototype = {
         this.app_out.resize(12,7,5);
         this.app_out.clear(" ");
 
+        this.cursor = string3_utils.xyz(0,0,3);
         this.cursor_display = string3();
         this.cursor_display.resize(4,4,4);
 
