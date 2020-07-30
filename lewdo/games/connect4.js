@@ -51,15 +51,22 @@ var lewdo_connect4_prototype = {
 
         t.copy( this.cursor );
         t.add(xyz(4,0,0));
-        this.app_out.drawTextXYZ( this.sides_turn_icon(), t );
+        this.app_out.drawTextXYZ( this.sides_turn_icon(true), t );
 
         this.app_out.drawTextXYZ(this.sides_names[0],xyz(5,5,(this.sides_turn==0)?0:4 ));
         this.app_out.drawTextXYZ(this.sides_names[1],xyz(6,5,(this.sides_turn==1)?0:4 ));
 
         this.app_out.frameStep();
     },
-    sides_turn_icon : function() {
-        return this.sides_names[ this.sides_turn ];
+
+    sides_turn_icon : function(isOnBoard=false) {
+        var ans = this.sides_names[ this.sides_turn ];
+        if (isOnBoard) {
+            if (this.board.getByXYZ(this.cursor) != " ") {
+                ans = "*";
+            }
+        }
+        return ans;
     },
 
     _best_height_temp : string3_utils.xyz(),
@@ -87,7 +94,7 @@ var lewdo_connect4_prototype = {
         this.sides_turn = (this.sides_turn + 1) % 2;
         this.cursor.z = this.best_height_for_xyz(this.cursor);
         if (!this.board.isValidXYZ(this.cursor)) {
-            this.cursor.set(1,1,1);
+            this.cursor.z = 0;
         }
         this.redraw();
     },
@@ -106,7 +113,13 @@ var lewdo_connect4_prototype = {
             var t = string3_utils._tempVec1;
             t.copy(this.cursor);
             t.add(this.app.app_in.scroll);
+            if (!this.cursor_display.isValidXYZ(t))
+                return;
+
             t.z = this.best_height_for_xyz(t);
+            if (!this.cursor_display.isValidXYZ(t)) {
+                t.z = 0;
+            }
             if (this.cursor_display.isValidXYZ(t)) {
                 this.cursor.copy(t);
                 this.redraw();
