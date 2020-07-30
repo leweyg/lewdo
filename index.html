@@ -1,7 +1,7 @@
 <html>
     <head><title>Lewdo</title></head>
     <body>
-        <h3>Lewdo console</h3>
+        <h3 id="main_title">lewdo</h3>
 
         <script src="lewdo/system/string3.js"></script>
         <script src="lewdo/system/string3_ui_html.js"></script>
@@ -17,8 +17,10 @@
 
             // App instance
             if (!lewdo_this_app) lewdo_this_app = lewdo_app();
-            //lewdo_terminal( lewdo_this_app );
-            lewdo_connect4( lewdo_this_app );
+
+            //lewdo_terminal( lewdo_this_app ); main_title.innerText = "lewdo.apps.terminal";
+
+            lewdo_connect4( lewdo_this_app ); main_title.innerText = "lewdo.games.connect4";
 
             // Connect to web page UI:
             string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
