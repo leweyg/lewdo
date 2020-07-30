@@ -1,12 +1,14 @@
 
 var string3_ui = {
-    topChildren : {},
+    _topChildren : {
+        "elementPtr":{ element:null, source3:null, pageElements:[], pageContents:[] },
+    },
     setInnerString3 : function(parent,str3) {
         var name = "";
         var html = string3_ui.toHTML(str3, function(elName){name = elName;});
         parent.innerHTML = html;
         var element = document.getElementById(name);
-        string3_ui._setup_element(element);
+        string3_ui._setup_element(element,str3);
         return element;
     },
     toHTML : function(str3, nameGetter) {
@@ -20,7 +22,7 @@ var string3_ui = {
         for (var fz=str3.depth-1; fz>=0; fz--) {
             var clr = (fz == 0) ? 'black' : 'lightgray';
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute; color:" + clr + "' ><p><pre><code>";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute; color:" + clr + "' ><p><pre><code class='page_content'>";
             for (var fy=0; fy<str3.height; fy++) {
                 for (var fx=0; fx<str3.width; fx++) {
                     var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
@@ -36,7 +38,49 @@ var string3_ui = {
         }
         return ans;
     },
-    _setup_element : function(element) {
+    _updatePageText : function(element) {
+        var info = string3_ui._topChildren[element];
+        var str3 = info.source3;
+        var pageContents = info.pageContents;
+        console.assert(pageContents.length == str3.depth);
+        for (var z=0; z<str3.depth; z++) {
+            var ans = "";
+            for (var y=0; y<str3.height; y++) {
+                for (var x=0; x<str3.width; x++) {
+                    var i = str3.indexFromSeperateXYZ(x,y,z);
+                    var v = str3.array1d[i];
+                    ans += v;
+                }
+                ans += "<br/>";
+            }
+            pageContents[z].innerHTML = ans;
+        }
+    },
+    _setup_element : function(element,str3) {
+        
+        var pageElementsQuery = element.getElementsByClassName('page_slice');
+        var pageElements = [];
+        for (var pi=0; pi<pageElementsQuery.length; pi++) {
+            pageElements.push( pageElementsQuery[pi] );
+        }
+        pageElements.sort( (a,b) => { 
+            return a.dataset.zdepth - b.dataset.zdepth; 
+        } );
+        var pageContents = [];
+        for (var pi in pageElements) {
+            var content_list = pageElements[pi].getElementsByClassName('page_content');
+            var content = content_list[0];
+            pageContents.push(content);
+        }
+        string3_ui._topChildren[element] = { 
+            element:element, 
+            source3:str3, 
+            pageElements:pageElements,
+            pageContents:pageContents };
+        str3.subscribe(() => {
+            this._updatePageText(element,str3);
+        });
+
         document.onkeydown = (event) => { 
             string3_ui.onKeyChange(true,event,element); };
         document.onkeyup = (event) => { 
@@ -87,12 +131,16 @@ var string3_ui = {
         if (isDown)
             this.doAppKeyInput(isDown,event.key);
     },
-    onMouseMoveTop : function(event,element) {
-        var layers = this.topChildren[element];
+    getPageElements : function(element) {
+        var layers = this._topChildren[element];
         if (!layers) {
             layers = document.getElementsByClassName('page_slice');
-            this.topChildren[element] = layers;
+            this._topChildren[element] = layers;
         }
+        return layers;
+    },
+    onMouseMoveTop : function(event,element) {
+        var layers = this.getPageElements(element).pageElements;
         var centerX = 150; // hack
         var centerY = 50; //hack
         var scl = -0.1;

@@ -28,15 +28,18 @@ var string3_prototype = {
     frame : 0,
     subscribers : [],
     _outOfBoundsWarnings : null,
+    _catchFrameExceptions : false,
 
     frameStep : function() {
         this.frame = this.frame + 1;
         for (var si in this.subscribers) {
             var sub = this.subscribers[si];
-            try {
+            if (!this._catchFrameExceptions) {
                 sub();
-            } catch (ex) {
-                console.log(ex);
+            } else {
+                try {
+                    sub();
+                } catch (ex) { console.log(ex); }
             }
         }
     },
