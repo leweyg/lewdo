@@ -91,6 +91,10 @@ var string3_prototype = {
             _outOfBoundsWarnings(xyz);
         }
     },
+    getBySeperateXYZ : function(x,y,z) {
+        var i = this.indexFromSeperateXYZ(x,y,z);
+        return this.array1d[i];
+    },
     drawRangeXYZ : function(val, vFrom, vTo) {
         var t = string3_utils._tempVec1;
         for (var d=0; d<(vTo.z-vFrom.z); d++) {
@@ -199,6 +203,9 @@ var string3_utils = {
         },
         isZero : function() {
             return ((this.x==0)&&(this.y==0)&&(this.z==0));
+        },
+        clone : function() {
+            return string3_utils.xyz(this.x, this.y, this.z);
         },
         toZero : function() {
             this.set(0,0,0);

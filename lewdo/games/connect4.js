@@ -11,7 +11,7 @@ var lewdo_connect4_prototype = {
     board : string3(),
     cursor : string3_utils.xyz(),
     cursor_display : string3(),
-    sides_names : [ "X", "O" ],
+    sides_names : [ "O", "X" ],
     sides_turn : 0,
 
     setup : function(_app) {
@@ -51,12 +51,36 @@ var lewdo_connect4_prototype = {
 
         t.copy( this.cursor );
         t.add(xyz(4,0,0));
-        this.app_out.drawTextXYZ( this.sides_names[ this.sides_turn ], t );
+        this.app_out.drawTextXYZ( this.sides_turn_icon(), t );
 
         this.app_out.drawTextXYZ(this.sides_names[0],xyz(5,5,(this.sides_turn==0)?0:4 ));
         this.app_out.drawTextXYZ(this.sides_names[1],xyz(6,5,(this.sides_turn==1)?0:4 ));
 
         this.app_out.frameStep();
+    },
+    sides_turn_icon : function() {
+        return this.sides_names[ this.sides_turn ];
+    },
+
+    best_height_for_xy : function(xy) {
+        for (var z=4; z>=0; z--) {
+            if (this.board.getBySeperateXYZ(xy.x, xy.y, z) == " ") {
+                return z;
+            }
+        }
+        return -1;
+    },
+
+    take_turn : function() {
+        var t = this.cursor.clone();
+        t.z = this.best_height_for_xy(t);
+        if (!this.board.isValidXYZ(t)) {
+            console.log("Invalid drop location:" + t);
+            return;
+        }
+        this.board.setByXYZ(this.sides_turn_icon(), t);
+        this.sides_turn = (this.sides_turn + 1) % 2;
+        this.redraw();
     },
 
     input_updated : function() {
@@ -66,8 +90,8 @@ var lewdo_connect4_prototype = {
             var letter = input.array1d[0];
             //console.log("Terminal got input '" + letter + "' !");
             if (letter == 'Enter') {
-                this.sides_turn = (this.sides_turn + 1) % 2;
-                this.redraw();
+                this.take_turn();
+                return;
             }
         } else if (!input.scroll.isZero()) {
             var t = string3_utils._tempVec1;
