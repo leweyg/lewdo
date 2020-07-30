@@ -14,3 +14,5 @@ var lewdo_app_prototype = {
     }
 };
 
+var lewdo_this_app = null;
+

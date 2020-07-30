@@ -13,6 +13,10 @@
         <script src="lewdo/system/string3.js"></script>
         <script src="lewdo/system/app.js"></script>
         <script src="lewdo/apps/terminal.js"></script>
+        <script>
+            if (!lewdo_this_app) lewdo_this_app = lewdo_app();
+            var lewdo_this_terminal = lewdo_terminal( lewdo_this_app );
+        </script>
         <div id="main_lewdo"> 
             <p>Loading...</p>
         </div>
@@ -34,7 +38,7 @@ function output_code()
             main_lewdo.innerHTML = string3(newText).toHTML();
         }
         var front = string3("Hello World.\nNew Line.\vNew Layer\v\nBack layer");
-        string3_ui.setInnerString3( main_lewdo, lewdo_this_terminal.console3 );
+        string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
         </script>
     </body>
 

@@ -23,6 +23,5 @@ var lewdo_terminal_prototype = {
     
 };
 
-var lewdo_this_terminal = lewdo_terminal();
 
 

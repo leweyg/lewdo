@@ -242,7 +242,7 @@ var string3_ui = {
         document.onkeydown = (event) => { 
             string3_ui.onKeyChange(true,event,element); };
         document.onkeyup = (event) => { 
-            string3_ui.onKeyChange(true,event,element); };
+            string3_ui.onKeyChange(false,event,element); };
     },
     _global_elementCount : 0,
     toHTML_Text : function(str3) {
@@ -266,7 +266,9 @@ var string3_ui = {
         return ans;
     },
     onKeyChange : function(isDown,event,element) {
-        console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
+        //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
+        var letter = event.key;
+        
     },
     onMouseMoveTop : function(event,element) {
         var layers = this.topChildren[element];
