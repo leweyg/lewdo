@@ -27,7 +27,9 @@ var string3_prototype = {
     depth : 0,
     frame : 0,
     subscribers : [],
-    _outOfBoundsWarnings : null,
+    _outOfBoundsWarnings : function(pos){
+        throw "out of bounds:" + pos;
+    },
     _catchFrameExceptions : false,
 
     frameStep : function() {
@@ -79,16 +81,16 @@ var string3_prototype = {
             var i = this.indexFromXYZ(xyz);
             var val = this.array1d[i];
             return val;
-        } else if (_outOfBoundsWarnings) {
-            _outOfBoundsWarnings(xyz);
+        } else if (this._outOfBoundsWarnings) {
+            this._outOfBoundsWarnings(xyz);
         }
     },
     setByXYZ : function(val, xyz) {
         if (this.isValidXYZ(xyz)) {
             var i = this.indexFromXYZ(xyz);
             this.array1d[i] = val;
-        } else if (_outOfBoundsWarnings) {
-            _outOfBoundsWarnings(xyz);
+        } else if (this._outOfBoundsWarnings) {
+            this._outOfBoundsWarnings(xyz);
         }
     },
     getBySeperateXYZ : function(x,y,z) {

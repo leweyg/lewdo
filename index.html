@@ -8,6 +8,7 @@
         <script src="lewdo/system/app.js"></script>
         <script src="lewdo/apps/terminal.js"></script>
         <script src="lewdo/games/connect4.js"></script>
+        <script src="lewdo/games/soduko.js"></script>
 
         <div id="main_lewdo"> 
             <p>Loading...</p>
@@ -18,8 +19,8 @@
             if (!lewdo_this_app) lewdo_this_app = lewdo_app();
 
             //lewdo_terminal( lewdo_this_app ); main_title.innerText = "lewdo.apps.terminal";
-
             lewdo_connect4( lewdo_this_app ); main_title.innerText = "lewdo.games.connect4";
+            //lewdo_soduko( lewdo_this_app ); main_title.innerText = "lewdo.games.soduko";
 
             // Connect to web page UI:
             string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
