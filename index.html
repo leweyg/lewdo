@@ -33,11 +33,10 @@
             </div>
         </center>
         </div>
-
         <script>
             var keypad = string3(" ↑\n←►→\n ↓");
             main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad, (letter,x,y,z) => {
-                
+                string3_ui.doAppKeyInput(true,letter);
             });
         </script>
 

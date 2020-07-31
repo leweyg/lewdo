@@ -141,10 +141,15 @@ var string3_ui = {
         return ans;
     },
     keyDirectionToXYZ : {
+        //←→↑↓\n←►\n 
         "ArrowLeft":string3_utils.xyz(-1,0,0),
         "ArrowRight":string3_utils.xyz(1,0,0),
         "ArrowUp":string3_utils.xyz(0,-1,0),
         "ArrowDown":string3_utils.xyz(0,1,0),
+        "←":string3_utils.xyz(-1,0,0),
+        "→":string3_utils.xyz(1,0,0),
+        "↑":string3_utils.xyz(0,-1,0),
+        "↓":string3_utils.xyz(0,1,0),
     },
     doAppKeyInput : function(isDown,key) {
         var app = lewdo_this_app;

@@ -106,7 +106,7 @@ var lewdo_connect4_prototype = {
         if (input.width > 0) {
             var letter = input.array1d[0];
             //console.log("Terminal got input '" + letter + "' !");
-            if (letter == 'Enter') {
+            if (letter == 'Enter' || letter=="►" ) {
                 this.take_turn();
                 return;
             }
