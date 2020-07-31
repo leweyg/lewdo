@@ -50,7 +50,7 @@ var string3_prototype = {
         this.width = w || 0;
         this.height = h || 0;
         this.depth = d || 0;
-        this.array1d = string3_utils.repeat_array(fill?fill:":", w * h * d);
+        this.array1d = string3_utils.repeat_array(fill?fill:" ", w * h * d);
         return this;
     },
     resize : function(w,h,d,fill) {
@@ -233,7 +233,7 @@ var string3_utils = {
     fromString : function(text) {
         var page_lines = string3_utils.split_page_lines(text);
         var size = string3_utils.max_page_lines(page_lines);
-        var ans = string3().resize( size.x, size.y, size.z, ":" );
+        var ans = string3().resize( size.x, size.y, size.z, " " );
         string3_utils.drawString(ans, page_lines);
         return ans;
     },

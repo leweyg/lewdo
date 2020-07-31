@@ -1,7 +1,7 @@
 <html>
     <head><title>Lewdo</title></head>
-    <body>
-        <h3 id="main_title">lewdo</h3>
+    <body style='width:100%;'>
+        <code><h3 id="main_title">lewdo</h3></code>
 
         <script src="lewdo/system/string3.js"></script>
         <script src="lewdo/system/string3_ui_html.js"></script>
@@ -12,7 +12,6 @@
         <div id="main_lewdo"> 
             <p>Loading...</p>
         </div>
-
         <script>
 
             // App instance
@@ -26,8 +25,21 @@
             string3_ui.setInnerString3( main_lewdo, lewdo_this_app.app_out );
 
         </script>
-        
-        <p>Lewdo v0.1 - by Lewey Geselowitz @ <a href="http://lewcid.com/">lewcid.com</a> </p>
+
+        <div id="main_key_holder" style="width:100%;">
+            <center>
+            <div id="main_keypad" style="width:80%;text-align: center;display: inline-block;">
+
+            </div>
+        </center>
+        </div>
+
+        <script>
+            var keypad = string3(" ↑\n←►→\n ↓");
+            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad);
+        </script>
+
+        <p><code>lewdo v0.1 <a href="http://lewcid.com/">lewcid.com</a> </code></p>
 
     </body>
 

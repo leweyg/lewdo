@@ -86,6 +86,24 @@ var string3_ui = {
         document.onkeyup = (event) => { 
             string3_ui.onKeyChange(false,event,element); };
     },
+    toHTML_Buttons : function(str3,callback) {
+        var ans = "<table style='width:80%' >";
+        str3.visitEach((letter,x,y,z) => {
+            if (x == 0) {
+                ans += "<tr style='width:80%' >";
+            } 
+            ans += "<td style='width:25%;' >";
+            if (letter != " ") {
+                ans += "<input type='button' value='" + letter + "' style='width:100%' ></input>";
+            }
+            ans += "</td>";
+            if (x == str3.width-1) {
+                ans += "</tr>";
+            }
+        });
+        ans += "</table>";
+        return ans;
+    },
     _global_elementCount : 0,
     toHTML_Text : function(str3) {
         var ans = "<div><p><pre><code>";
