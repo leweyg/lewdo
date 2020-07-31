@@ -16,7 +16,9 @@ var string3_ui = {
         var myname = "string3_element_" + (string3_ui._global_elementCount++);
         if (nameGetter) nameGetter(myname);
 
-        var events = " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
+        var events = " ";// " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
+        document.onmousemove = ((event) => { string3_ui.onMouseMoveTop(event,document.getElementById(myname)); });
+
         ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
         for (var fz=str3.depth-1; fz>=0; fz--) {
@@ -179,15 +181,34 @@ var string3_ui = {
     },
     onMouseMoveTop : function(event,element) {
         var layers = this.getPageElements(element).pageElements;
-        var centerX = 150; // hack
-        var centerY = 50; //hack
-        var scl = -0.1;
-        var dx = ((event.offsetX - centerX) * scl);
-        var dy = ((event.offsetY - centerY) * scl);
+
+        // page level:
+        var w = document.body.clientWidth;
+        var h = document.body.clientHeight;
+        var fx = event.clientX / w;
+        var fy = event.clientY / h;
+        var angleX = (fy - 0.5) * 45.0;
+        var angleY = (fx - 0.5) * -45.0;
+
+        // element level:
+        w = layers[0].scrollWidth;
+        h = layers[1].scrollHeight;
+
         for (var i=0; i<layers.length; i++) {
             var el = layers[i];
-            el.style.left = (dx * el.dataset.zdepth ) + "px";
-            el.style.top = (dy * el.dataset.zdepth ) + "px";
+            var index = el.dataset.zdepth;
+            //el.style.left = (dx * el.dataset.zdepth ) + "px";
+            //el.style.top = (dy * el.dataset.zdepth ) + "px";
+
+            var sequence = " translate(" + (w/2) + "px, " + (h/2) + "px) ";
+            sequence += "perspective(350px) ";
+            sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
+            sequence += " rotateY(" + angleY + "deg) ";
+            sequence += " rotateX(" + angleX + "deg) ";
+            sequence += " translateZ(" + (-20 * index) + "px)";
+            //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
+
+            el.style.transform = sequence;
         }
     },
 };
