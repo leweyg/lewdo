@@ -29,7 +29,7 @@ var lewdo_connect4_prototype = {
         this.board = string3();
         this.board.resize(4,4,5);
         this.board.clear(' ');
-        this.board.clearPlane(4, '#');
+        this.board.clearPlane(4, '●'); // ○
 
         this.redraw();
 

@@ -22,9 +22,11 @@ var string3_ui = {
         ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
         for (var fz=str3.depth-1; fz>=0; fz--) {
-            var clr = (fz == 0) ? 'black' : 'lightgray';
+            var clr = 'black';//(fz == 0) ? 'black' : 'lightgray';
+            var opacity = 1.0 - (fz / (str3.depth + 1));
+            opacity = Math.pow(opacity,1.61);
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute; color:" + clr + "' ><p><pre><code class='page_content'>";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;opacity:" + opacity + ";color:" + clr + ";' ><p><pre><code class='page_content'>";
             for (var fy=0; fy<str3.height; fy++) {
                 for (var fx=0; fx<str3.width; fx++) {
                     var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
@@ -187,8 +189,9 @@ var string3_ui = {
         var h = document.body.clientHeight;
         var fx = event.clientX / w;
         var fy = event.clientY / h;
-        var angleX = (fy - 0.5) * 45.0;
-        var angleY = (fx - 0.5) * -45.0;
+        var scl = 85.0;
+        var angleX = (fy - 0.5) * scl;
+        var angleY = (fx - 0.5) * -scl;
 
         // element level:
         w = layers[0].scrollWidth;
@@ -205,7 +208,7 @@ var string3_ui = {
             sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
             sequence += " rotateY(" + angleY + "deg) ";
             sequence += " rotateX(" + angleX + "deg) ";
-            sequence += " translateZ(" + (-20 * index) + "px)";
+            sequence += " translateZ(" + (-10 * index) + "px)";
             //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
 
             el.style.transform = sequence;
