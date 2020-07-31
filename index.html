@@ -36,7 +36,9 @@
 
         <script>
             var keypad = string3(" ↑\n←►→\n ↓");
-            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad);
+            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad, (letter,x,y,z) => {
+                
+            });
         </script>
 
         <p><code>lewdo v0.1 <a href="http://lewcid.com/">lewcid.com</a> </code></p>

@@ -86,15 +86,30 @@ var string3_ui = {
         document.onkeyup = (event) => { 
             string3_ui.onKeyChange(false,event,element); };
     },
+    _valuesByName : {},
+    nameByValue : function(value) {
+        var name = "_named_id" + ( Object.keys(string3_ui._valuesByName).length );
+        string3_ui._valuesByName[name] = value;
+        return name;
+    },
+    valueByName : function(name) {
+        return string3_ui._valuesByName[name];
+    },
+    _doButtonCallback : function(cbName,letter,x,y,z) {
+        var callback = string3_ui.valueByName(cbName);
+        callback(letter,x,y,z);
+    },
     toHTML_Buttons : function(str3,callback) {
         var ans = "<table style='width:80%' >";
+        var callbackName = string3_ui.nameByValue(callback);
         str3.visitEach((letter,x,y,z) => {
             if (x == 0) {
                 ans += "<tr style='width:80%' >";
             } 
             ans += "<td style='width:25%;' >";
             if (letter != " ") {
-                ans += "<input type='button' value='" + letter + "' style='width:100%' ></input>";
+                var act = " onclick=\"string3_ui._doButtonCallback('" + callbackName + "','" + letter + "'," + x + "," + y + "," + z + ");\" ";
+                ans += "<input type='button' " + act + " value='" + letter + "' style='width:100%' ></input>";
             }
             ans += "</td>";
             if (x == str3.width-1) {
