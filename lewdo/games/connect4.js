@@ -19,7 +19,7 @@ var lewdo_connect4_prototype = {
         this.app = _app || lewdo_app(); 
     
         this.app_out = this.app.app_out;
-        this.app_out.resize(12,7,5);
+        this.app_out.resize(4,7,5);
         this.app_out.clear(" ");
 
         this.cursor = string3_utils.xyz(0,0,3);
@@ -45,17 +45,17 @@ var lewdo_connect4_prototype = {
 
         this.app_out.clear(' ');
 
-        this.app_out.drawString3XYZ( this.board, xyz(4,0,0) );
+        this.app_out.drawString3XYZ( this.board, xyz(0,0,0) );
 
         this.cursor_display.clear(' ');
         this.cursor_display.drawTextXYZ("*", this.cursor );
 
         t.copy( this.cursor );
-        t.add(xyz(4,0,0));
+        t.add(xyz(0,0,0));
         this.app_out.drawTextXYZ( this.sides_turn_icon(true), t );
 
-        this.app_out.drawTextXYZ(this.sides_names[0],xyz(5,5,(this.sides_turn==0)?0:4 ));
-        this.app_out.drawTextXYZ(this.sides_names[1],xyz(6,5,(this.sides_turn==1)?0:4 ));
+        this.app_out.drawTextXYZ(this.sides_names[0],xyz(1,5,(this.sides_turn==0)?0:4 ));
+        this.app_out.drawTextXYZ(this.sides_names[1],xyz(2,5,(this.sides_turn==1)?0:4 ));
 
         this.app_out.frameStep();
     },

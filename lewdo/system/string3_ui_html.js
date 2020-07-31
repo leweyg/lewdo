@@ -89,6 +89,8 @@ var string3_ui = {
             string3_ui.onKeyChange(true,event,element); };
         document.onkeyup = (event) => { 
             string3_ui.onKeyChange(false,event,element); };
+
+        string3_ui.onMouseMoveTop({},element);
     },
     _valuesByName : {},
     nameByValue : function(value) {
@@ -185,10 +187,11 @@ var string3_ui = {
         var layers = this.getPageElements(element).pageElements;
 
         // page level:
+        var fw = element.scrollWidth;
         var w = document.body.clientWidth;
         var h = document.body.clientHeight;
-        var fx = event.clientX / w;
-        var fy = event.clientY / h;
+        var fx = event.clientX ? ( event.clientX / w) : 0.5;
+        var fy = event.clientY ? ( event.clientY / h ) : 0.5;
         var scl = 85.0;
         var angleX = (fy - 0.5) * scl;
         var angleY = (fx - 0.5) * -scl;
@@ -203,7 +206,7 @@ var string3_ui = {
             //el.style.left = (dx * el.dataset.zdepth ) + "px";
             //el.style.top = (dy * el.dataset.zdepth ) + "px";
 
-            var sequence = " translate(" + (w/2) + "px, " + (h/2) + "px) ";
+            var sequence = " translate(" + (fw/2) + "px, " + (h/2) + "px) ";
             sequence += "perspective(350px) ";
             sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
             sequence += " rotateY(" + angleY + "deg) ";
