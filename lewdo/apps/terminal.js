@@ -45,7 +45,8 @@ var lewdo_terminal_prototype = {
                     this.launchSelected();
                 }
             } else if (input.scroll.y != 0) {
-                this.selected_index = ( this.selected_index + input.scroll.y ) % this.selected_from.length;
+                var n = this.selected_from.length;
+                this.selected_index = ( this.selected_index + input.scroll.y + n ) % n;
                 this.redraw();
             }
         });
