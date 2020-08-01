@@ -26,7 +26,9 @@ var lewdo_terminal_prototype = {
         this.app.app_in.subscribe(() => {
             console.log("Terminal input frame...");
             var input = this.app.app_in;
-            if ((input.array1d.length > 0) && (input.array1d[0] == "Escape") || (input.array1d[0]=="~")) {
+            if ((input.array1d.length > 0) && (input.array1d[0] == "Escape") 
+                    || (input.array1d[0]=="~")
+                    || (input.array1d[0]=="`")) {
                 this.hosted_app = null;
                 this.selected_index = 0;
                 this.redraw();

@@ -40,7 +40,7 @@ var string3_ui = {
             ans += "</code></pre></p></div>";
         }
         ans += "</div>";
-        for (var fy=0; fy<str3.height; fy++) {
+        for (var fy=0; fy<pagesToMake/3; fy++) {
             ans += "<br/>";
         }
         return ans;
@@ -103,9 +103,11 @@ var string3_ui = {
         });
 
         document.onkeydown = (event) => { 
-            string3_ui.onKeyChange(true,event,element); };
+            string3_ui.onKeyChange(true,event,element);
+            return false; };
         document.onkeyup = (event) => { 
-            string3_ui.onKeyChange(false,event,element); };
+            string3_ui.onKeyChange(false,event,element);
+            return false; };
 
         string3_ui.onMouseMoveTop({},element);
     },
@@ -123,7 +125,7 @@ var string3_ui = {
         callback(letter,x,y,z);
     },
     toHTML_Buttons : function(str3,callback) {
-        var ans = "<table >";
+        var ans = "<center><table >";
         var callbackName = string3_ui.nameByValue(callback);
         str3.visitEach((letter,x,y,z) => {
             if (x == 0) {
@@ -140,7 +142,7 @@ var string3_ui = {
                 ans += "</tr>";
             }
         });
-        ans += "</table>";
+        ans += "</table></center>";
         return ans;
     },
     _global_elementCount : 0,
