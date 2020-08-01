@@ -40,6 +40,14 @@ var string3_prototype = {
         for (var i=0; i<other.array1d.length; i++) {
             this.array1d[i] = other.array1d[i];
         }
+        if (other.offset) {
+            if (!this.offset) this.offset = string3_utils.xyz();
+            this.offset.copy(other.offset);
+        }
+        if (other.scroll) {
+            if (!this.scroll) this.scroll = string3_utils.xyz();
+            this.scroll.copy(other.scroll);
+        }
         return this;
     },
     frameStep : function() {
@@ -57,6 +65,7 @@ var string3_prototype = {
     },
     subscribe : function(callback) {
         this.subscribers.push(callback);
+        callback();
     },
     setSize : function(w,h,d,fill) {
         this.width = w || 0;

@@ -21,18 +21,21 @@ var string3_ui = {
 
         ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
-        for (var fz=str3.depth-1; fz>=0; fz--) {
+        var pagesToMake = 16;
+        for (var fz=pagesToMake; fz>=0; fz--) {
             var clr = 'black';//(fz == 0) ? 'black' : 'lightgray';
-            var opacity = 1.0 - (fz / (str3.depth + 1));
+            var opacity = 1.0 - (fz / (pagesToMake + 1));
             opacity = Math.pow(opacity,1.61);
 
             ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;opacity:" + opacity + ";color:" + clr + ";' ><p><pre><code class='page_content'>";
-            for (var fy=0; fy<str3.height; fy++) {
-                for (var fx=0; fx<str3.width; fx++) {
-                    var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
-                    ans += c;
+            if (fz < str3.depth) {
+                for (var fy=0; fy<str3.height; fy++) {
+                    for (var fx=0; fx<str3.width; fx++) {
+                        var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
+                        ans += c;
+                    }
+                    ans += "<br/>";
                 }
-                ans += "<br/>";
             }
             ans += "</code></pre></p></div>";
         }
@@ -46,8 +49,12 @@ var string3_ui = {
         var info = string3_ui._topChildren[element];
         var str3 = info.source3;
         var pageContents = info.pageContents;
-        console.assert(pageContents.length == str3.depth);
-        for (var z=0; z<str3.depth; z++) {
+        //console.assert(pageContents.length == str3.depth);
+        for (var z=0; z<pageContents.length; z++) {
+            if (z >= str3.depth) {
+                pageContents[z].style.display = "none";
+                continue;
+            }
             var ans = "";
             for (var y=0; y<str3.height; y++) {
                 for (var x=0; x<str3.width; x++) {
@@ -58,6 +65,7 @@ var string3_ui = {
                 ans += "<br/>";
             }
             pageContents[z].innerHTML = ans;
+            pageContents[z].style.display = "inline";
         }
     },
     _setup_element : function(element,str3) {
