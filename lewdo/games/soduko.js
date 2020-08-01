@@ -86,7 +86,7 @@ var lewdo_soduko_prototype = {
         this.app_out.drawTextXYZ( curLetter, t );
 
         for (var i=1; i<10; i++) {
-            t.set(i-1,10,i-1);
+            t.set(i-1,10,i);
             var num = "" + i;
             if (!(num in numbersUsed))
                 this.app_out.drawTextXYZ(num, t );

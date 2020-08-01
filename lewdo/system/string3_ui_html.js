@@ -27,7 +27,7 @@ var string3_ui = {
             var opacity = 1.0 - (fz / (pagesToMake + 1));
             opacity = Math.pow(opacity,1.61);
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;opacity:" + opacity + ";color:" + clr + ";' ><p><pre><code class='page_content'>";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' ><p><pre><code class='page_content'>";
             if (fz < str3.depth) {
                 for (var fy=0; fy<str3.height; fy++) {
                     for (var fx=0; fx<str3.width; fx++) {
@@ -41,13 +41,22 @@ var string3_ui = {
         }
         ans += "</div>";
         for (var fy=0; fy<str3.height; fy++) {
-            ans += "<br/><br/>";
+            ans += "<br/>";
         }
         return ans;
+    },
+    fontSizeForString3 : function(str3) {
+        var pixelSize = Math.max(str3.width, Math.max(str3.height, str3.depth));
+        console.log("PixelSize=" + pixelSize);
+        var fontSize =  ((pixelSize / 17 )*(0.1)) + 24;
+        fontSize = Math.floor(fontSize) + "px";
+        console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
+        return fontSize;
     },
     _updatePageText : function(element) {
         var info = string3_ui._topChildren[element];
         var str3 = info.source3;
+        element.style["font-size"] = this.fontSizeForString3(str3);
         var pageContents = info.pageContents;
         //console.assert(pageContents.length == str3.depth);
         for (var z=0; z<pageContents.length; z++) {
@@ -114,16 +123,17 @@ var string3_ui = {
         callback(letter,x,y,z);
     },
     toHTML_Buttons : function(str3,callback) {
-        var ans = "<table style='width:80%' >";
+        var ans = "<table >";
         var callbackName = string3_ui.nameByValue(callback);
         str3.visitEach((letter,x,y,z) => {
             if (x == 0) {
-                ans += "<tr style='width:80%' >";
+                ans += "<tr >";
             } 
-            ans += "<td style='width:25%;' >";
+            ans += "<td >";
             if (letter != " ") {
                 var act = " onclick=\"string3_ui._doButtonCallback('" + callbackName + "','" + letter + "'," + x + "," + y + "," + z + ");\" ";
-                ans += "<input type='button' " + act + " value='" + letter + "' style='width:100%' ></input>";
+                var styles = "style='width:100%;' class='lewdo_keybutton' ";
+                ans += "<input type='button' " + act + " value='" + letter + "' " + styles + " ></input>";
             }
             ans += "</td>";
             if (x == str3.width-1) {
