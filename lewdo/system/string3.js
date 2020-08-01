@@ -32,6 +32,16 @@ var string3_prototype = {
     },
     _catchFrameExceptions : false,
 
+    copy : function(other) {
+        this.width = other.width;
+        this.height = other.height;
+        this.depth = other.depth;
+        this.array1d = [];
+        for (var i=0; i<other.array1d.length; i++) {
+            this.array1d[i] = other.array1d[i];
+        }
+        return this;
+    },
     frameStep : function() {
         this.frame = this.frame + 1;
         for (var si in this.subscribers) {

@@ -5,20 +5,20 @@ var lewdo_terminal = function ( app ) {
     return ans;
 };
 
+lewdo_app_prototype.all_apps.apps["terminal"] = lewdo_terminal;
+
 var lewdo_terminal_prototype = {
     console3 : string3(),
     app : null,
+    selected_index : 0,
+    selected_app : null,
+    selected_from : [],
 
     setup : function(_app) {
         this.app = _app || lewdo_app(); 
-        var xyz = string3_utils.xyz;
-        this.console3 = this.app.app_out;
-        this.console3.resize(16,9,3);
-        this.console3.clearPlane(2,'*');
-        this.console3.clearPlane(1,' ');
-        this.console3.drawTextXYZ('lewdo',xyz(0,0,1));
-        this.console3.clearPlane(0,' ');
-        this.console3.drawTextXYZ('>',xyz(5,0,0));
+        
+
+        this.redraw();
 
         this.app.app_in.subscribe(() => {
             console.log("Terminal input frame...");
@@ -26,9 +26,49 @@ var lewdo_terminal_prototype = {
             if (input.width > 0) {
                 var letter = input.array1d[0];
                 console.log("Terminal got input '" + letter + "' !");
+            } else if (input.scroll.y != 0) {
+                this.selected_index = ( this.selected_index + 1 ) % this.selected_from.length;
+                this.redraw();
             }
         });
     },
+
+    redraw : function() {
+        var xyz = string3_utils.xyz;
+        this.console3 = this.app.app_out;
+
+        var rawApps = this.app.all_apps;
+        var allApps = [];
+        var folderLayer = "\n";
+        var fileLayer = "\n";
+        var selectLayer = "\n";
+        var curIndex = 0;
+        this.selected_from = [];
+        for (var folder in rawApps) {
+            folderLayer += "    " + folder + "\n";
+            fileLayer += "\n";
+            selectLayer += "\n";
+            for (var app in rawApps[folder]) {
+                folderLayer += "\n";
+                var thisLine = "     " + "    " + app + "\n";
+                fileLayer += thisLine;
+                allApps.push({name:app,depth:2,path:folder});
+                var fullname = "lewdo." + folder + "." + app;
+                this.selected_from.push(fullname);
+                if (this.selected_index == curIndex) {
+                    selectLayer += thisLine;
+                } else {
+                    selectLayer += "\n";
+                }
+                curIndex++;
+            }
+        }
+        var final = selectLayer + "\v" + fileLayer +"\v" + folderLayer + "\vlewdo";
+
+        this.console3.copy( string3_utils.fromString(final) );
+
+        this.console3.frameStep();
+    }
     
 };
 
