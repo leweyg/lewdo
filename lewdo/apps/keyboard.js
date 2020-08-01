@@ -6,7 +6,7 @@ var lewdo_system_keyboard = function ( app ) {
     return ans;
 };
 
-lewdo_app_prototype.all_apps.apps["keyboards"] = lewdo_system_keyboard;
+lewdo_app_prototype.all_apps.apps["keyboard"] = lewdo_system_keyboard;
 
 var lewdo_system_keyboard_prototype = {
     console3 : string3(),
