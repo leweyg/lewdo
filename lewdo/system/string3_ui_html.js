@@ -164,6 +164,8 @@ var string3_ui = {
         "→":string3_utils.xyz(1,0,0),
         "↑":string3_utils.xyz(0,-1,0),
         "↓":string3_utils.xyz(0,1,0),
+        "-":string3_utils.xyz(0,0,-1),
+        "+":string3_utils.xyz(0,0,1),
     },
     doAppKeyInput : function(isDown,key) {
         var app = lewdo_this_app;
