@@ -28,6 +28,7 @@ var lewdo_terminal_prototype = {
             var input = this.app.app_in;
             if ((input.array1d.length > 0) && (input.array1d[0] == "Escape") 
                     || (input.array1d[0]=="~")
+                    || (input.array1d[0]=="x")
                     || (input.array1d[0]=="`")) {
                 this.hosted_app = null;
                 this.selected_index = 0;
