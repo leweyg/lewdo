@@ -19,6 +19,7 @@ var string3_ui = {
         var events = " ";// " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
         document.onmousemove = ((event) => { string3_ui.onMouseMoveTop(event,document.getElementById(myname)); });
 
+
         ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
         var pagesToMake = 16;
@@ -39,10 +40,10 @@ var string3_ui = {
             }
             ans += "</code></pre></p></div>";
         }
-        ans += "</div>";
         for (var fy=0; fy<pagesToMake/3; fy++) {
-            ans += "<br/>";
+            ans += "<br/><br/>";
         }
+        ans += "</div>";
         return ans;
     },
     fontSizeForString3 : function(str3) {
@@ -109,7 +110,21 @@ var string3_ui = {
             string3_ui.onKeyChange(false,event,element);
             return false; };
 
-        string3_ui.onMouseMoveTop({},element);
+        element.ontouchstart = (evnt) => { 
+            string3_ui.onTouchEventTop(evnt,element,true); 
+            return false; };
+        element.ontouchmove = (evnt) => { 
+            string3_ui.onTouchEventTop(evnt,element,true); 
+            return false; };
+        element.ontouchend = (evnt) => { 
+            string3_ui.onTouchEventTop(evnt,element,false); 
+            return false; };
+        //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
+        //element.addEventListener("ontouchend",(event) => { string3_ui.onTouchEventTop(event,element,false); return false; }, { passive: false } );
+        //document.ontouchmove = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),true); });
+        //document.ontouchend = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),false); });
+
+        //string3_ui.onMouseMoveTop({},element);
     },
     _valuesByName : {},
     nameByValue : function(value) {
@@ -205,18 +220,30 @@ var string3_ui = {
         }
         return layers;
     },
-    onMouseMoveTop : function(event,element) {
+    onTouchEventTop : function(evnt,element,isDown) {
+        evnt.preventDefault();
+        for (var ti=0; ti<evnt.touches.length; ti++) {
+            this.onMouseMoveTop(evnt.touches[ti],element);
+        }
+    },
+    recentAngle : string3_utils.xyz(),
+    onMouseMoveTop : function(evnt,element) {
         var layers = this.getPageElements(element).pageElements;
 
         // page level:
         var fw = element.scrollWidth;
+        var fh = element.scrollHeight;
         var w = document.body.clientWidth;
         var h = document.body.clientHeight;
-        var fx = event.clientX ? ( event.clientX / w) : 0.5;
-        var fy = event.clientY ? ( event.clientY / h ) : 0.5;
+        var fx = evnt.clientX ? ( evnt.clientX / w) : 0.5;
+        var fy = evnt.clientY ? ( evnt.clientY / h ) : 0.5;
         var scl = 85.0;
+        if (fx == 0.5) {
+            console.log("Zero???");
+        }
         var angleX = (fy - 0.5) * scl;
         var angleY = (fx - 0.5) * -scl;
+        //var angleNow = string3_utils.xyz();
 
         // element level:
         w = layers[0].scrollWidth;
