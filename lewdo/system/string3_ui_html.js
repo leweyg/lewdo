@@ -54,6 +54,7 @@ var string3_ui = {
         console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
         return fontSize;
     },
+    _previousPageSize : string3_utils.xyz(),
     _updatePageText : function(element) {
         var info = string3_ui._topChildren[element];
         var str3 = info.source3;
@@ -76,6 +77,13 @@ var string3_ui = {
             }
             pageContents[z].innerHTML = ans;
             pageContents[z].style.display = "inline";
+        }
+        if ((this._previousPageSize.x != str3.width)
+            || (this._previousPageSize.y != str3.height)) {
+            this._previousPageSize.set(str3.width, str3.height, str3.depth);
+
+            // update the rendering:
+            this._updatePageTransforms(element);
         }
     },
     _setup_element : function(element,str3) {
@@ -249,9 +257,9 @@ var string3_ui = {
         this.recentAngle.x = this.lerp(this.recentAngle.x, angleX, lt);
         this.recentAngle.y = this.lerp(this.recentAngle.y, angleY, lt);
         
-        this.updatePageLayersOfElement(element);
+        this._updatePageTransforms(element);
     },
-    updatePageLayersOfElement : function(element) {
+    _updatePageTransforms : function(element) {
         var layers = this.getPageElements(element).pageElements;
         var fw = element.scrollWidth;
         var fh = element.scrollHeight;
@@ -266,17 +274,23 @@ var string3_ui = {
         w = layers[0].scrollWidth;
         h = layers[1].scrollHeight;
 
+        var storedSeq = "";
+
         for (var i=0; i<layers.length; i++) {
             var el = layers[i];
             var index = el.dataset.zdepth;
             //el.style.left = (dx * el.dataset.zdepth ) + "px";
             //el.style.top = (dy * el.dataset.zdepth ) + "px";
 
-            var sequence = " translate(" + (fw/2) + "px, " + (h/2) + "px) ";
-            sequence += "perspective(350px) ";
-            sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
-            sequence += " rotateY(" + angleY + "deg) ";
-            sequence += " rotateX(" + angleX + "deg) ";
+            var sequence = storedSeq;
+            if (sequence == "") {
+                sequence += " translate(" + (fw/2) + "px, " + (h/2) + "px) ";
+                sequence += "perspective(350px) ";
+                sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
+                sequence += " rotateY(" + angleY + "deg) ";
+                sequence += " rotateX(" + angleX + "deg) ";
+                storedSeq = sequence;
+            }
             sequence += " translateZ(" + (-10 * index) + "px)";
             //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
 
