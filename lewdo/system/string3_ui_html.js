@@ -227,12 +227,14 @@ var string3_ui = {
         }
     },
     recentAngle : string3_utils.xyz(),
+    lerp : function(a,b,t) {
+        return ((b*t)+(a*(1.0-t)));
+    },
     onMouseMoveTop : function(evnt,element) {
         var layers = this.getPageElements(element).pageElements;
 
         // page level:
-        var fw = element.scrollWidth;
-        var fh = element.scrollHeight;
+        
         var w = document.body.clientWidth;
         var h = document.body.clientHeight;
         var fx = evnt.clientX ? ( evnt.clientX / w) : 0.5;
@@ -243,6 +245,21 @@ var string3_ui = {
         }
         var angleX = (fy - 0.5) * scl;
         var angleY = (fx - 0.5) * -scl;
+        var lt = 0.2;
+        this.recentAngle.x = this.lerp(this.recentAngle.x, angleX, lt);
+        this.recentAngle.y = this.lerp(this.recentAngle.y, angleY, lt);
+        
+        this.updatePageLayersOfElement(element);
+    },
+    updatePageLayersOfElement : function(element) {
+        var layers = this.getPageElements(element).pageElements;
+        var fw = element.scrollWidth;
+        var fh = element.scrollHeight;
+        var w = document.body.clientWidth;
+        var h = document.body.clientHeight;
+
+        var angleX = this.recentAngle.x;
+        var angleY = this.recentAngle.y;
         //var angleNow = string3_utils.xyz();
 
         // element level:
