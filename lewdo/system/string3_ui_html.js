@@ -47,9 +47,9 @@ var string3_ui = {
         return ans;
     },
     fontSizeForString3 : function(str3) {
-        var pixelSize = Math.max(str3.width, Math.max(str3.height, str3.depth));
+        var pixelSize = str3.height;// Math.max(str3.width, Math.max(str3.height, str3.depth));
         console.log("PixelSize=" + pixelSize);
-        var fontSize =  ((pixelSize / 17 )*(0.1)) + 24;
+        var fontSize =  ((pixelSize - 8)*(-1)) + 24;
         fontSize = Math.floor(fontSize) + "px";
         console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
         return fontSize;
