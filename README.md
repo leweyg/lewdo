@@ -63,10 +63,12 @@ For an example app which reads it's input and repeats it back volumetrically, se
 | frameStep | () | increased frame index, and notified subscribers |
 | resize | (w,h,d,fill) | resizes the volume |
 | clear | (fill) | clears the volume to a common value |
+| sizeXYZ | () | returns an XYZ with the width, height and depth |
 | drawTextXYZ | (text,xyz) | draws text as string3 starting at the given xyz vector |
 | visitEach | (callback(value,x,y,z)) | visits each voxel providing it's value and location |
 | setByXYZ | (value,xyz) | sets this value into the given xyz |
 | getByXYZ | (xyz) | returns the value at the given xyz |
+| subString3XYZ | (xyz,xyz) | returns a new string3 with the subset of the current volume, starting at the first xyz and ending at the second. The default for start is 0,0,0 and for the end is the size of the volume. |
 | indexFromSeperateXYZ | (x,y,z) | returns the 1D index of the given x,y,z tuple |
 | indexFromXYZ | (xyz) | returns the 1D index of the given xyz tuple |
 

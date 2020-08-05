@@ -112,6 +112,15 @@ var string3_prototype = {
             this._outOfBoundsWarnings(xyz);
         }
     },
+    _setBySeperateXYZ : null,
+    setBySeperateXYZ : function(val, x,y,z) {
+        if (!string3._setBySeperateXYZ) {
+            string3._setBySeperateXYZ = string3_utils.xyz();
+        }
+        var t = string3._setBySeperateXYZ;
+        t.set(x,y,z);
+        this.setByXYZ(val,t);
+    },
     getBySeperateXYZ : function(x,y,z) {
         var i = this.indexFromSeperateXYZ(x,y,z);
         return this.array1d[i];
@@ -128,6 +137,19 @@ var string3_prototype = {
                 }
             }
         }
+    },
+    sizeXYZ : function() {
+        return string3_utils.xyz(this.width,this.height,this.depth);
+    },
+    subString3XYZ : function(start,end) {
+        end = ( end || this.sizeXYZ() );
+        var ans = string3();
+        ans.resize(end.x-start.x, end.y-start.y, end.z-start.z);
+        ans.visitEach((older,x,y,z) => {
+            var v = this.getBySeperateXYZ(x+start.x,y+start.y,z+start.z);
+            ans.setBySeperateXYZ(v,x,y,z);
+        });
+        return ans;
     },
     drawString3XYZ : function(other,xyz) {
         xyz = ( xyz || string3_utils._xyz_zero );

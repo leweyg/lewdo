@@ -205,19 +205,24 @@ var string3_ui = {
     doAppKeyInput : function(isDown,key) {
         var app = lewdo_this_app;
 
-        if (key in string3_ui.keyDirectionToXYZ) {
-            app.app_in_reset(0);
-            app.app_in.scroll.copy( string3_ui.keyDirectionToXYZ[key] );
-            app.app_in.frameStep();
+        if (isDown) {
+            if (key in string3_ui.keyDirectionToXYZ) {
+                app.app_in_reset(0);
+                app.app_in.scroll.copy( string3_ui.keyDirectionToXYZ[key] );
+                app.app_in.frameStep();
+            } else {
+                app.app_in_reset(1);
+                app.app_in.array1d[0] = key;
+                app.app_in.frameStep();
+            }
         } else {
-            app.app_in_reset(1);
-            app.app_in.array1d[0] = key;
+            app.app_in_reset(0);
             app.app_in.frameStep();
         }
     },
     onKeyChange : function(isDown,event,element) {
         //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
-        if (isDown)
+        //if (isDown)
             this.doAppKeyInput(isDown,event.key);
     },
     getPageElements : function(element) {
