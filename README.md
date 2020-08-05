@@ -6,7 +6,7 @@ https://leweyg.github.io/lewdo/index.html
 <a href="https://leweyg.github.io/lewdo/index.html">![lewdo](lewdo/lewdo.png)</a>
 
 ## Introduction
-'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](##string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](##lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
+'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](###string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](###lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
 
 ### Background
 
@@ -32,18 +32,20 @@ This application outputs a 3D "Hello World" to the display, with "Hello" at the 
 
 For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/examples/repeatMe.js)
 
-## lewdo_app\(\)
+## Scripting Reference
 
-This methods creates a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
+### lewdo_app
+
+`lewdo_app()` creates a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
 | app_out | string3 | Output/display buffer stream |
 | app_in | string3 | Input buffer stream |
 
-## string3\(\)
+### string3
 
-This method creates a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
+`string3()` creates a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
@@ -69,8 +71,9 @@ This method creates a 3d buffer of characters, arranged by width, height and the
 | indexFromXYZ | (xyz) | returns the 1D index of the given xyz tuple |
 
 
-## string3_util.xyz\(\)
-Is a simple wrapper for an object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
+### string3_util.xyz
+
+`string3_util.xyz()` is a simple wrapper for an object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
