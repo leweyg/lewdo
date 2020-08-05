@@ -4370,14 +4370,18 @@ var lewdo_font = {
         _app.app_out.frameStep();
         return;
     }),
+    _emptyString3 : string3(" "),
     app : ((_app) => {
         var t = string3_utils.xyz();
         _app.app_in.subscribe((input) => {
             var font = lewdo_font_fixed;
+            if (input.array1d.length < 1)
+                input = lewdo_font._emptyString3;
             _app.app_out.resize(
-                input.width*font.width,
-                input.height*font.height,
-                input.depth*1);
+                Math.max(1,input.width*font.width),
+                Math.max(1,input.height*font.height),
+                Math.max(1,input.depth*1));
+            
             input.visitEachXYZ((letter,inputXYZ) => {
                 // TODO: dereference the letter into the font
                 string3_utils.visitEachXYOnZ(font, letter.charCodeAt(0), ((isOn,fontXYZ) => {
@@ -4392,7 +4396,11 @@ var lewdo_font = {
         });
     }),
     app_demo : ((_app) => {
-        _app.app_in.copy( string3( "lewdo" ) );
+        _app.app_in.subscribe((input) => {
+            if (input.width < 1) {
+                input.copy( string3( "lewdo" ) );
+            }
+        });
         lewdo_font.app(_app);
     }),
 };
