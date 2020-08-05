@@ -32,18 +32,18 @@ This application outputs a 3D "Hello World" to the display, with "Hello" at the 
 
 For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/examples/repeatMe.js)
 
-## lewdo_app()
+## lewdo_app\(\)
 
-This methods create a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
+This methods creates a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
 | app_out | string3 | Output/display buffer stream |
 | app_in | string3 | Input buffer stream |
 
-## string3()
+## string3\(\)
 
-This type represents a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
+This method creates a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
@@ -69,7 +69,7 @@ This type represents a 3d buffer of characters, arranged by width, height and th
 | indexFromXYZ | (xyz) | returns the 1D index of the given xyz tuple |
 
 
-## string3_util.xyz()
+## string3_util.xyz\(\)
 Is a simple wrapper for an object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
 
 | Property | Type | Description |
