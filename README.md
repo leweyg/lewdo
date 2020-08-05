@@ -16,6 +16,14 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
 
 ## Example App
 
+    function helloWorld(app) {
+        app.app_out.copy(string3("Hello\v\nWorld"));
+        app.app_out.frameStep();
+    }
+    lewdo_app_prototype.all_apps.apps["helloWorld"] = helloWorld;
+
+This application outputs a 3D "Hello World" to the display, with "Hello" at the closest depth, and "World" below that. `string3` treats the `\n` as `New Line`, but the `\v` is interpreted as `New Page`. The call to `frameStep()` informs any subscribers that the frame is now ready to be recieved (common in graphics architectures). Also the line at the bottom add this method to the standard list of apps.
+
 ## Example App with Input
 
 ## lewdo_app()
