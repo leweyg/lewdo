@@ -28,6 +28,8 @@ This application outputs a 3D "Hello World" to the display, with "Hello" at the 
 
 ## Example App with Input
 
+![Repeat Me App](lewdo/examples/lewdo_repeatMe.png)
+
 For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/examples/repeatMe.js)
 
 ## lewdo_app()

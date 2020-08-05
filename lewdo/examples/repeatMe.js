@@ -19,15 +19,23 @@
                 for (var i=0; i<input.width; i++) {
                     str += input.getBySeperateXYZ(i,0,0);
                 }
+                var writeIndex = lines.length-1;
                 if (str == "\n" || str == "Enter") {
-                    lines.splice(0,0,"");
-                } else {
-                    lines[0] += str;
+                    //lines.splice(0,0,"");
+                    lines.push("");
+                } else if (str.length == 1) {
+                    lines[writeIndex] += str;
+                } else if (str == "Backspace") {
+                    var str = lines[writeIndex];
+                    if (str.length > 0) {
+                        str = str.substr(0,str.length-1);
+                        lines[writeIndex] = str;
+                    }
                 }
                 redraw();
             }
         });
         redraw();
     }
-    //lewdo_app_prototype.all_apps.apps["repeatMe"] = repeatMe;
+    lewdo_app_prototype.all_apps.apps["repeatMe"] = repeatMe;
     
