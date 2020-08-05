@@ -55,17 +55,17 @@ var string3_prototype = {
         for (var si in this.subscribers) {
             var sub = this.subscribers[si];
             if (!this._catchFrameExceptions) {
-                sub();
+                sub(this);
             } else {
                 try {
-                    sub();
+                    sub(this);
                 } catch (ex) { console.log(ex); }
             }
         }
     },
     subscribe : function(callback) {
         this.subscribers.push(callback);
-        callback();
+        callback(this);
     },
     setSize : function(w,h,d,fill) {
         this.width = w || 0;
