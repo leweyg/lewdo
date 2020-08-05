@@ -33,9 +33,50 @@ For an example app which reads it's input and repeats it back volumetrically, se
 This methods create a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
 
 | Property | Type | Description |
-| ----- | ----- |
-| app_out | string3 | Output/display buffer |
+| ----- | ----- | ------ |
+| app_out | string3 | Output/display buffer stream |
+| app_in | string3 | Input buffer stream |
 
 ## string3()
 
+This type represents a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
 
+| Property | Type | Description |
+| ----- | ----- | ------ |
+| width | number | voxel width of the stream's current frame |
+| height | number | voxel height of the stream's current frame |
+| depth | number | voxel depth of the stream's current frame |
+| array1d | [ string ] | an array of characters |
+| frame | number | current frame index (should only go up) |
+| subscribers | [ (string3) ] | array of callbacks subscribed to the string3 |
+
+| Method | Arguements | Description |
+| ----- | ----- | ------ |
+| copy | (string3) | copies another string3 |
+| frameStep | () | increased frame index, and notified subscribers |
+| resize | (w,h,d,fill) | resizes the volume |
+| clear | (fill) | clears the volume to a common value |
+| drawTextXYZ | (text,xyz) | draws text as string3 starting at the given xyz vector |
+| visitEach | (callback(value,x,y,z)) | visits each voxel providing it's value and location |
+| setByXYZ | (value,xyz) | sets this value into the given xyz |
+| getByXYZ | (xyz) | returns the value at the given xyz |
+| indexFromSeperateXYZ | (x,y,z) | returns the 1D index of the given x,y,z tuple |
+| indexFromXYZ | (xyz) | returns the 1D index of the given xyz tuple |
+
+
+## string3_util.xyz()
+Is a simple wrapper for an object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
+
+| Property | Type | Description |
+| ----- | ----- | ------ |
+| x | number | voxel width of the stream's current frame |
+| y | number | voxel height of the stream's current frame |
+| z | number | voxel depth of the stream's current frame |
+
+And associated methods:
+
+| Method | Arguements | Description |
+| ----- | ----- | ------ |
+| copy | (xyz) | copies another xyz |
+| set | (x,y,z) | changes the x, y and z values |
+| clone | () | returns a new object with the same xyz values |
