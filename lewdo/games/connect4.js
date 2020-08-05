@@ -5,8 +5,6 @@ var lewdo_connect4 = function ( app ) {
     return ans;
 };
 
-lewdo_app_prototype.all_apps.games["connect4"] = lewdo_connect4;
-
 var lewdo_connect4_prototype = {
     app : null,
     app_out : null,
@@ -134,5 +132,4 @@ var lewdo_connect4_prototype = {
     
 };
 
-
-
+lewdo_app_prototype.all_apps.games["connect4"] = lewdo_connect4;

@@ -5,8 +5,6 @@ var lewdo_soduko = function ( app ) {
     return ans;
 };
 
-lewdo_app_prototype.all_apps.games["soduko"] = lewdo_soduko;
-
 var lewdo_soduko_prototype = {
     app : null,
     app_out : null,
@@ -153,10 +151,10 @@ var lewdo_soduko_prototype = {
             }
         }
     },
-
-
-    
 };
 
 
 
+
+
+lewdo_app_prototype.all_apps.games["soduko"] = lewdo_soduko;

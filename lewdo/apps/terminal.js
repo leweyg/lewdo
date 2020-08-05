@@ -5,8 +5,6 @@ var lewdo_terminal = function ( app ) {
     return ans;
 };
 
-lewdo_app_prototype.all_apps.apps["terminal"] = lewdo_terminal;
-
 var lewdo_terminal_prototype = {
     console3 : string3(),
     app : null,
@@ -111,6 +109,8 @@ var lewdo_terminal_prototype = {
     }
     
 };
+
+lewdo_app_prototype.all_apps.apps["terminal"] = lewdo_terminal;
 
 
 
