@@ -8,7 +8,7 @@ var lewdo_app = function() {
 var lewdo_app_prototype = {
     app_in : string3(),
     app_out : string3(),
-    all_apps : {games:{},apps:{}},
+    all_apps : {games:{},apps:{},system:{}},
     setup : function() {
         this.app_in = string3();
         this.app_in.offset = string3_utils.xyz();
