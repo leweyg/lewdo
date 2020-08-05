@@ -6,13 +6,13 @@ https://leweyg.github.io/lewdo/index.html
 <a href="https://leweyg.github.io/lewdo/index.html">![lewdo](lewdo/lewdo.png)</a>
 
 ## Introduction
-'lewdo' is a text-based 3D windowing and application environment. Both the output display and input system are modelled as simply 3d buffers of text with update events (see `string3`). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, lewdo applications simply use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
+'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](##string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](##lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
 
 ### Background
 
 Designing a 3D interface is a complex problem; 'lewdo' attempts to tackle a subset of these design problems within the somewhat artificial context of a purely 'text-based 3d interface'. It contains numerous apps, and data models to explore interaction within that environment.
 
-Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Geselowitz</a> ), is aware that non-text-based 3D interfaces exist and provide additional levels of control than ASCII allows (he generally works on AR/MR/VR and even <a href="http://www.4dprocess.com/4d/index.html">4D interfaces</a>). This effort is mostly just a test of the idea of an XR system-terminal interface within which both the input and output are similarly typed 3d 'scenes' (as AR/XR get more complex, the description of the input scene and output scene formats are tending towards unification; see his work on <a href="https://unity.com/products/unity-mars">Unity MARS</a>, a useful tool for simulating complex environments as application inputs); plus it reminds him of the old-days when every letter mattered; while also providing space to really explore 3D interaction in a pure form.
+Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Geselowitz</a> ), is aware that non-text-based 3D interfaces exist and provide additional levels of control than ASCII allows (he generally works on AR/MR/VR and even <a href="http://www.4dprocess.com/4d/index.html">4D interfaces</a>). This effort is mostly just a test of the idea of an XR system-terminal interface within which both the input and output are similarly typed 3d 'scenes' (as AR/XR get more complex, the description of the input scene and output scene formats are tending towards unification; see his work on <a href="https://unity.com/products/unity-mars">Unity MARS</a>, a useful tool for simulating complex environments as application inputs); plus it reminds him of the old-days when every letter mattered; while also providing space to really explore 3D interaction in a pure context.
 
 ## Example App
 
@@ -56,6 +56,7 @@ This type represents a 3d buffer of characters, arranged by width, height and th
 
 | Method | Arguements | Description |
 | ----- | ----- | ------ |
+| string3 | () or (string) | creates a new string3, parsing '\v' as new page, and '\n' as new line. |
 | copy | (string3) | copies another string3 |
 | frameStep | () | increased frame index, and notified subscribers |
 | resize | (w,h,d,fill) | resizes the volume |
@@ -81,6 +82,7 @@ And associated methods:
 
 | Method | Arguements | Description |
 | ----- | ----- | ------ |
+| string3_util.xyz | () or (x,y,z) | create an XYZ object with default or passed in values |
 | copy | (xyz) | copies another xyz |
 | set | (x,y,z) | changes the x, y and z values |
 | clone | () | returns a new object with the same xyz values |
