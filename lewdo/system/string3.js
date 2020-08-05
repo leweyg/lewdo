@@ -94,6 +94,13 @@ var string3_prototype = {
             && ((v.z >= 0) && (v.z < this.depth))
         );
     },
+    isEdgeXYZ : function(v) {
+        return ( true
+            || ((v.x == 0) || (v.x == this.width-1))
+            || ((v.y == 0) || (v.y == this.height-1))
+            || ((v.z == 0) || (v.z == this.depth-1))
+        );
+    },
     
     getByXYZ : function(xyz) {
         if (this.isValidXYZ(xyz)) {
@@ -203,11 +210,27 @@ var string3_prototype = {
         }
         return this;
     },
+    visitEachXYZ : function(cb) {
+        var t = string3_utils.xyz(); // TODO: recycle this
+        for (var d=0; d<this.depth; d++) {
+            for (var h=0; h<this.height; h++) {
+                for (var w=0; w<this.width; w++) {
+                    var let = this.array1d[this.indexFromSeperateXYZ(w,h,d)];
+                    t.set(w,h,d);
+                    cb(let, t);
+                }
+            }
+        }
+        return this;
+    },
     fromString : function(str) {
         return this.copy( string3_utils.fromString(str) );
     },
     toHTML : function() {
         return string3_ui.toHTML(this);
+    },
+    toString : function() {
+        return string3_utils.toString(this);
     },
     
 };
@@ -237,6 +260,7 @@ var string3_utils = {
             this.x = _x;
             this.y = _y;
             this.z = _z;
+            return this;
         },
         copy : function(other) {
             this.set(other.x, other.y, other.z);
@@ -253,7 +277,14 @@ var string3_utils = {
         },
         toZero : function() {
             this.set(0,0,0);
-        }
+            return this;
+        },
+        select : function(foo) {
+            return this.set(foo(this.x),foo(this.y),foo(this.z));
+        },
+        select2 : function(other,foo) {
+            return this.set(foo(this.x,other.x),foo(this.y,other.y),foo(this.z,other.z));
+        },
     },
     repeat_array : function(c,n) {
         var ans = [];
@@ -273,6 +304,23 @@ var string3_utils = {
         a *= 1;
         b *= 1;
         return ((a > b) ? a : b);
+    },
+    toString : function(str3) {
+        var ans = "";
+        var index = 0;
+        for (var d=0; d<str3.depth; d++) {
+            if (d != 0)
+                    ans += "\v";
+            for (var h=0; h<str3.height; h++) {
+                if (h != 0)
+                    ans += "\n";
+                for (var w=0; w<str3.width; w++) {
+                    ans += str3.array1d[ index ];
+                    index++;
+                }
+            }
+        }
+        return ans;
     },
     fromString : function(text) {
         var page_lines = string3_utils.split_page_lines(text);
