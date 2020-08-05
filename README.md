@@ -16,6 +16,8 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
 
 ## Example App
 
+![Hello World App](lewdo/examples/lewdo_helloworld.png)
+
     function helloWorld(app) {
         app.app_out.copy(string3("Hello\v\nWorld"));
         app.app_out.frameStep();
