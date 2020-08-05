@@ -48,8 +48,9 @@ var string3_ui = {
     },
     fontSizeForString3 : function(str3) {
         var pixelSize = str3.height;// Math.max(str3.width, Math.max(str3.height, str3.depth));
-        console.log("PixelSize=" + pixelSize);
         var fontSize =  ((pixelSize - 8)*(-1)) + 24;
+        fontSize = Math.max( fontSize, 8 );
+        fontSize = Math.min( fontSize, 50 );
         fontSize = Math.floor(fontSize) + "px";
         console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
         return fontSize;

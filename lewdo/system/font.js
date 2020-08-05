@@ -1,9 +1,9 @@
-var LEWDO_FONT_BASIC = {
-    "axes":{
-        "x":{mod:8},
-        "y":{pack:8,mod:16},
-        "char":{pack:(8*16)},
-        "opacity":{array:[
+
+var lewdo_font_fixed = {
+    width : 8,
+    height : 16,
+    depth : 256,
+    array1d : [
 
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -4356,6 +4356,45 @@ var LEWDO_FONT_BASIC = {
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
-
-    ] } }
+    ],
 };
+
+var lewdo_font = {
+    asString3 : lewdo_font_fixed,
+    app_show_font : ((_app) => {
+        _app.app_out.copy( lewdo_font_fixed );
+        _app.app_out.modifyEachXYZ((letter) => {
+            if (letter == 0) return ' ';
+            return '#';
+        });
+        _app.app_out.frameStep();
+        return;
+    }),
+    app : ((_app) => {
+        var t = string3_utils.xyz();
+        _app.app_in.subscribe((input) => {
+            var font = lewdo_font_fixed;
+            _app.app_out.resize(
+                input.width*font.width,
+                input.height*font.height,
+                input.depth*1);
+            input.visitEachXYZ((letter,inputXYZ) => {
+                // TODO: dereference the letter into the font
+                string3_utils.visitEachXYOnZ(font, letter.charCodeAt(0), ((isOn,fontXYZ) => {
+                    var val = (isOn ? "●" : " ");
+                    t.x = ( inputXYZ.x * font.width ) + fontXYZ.x;
+                    t.y = ( inputXYZ.y * font.height ) + fontXYZ.y;
+                    t.z = inputXYZ.z;
+                    _app.app_out.setByXYZ(val,t)
+                }));
+            });
+            _app.app_out.frameStep();
+        });
+    }),
+    app_demo : ((_app) => {
+        _app.app_in.copy( string3( "lewdo" ) );
+        lewdo_font.app(_app);
+    }),
+};
+
+lewdo_app_prototype.all_apps.apps["font"] = lewdo_font.app_demo;

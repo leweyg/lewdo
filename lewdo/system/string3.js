@@ -223,6 +223,21 @@ var string3_prototype = {
         }
         return this;
     },
+    modifyEachXYZ : function(cb) {
+        var t = string3_utils.xyz(); // TODO: recycle this
+        for (var d=0; d<this.depth; d++) {
+            for (var h=0; h<this.height; h++) {
+                for (var w=0; w<this.width; w++) {
+                    var index = this.indexFromSeperateXYZ(w,h,d);
+                    var letter = this.array1d[index];
+                    t.set(w,h,d);
+                    var v = cb(letter, t);
+                    this.array1d[index] = v;
+                }
+            }
+        }
+        return this;
+    },
     fromString : function(str) {
         return this.copy( string3_utils.fromString(str) );
     },
@@ -293,6 +308,7 @@ var string3_utils = {
         }
         return ans;
     },
+
     arrayFromString : function(str) {
         var ans = [];
         for (var i=0; i<str.length; i++) {
@@ -321,6 +337,28 @@ var string3_utils = {
             }
         }
         return ans;
+    },
+    visitEachXYZ : function(str3,callback) {
+        if (!str3.visitEachXYZ) str3.visitEachXYZ = string3_prototype.visitEachXYZ;
+        return str3.visitEachXYZ(callback);
+    },
+    indexFromXYZ : function(str3,xyz) {
+        if (!str3.indexFromXYZ) str3.indexFromXYZ = string3_prototype.indexFromXYZ;
+        if (!str3.indexFromSeperateXYZ) str3.indexFromSeperateXYZ = string3_prototype.indexFromSeperateXYZ;
+        return str3.indexFromXYZ(xyz);
+    },
+    visitEachXYOnZ : function(str3,z,callback) {
+        var t = string3_utils.xyz();
+        for (var x=0; x<str3.width; x++) {
+            t.x = x;
+            for (var y=0; y<str3.height;y++) {
+                t.y = y;
+                t.z = z;
+                var i = string3_utils.indexFromXYZ(str3,t);
+                var v = str3.array1d[i];
+                callback(v,t);
+            }
+        }
     },
     fromString : function(text) {
         var page_lines = string3_utils.split_page_lines(text);
