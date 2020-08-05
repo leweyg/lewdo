@@ -61,6 +61,7 @@ For an example app which reads it's input and repeats it back volumetrically, se
 | string3 | () or (string) | creates a new string3, parsing '\v' as new page, and '\n' as new line. |
 | copy | (string3) | copies another string3 |
 | frameStep | () | increased frame index, and notified subscribers |
+| subscribe | (callback(string3)) | gives the current and subsequent frames to the subscriber |
 | resize | (w,h,d,string) | resizes the volume |
 | clear | (string) | clears the volume to a common value |
 | sizeXYZ | () | returns an XYZ with the width, height and depth |
