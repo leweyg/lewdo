@@ -6,7 +6,7 @@ https://leweyg.github.io/lewdo/index.html
 <a href="https://leweyg.github.io/lewdo/index.html">![lewdo](lewdo/lewdo.png)</a>
 
 # Introduction
-'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](##string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](##lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
+'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](#string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](#lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
 
 ### Background
 
