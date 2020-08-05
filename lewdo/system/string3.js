@@ -204,7 +204,7 @@ var string3_prototype = {
         return this;
     },
     fromString : function(str) {
-        return string3_utils.fromString(str);
+        return this.copy( string3_utils.fromString(str) );
     },
     toHTML : function() {
         return string3_ui.toHTML(this);
@@ -240,6 +240,7 @@ var string3_utils = {
         },
         copy : function(other) {
             this.set(other.x, other.y, other.z);
+            return this;
         },
         add : function(other) {
             this.set( this.x + other.x, this.y + other.y, this.z + other.z );
