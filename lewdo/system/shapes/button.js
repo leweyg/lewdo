@@ -25,6 +25,7 @@ var lewdo_button_app = function(app,content,callback) {
         app.app_out.copy( lewdo_square.aroundString3(content) );
         app.app_out.frameStep();
     });
+    return app;
 }
 
 

@@ -63,6 +63,7 @@ var lewdo_cube = {
             app.app_out.copy( lewdo_cube.aroundString3( input ) );
             app.app_out.frameStep();
         });
+        return app;
     },
 
     _clampIndex : function(i,n) {

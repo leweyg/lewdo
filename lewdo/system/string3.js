@@ -71,7 +71,15 @@ var string3_prototype = {
         this.width = w || 0;
         this.height = h || 0;
         this.depth = d || 0;
-        this.array1d = string3_utils.repeat_array(fill?fill:" ", w * h * d);
+        if (!fill) fill = " ";
+        var count = (this.width * this.height * this.depth);
+        if (!this.array1d || count != this.array1d.length) {
+            this.array1d = string3_utils.repeat_array(fill, count);
+        } else {
+            for (var i=0; i<count; i++) {
+                this.array1d[i] = fill;
+            }
+        }
         return this;
     },
     resize : function(w,h,d,fill) {

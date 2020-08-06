@@ -4394,6 +4394,7 @@ var lewdo_font = {
             });
             _app.app_out.frameStep();
         });
+        return _app;
     }),
     app_demo : ((_app) => {
         _app.app_in.subscribe((input) => {
@@ -4401,7 +4402,7 @@ var lewdo_font = {
                 input.copy( string3( "lewdo" ) );
             }
         });
-        lewdo_font.app(_app);
+        return lewdo_font.app(_app);
     }),
 };
 
