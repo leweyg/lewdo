@@ -10,6 +10,7 @@ var lewdo_stack = {
         if (!stackOfApps) {
             stack.pushApp(lewdo_stack._labelApp("Heading"));
             stack.pushApp(lewdo_stack._labelApp("Next"));
+            stack.pushApp(lewdo_stack._labelApp("\vAnd Last"));
         }
         stack.redraw();
         app.app_in.subscribe((input) => {
