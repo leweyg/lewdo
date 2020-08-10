@@ -86,7 +86,9 @@ var lewdo_terminal_prototype = {
             selectLayer += "\n";
             for (var app in rawApps[folder]) {
                 folderLayer += "\n";
-                var thisLine = "     " + "    " + app + "\n";
+                var isSelected = (this.selected_index == curIndex);
+                var showAppAs = ( isSelected ? "●": " ") + app;
+                var thisLine = "     " + "    " + showAppAs + "\n";
                 
                 allApps.push({name:app,depth:2,path:folder});
                 var fullname = "lewdo." + folder + "." + app;
