@@ -28,21 +28,29 @@ var string3_ui = {
             var opacity = 1.0 - (fz / (pagesToMake + 1));
             opacity = Math.pow(opacity,1.61);
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' ><p><pre><code class='page_content'>";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' >";
+            ans += "<pre style='margin:0px;'>";
+            ans += "<code class='page_content'>";
             if (fz < str3.depth) {
                 for (var fy=0; fy<str3.height; fy++) {
                     for (var fx=0; fx<str3.width; fx++) {
                         var c = str3.array1d[str3.indexFromSeperateXYZ(fx,fy,fz)];
                         ans += c;
                     }
-                    ans += "<br/>";
+                    //ans += "<br/>";
                 }
             }
-            ans += "</code></pre></p></div>";
+            ans += "</code></pre></div>";
         }
-        for (var fy=0; fy<pagesToMake/3; fy++) {
-            ans += "<br/><br/>";
+        if (true) {
+            var sizer = "<div><p><pre><code class='page_sizer'>";
+            for (var fy=0; fy<pagesToMake; fy++) {
+                sizer += "\n - ";
+            }
+            sizer += "</code></pre></p></div>";
+            ans += sizer;
         }
+
         ans += "</div>";
         return ans;
     },
@@ -74,7 +82,8 @@ var string3_ui = {
                     var v = str3.array1d[i];
                     ans += v;
                 }
-                ans += "<br/>";
+                ans += "\n";
+                //ans += "<br/>";
             }
             pageContents[z].innerHTML = ans;
             pageContents[z].style.display = "inline";
@@ -83,6 +92,14 @@ var string3_ui = {
             || (this._previousPageSize.y != str3.height)) {
             this._previousPageSize.set(str3.width, str3.height, str3.depth);
 
+            // page contents:
+            if (info.pageSpacer) {
+                var line = string3_utils.repeatString(" ",str3.width) + "\n";
+                var rows = string3_utils.repeatString(line,str3.height);
+                info.pageSpacer.innerHTML = rows;
+            }
+
+
             // update the rendering:
             this._updatePageTransforms(element);
         }
@@ -90,6 +107,8 @@ var string3_ui = {
     _setup_element : function(element,str3) {
         
         var pageElementsQuery = element.getElementsByClassName('page_slice');
+        var pageSpacers = element.getElementsByClassName( 'page_sizer' );
+        var pageSpacer = ((pageSpacers.length > 0) ? pageSpacers[0] : null);
         var pageElements = [];
         for (var pi=0; pi<pageElementsQuery.length; pi++) {
             pageElements.push( pageElementsQuery[pi] );
@@ -107,7 +126,8 @@ var string3_ui = {
             element:element, 
             source3:str3, 
             pageElements:pageElements,
-            pageContents:pageContents };
+            pageContents:pageContents,
+            pageSpacer:pageSpacer };
         str3.subscribe(() => {
             this._updatePageText(element,str3);
         });

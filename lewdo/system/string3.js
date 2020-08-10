@@ -316,6 +316,13 @@ var string3_utils = {
         }
         return ans;
     },
+    repeatString : function(str,n) {
+        var ans = "";
+        for (var i=0; i<n; i++) {
+            ans += str;
+        }
+        return ans;
+    },
 
     arrayFromString : function(str) {
         var ans = [];
