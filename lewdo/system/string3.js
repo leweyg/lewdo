@@ -85,6 +85,9 @@ var string3_prototype = {
     resize : function(w,h,d,fill) {
         return this.setSize(w,h,d,fill);
     },
+    resizeXYZ : function(sizeXYZ) {
+        return this.setSize(sizeXYZ.x,sizeXYZ.y,sizeXYZ.z);
+    },
     indexFromSeperateXYZ : function(x,y,z) {
         var ix = (x * 1);
         var iy = (y * this.width);
