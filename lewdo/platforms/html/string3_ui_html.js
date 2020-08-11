@@ -28,7 +28,7 @@ var string3_ui = {
             var opacity = 1.0 - (fz / (pagesToMake + 1));
             opacity = Math.pow(opacity,1.61);
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' >";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;transform-origin : 50% 50%;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' >";
             ans += "<pre style='margin:0px;'>";
             ans += "<code class='page_content'>";
             if (fz < str3.depth) {
@@ -55,9 +55,9 @@ var string3_ui = {
         return ans;
     },
     fontSizeForString3 : function(str3) {
-        var pixelSize = str3.height;// Math.max(str3.width, Math.max(str3.height, str3.depth));
+        var pixelSize = Math.max( str3.height, str3.width );// Math.max(str3.width, Math.max(str3.height, str3.depth));
         var fontSize =  ((pixelSize - 8)*(-1)) + 24;
-        fontSize = Math.max( fontSize, 8 );
+        fontSize = Math.max( fontSize, 12 );
         fontSize = Math.min( fontSize, 50 );
         fontSize = Math.floor(fontSize) + "px";
         console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
@@ -294,11 +294,16 @@ var string3_ui = {
         var angleY = this.recentAngle.y;
         //var angleNow = string3_utils.xyz();
 
+        var maxAngle = Math.max( angleX, angleY );
+        var offset = 0; //maxAngle * -1.5;
+
         // element level:
-        w = spacer.scrollWidth;
-        h = spacer.scrollHeight;
+        w = spacer.offsetWidth;
+        h = spacer.offsetHeight;
 
         var storedSeq = "";
+
+        var depthScaling = (120 / info.source3.depth);
 
         for (var i=0; i<layers.length; i++) {
             var el = layers[i];
@@ -308,14 +313,18 @@ var string3_ui = {
 
             var sequence = storedSeq;
             if (sequence == "") {
-                //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
-                sequence += " perspective(350px) ";
+                //sequence += " translate3d(" + Math.floor(-w/2) + "px, " + Math.floor(-h/2) + "px, 0px ) ";
+                sequence += " perspective(450px) ";
+                //sequence += " translateZ(-30px) ";
+                
                 //sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
                 sequence += " rotateY(" + angleY + "deg) ";
                 sequence += " rotateX(" + angleX + "deg) ";
+                
                 storedSeq = sequence;
             }
-            sequence += " translateZ(" + (-10 * index) + "px)";
+            sequence += " translateZ(" + Math.floor( ( -depthScaling * index ) + offset ) + "px)";
+
             //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
 
             el.style.transform = sequence;

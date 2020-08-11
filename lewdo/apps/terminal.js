@@ -103,7 +103,7 @@ var lewdo_terminal_prototype = {
                 curIndex++;
             }
         }
-        var final = selectLayer + "\v\v" + fileLayer +"\v" + folderLayer + "\vlewdo";
+        var final = selectLayer + "\v" + fileLayer +"\v" + folderLayer + "\vlewdo";
 
         this.console3.copy( string3_utils.fromString(final) );
 

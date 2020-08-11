@@ -37,7 +37,7 @@ var lewdo_textfile = {
             var t = tokens[ti];
             if (t.type == "words") {
                 if (!(t.text in knownWords)) {
-                    knownWords[t.text] = knownWordsCount;
+                    knownWords[t.text] = knownWordsCount+1;
                     knownWordsCount++;
                 }
                 t.pos.z = knownWords[t.text];
@@ -47,7 +47,7 @@ var lewdo_textfile = {
         for (var ti=0; ti<tokens.length; ti++) {
             var t = tokens[ti];
             if (t.type != "words") {
-                t.pos.z = knownWordsCount;
+                t.pos.z = 0; //knownWordsCount;
             }
         }
         tokenInfo.size.z = knownWordsCount+1;
@@ -115,9 +115,11 @@ var lewdo_textfile = {
 
     app : function(_app) {
         _app.app_in.subscribe((input) => {
-            var str = input.toString();
+            var str = "";
             if (input.width == 0) {
                 str = lewdo_textfile._exampleText;
+            } else {
+                str = input.toString();
             }
             var str3 = lewdo_textfile.toString3( str );
             _app.app_out.copy( str3 );
