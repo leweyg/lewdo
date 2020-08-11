@@ -28,6 +28,31 @@ var lewdo_textfile = {
         return "symbol";
     },
 
+    tokens_arrange_depth : function(tokenInfo) {
+        var knownWords = {};
+        var knownWordsCount = 0;
+        var tokens = tokenInfo.tokens;
+        // first arrange words
+        for (var ti=0; ti<tokens.length; ti++) {
+            var t = tokens[ti];
+            if (t.type == "words") {
+                if (!(t.text in knownWords)) {
+                    knownWords[t.text] = knownWordsCount;
+                    knownWordsCount++;
+                }
+                t.pos.z = knownWords[t.text];
+            }
+        }
+        // then arrange other things:
+        for (var ti=0; ti<tokens.length; ti++) {
+            var t = tokens[ti];
+            if (t.type != "words") {
+                t.pos.z = knownWordsCount;
+            }
+        }
+        tokenInfo.size.z = knownWordsCount+1;
+    },
+
     tokenize_line : function(line_str) {
         var result = [ ];
         if (line_str.length < 1)
@@ -80,10 +105,12 @@ var lewdo_textfile = {
                 }
             }
         }
-        return {
+        var result = {
             tokens : result,
             size : size,
         };
+        lewdo_textfile.tokens_arrange_depth( result );
+        return result;
     },
 
     app : function(_app) {
