@@ -117,13 +117,16 @@ var lewdo_textfile = {
         _app.app_in.subscribe((input) => {
             var str = input.toString();
             if (input.width == 0) {
-                str = "Hello(World);";
+                str = lewdo_textfile._exampleText;
             }
             var str3 = lewdo_textfile.toString3( str );
             _app.app_out.copy( str3 );
             _app.app_out.frameStep();
         });
     },
+
+    _exampleText : "function helloWorld(app) {\n    app.app_in.subscribe((input) => {\n        app.app_out.copy(input);\n        app.app_out.frameStep();\n    });\n}",
+
 };
 
 lewdo_app_prototype.all_apps.system["textfile"] = lewdo_textfile.app;
