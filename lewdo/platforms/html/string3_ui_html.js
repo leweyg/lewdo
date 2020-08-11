@@ -43,11 +43,11 @@ var string3_ui = {
             ans += "</code></pre></div>";
         }
         if (true) {
-            var sizer = "<div><p><pre><code class='page_sizer'>";
+            var sizer = "<div><pre style='margin:0px;'><code class='page_sizer'>";
             for (var fy=0; fy<pagesToMake; fy++) {
                 sizer += "\n - ";
             }
-            sizer += "</code></pre></p></div>";
+            sizer += "</code></pre></div>";
             ans += sizer;
         }
 
@@ -286,19 +286,17 @@ var string3_ui = {
         this._updatePageTransforms(element);
     },
     _updatePageTransforms : function(element) {
-        var layers = this.getPageElements(element).pageElements;
-        var fw = element.scrollWidth;
-        var fh = element.scrollHeight;
-        var w = document.body.clientWidth;
-        var h = document.body.clientHeight;
+        var info = this.getPageElements(element);
+        var layers = info.pageElements;
+        var spacer = info.pageSpacer;
 
         var angleX = this.recentAngle.x;
         var angleY = this.recentAngle.y;
         //var angleNow = string3_utils.xyz();
 
         // element level:
-        w = layers[0].scrollWidth;
-        h = layers[1].scrollHeight;
+        w = spacer.scrollWidth;
+        h = spacer.scrollHeight;
 
         var storedSeq = "";
 
@@ -310,9 +308,9 @@ var string3_ui = {
 
             var sequence = storedSeq;
             if (sequence == "") {
-                sequence += " translate(" + (fw/2) + "px, " + (h/2) + "px) ";
-                sequence += "perspective(350px) ";
-                sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
+                //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
+                sequence += " perspective(350px) ";
+                //sequence += " translate3d(-" + (w/2) + "px, -" + (h/2) + "px, 0) ";
                 sequence += " rotateY(" + angleY + "deg) ";
                 sequence += " rotateX(" + angleX + "deg) ";
                 storedSeq = sequence;
