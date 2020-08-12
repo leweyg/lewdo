@@ -132,4 +132,4 @@ var lewdo_connect4_prototype = {
     
 };
 
-lewdo_app_prototype.all_apps.games["connect4"] = lewdo_connect4;
+lewdo_app_prototype.all_apps.apps.games.connect4 = lewdo_connect4;

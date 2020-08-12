@@ -157,4 +157,4 @@ var lewdo_soduko_prototype = {
 
 
 
-lewdo_app_prototype.all_apps.games["soduko"] = lewdo_soduko;
+lewdo_app_prototype.all_apps.apps.games.soduko = lewdo_soduko;
