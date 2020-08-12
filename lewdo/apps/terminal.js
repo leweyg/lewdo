@@ -88,7 +88,7 @@ var lewdo_terminal_prototype = {
                 folderLayer += "\n";
                 var isSelected = (this.selected_index == curIndex);
                 var showAppAs = ( isSelected ? "●": " ") + app;
-                var thisLine = "     " + "    " + showAppAs + "\n";
+                var thisLine = "     " + "   " + showAppAs + "\n";
                 
                 allApps.push({name:app,depth:2,path:folder});
                 var fullname = "lewdo." + folder + "." + app;
