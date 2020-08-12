@@ -273,7 +273,8 @@ var string3_ui = {
         var h = document.body.clientHeight;
         var fx = evnt.clientX ? ( evnt.clientX / w) : 0.5;
         var fy = evnt.clientY ? ( evnt.clientY / h ) : 0.5;
-        var scl = 85.0;
+        var maxAngle = 120.0;
+        var scl = maxAngle;
         if (fx == 0.5) {
             console.log("Zero???");
         }

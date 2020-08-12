@@ -44,10 +44,13 @@ var lewdo_textfile = {
             }
         }
         // then arrange other things:
+        var recentZ = 0;
         for (var ti=0; ti<tokens.length; ti++) {
             var t = tokens[ti];
             if (t.type != "words") {
-                t.pos.z = 0; //knownWordsCount;
+                t.pos.z = recentZ; //knownWordsCount;
+            } else {
+                recentZ = t.pos.z;
             }
         }
         tokenInfo.size.z = knownWordsCount+1;

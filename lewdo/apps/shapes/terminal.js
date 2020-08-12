@@ -90,12 +90,12 @@ var lewdo_terminal_prototype = {
                 folderLayer += "    " + prefix + genre + "\n";
                 fileLayer += "\n";
                 selectLayer += "\n";
-                prefix = "      ";
+                prefix = "           ";
                 for (var app in rawApps[folder][genre]) {
                     folderLayer += "\n";
                     var isSelected = (this.selected_index == curIndex);
                     var showAppAs = ( isSelected ? "●": " ") + app;
-                    var thisLine = "     " + "   " + prefix + showAppAs + "\n";
+                    var thisLine = "" + prefix + showAppAs + "\n";
                     
                     allApps.push({name:app,depth:2,path:folder});
                     var fullname = "lewdo." + folder + "." + genre + "." + app;
