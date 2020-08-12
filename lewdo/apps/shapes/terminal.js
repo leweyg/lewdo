@@ -78,6 +78,7 @@ var lewdo_terminal_prototype = {
         var folderLayer = "\n";
         var fileLayer = "\n";
         var selectLayer = "\n";
+        var genreLayer = "\n";
         var curIndex = 0;
         this.selected_from = [];
         var prefix = "";
@@ -85,14 +86,17 @@ var lewdo_terminal_prototype = {
             folderLayer += "    " + folder + "\n";
             fileLayer += "\n";
             selectLayer += "\n";
+            genreLayer += "\n";
             for (var genre in rawApps[folder]) {
                 prefix = "   ";
-                folderLayer += "    " + prefix + genre + "\n";
+                genreLayer += "    " + prefix + genre + "\n";
+                folderLayer += "\n";
                 fileLayer += "\n";
                 selectLayer += "\n";
                 prefix = "           ";
                 for (var app in rawApps[folder][genre]) {
                     folderLayer += "\n";
+                    genreLayer += "\n";
                     var isSelected = (this.selected_index == curIndex);
                     var showAppAs = ( isSelected ? "●": " ") + app;
                     var thisLine = "" + prefix + showAppAs + "\n";
@@ -114,7 +118,7 @@ var lewdo_terminal_prototype = {
                 }
             }
         }
-        var final = selectLayer + "\v" + fileLayer +"\v" + folderLayer + "\vlewdo";
+        var final = selectLayer + "\v" + fileLayer + "\v" + genreLayer + "\v" + folderLayer + "\vlewdo";
 
         this.console3.copy( string3_utils.fromString(final) );
 
