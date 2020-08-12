@@ -28,6 +28,13 @@ var lewdo_app_prototype = {
         this.app_in.scroll.set(0,0,0);
         this.app_in.resize(size,size,size);
     },
+    pipedInto : function(otherApp) {
+        this.app_out.subscribe((output) => {
+            otherApp.app_in.copy(output);
+            otherApp.app_in.frameStep();
+        });
+        return otherApp;
+    }
 };
 
 var lewdo_this_app = null;

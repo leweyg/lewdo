@@ -4,6 +4,7 @@ var fs = require('fs');
 eval( fs.readFileSync('./lewdo/system/string3.js', 'utf8') );
 eval( fs.readFileSync('./lewdo/system/app.js', 'utf8') );
 
+eval( fs.readFileSync('./lewdo/apps/shapes/flat.js', 'utf8') );
 eval( fs.readFileSync('./lewdo/apps/shapes/terminal.js', 'utf8') );
 
 var lewdo_node = {
@@ -12,8 +13,8 @@ var lewdo_node = {
     string3_utils : string3_utils,
     
     makeTerminal : function() {
-        var mainAppInst = lewdo_app();
-        lewdo_terminal( mainAppInst );
+        var mainAppInst = lewdo_terminal().app.pipedInto( lewdo_flat.app() );
+        
         console.log( mainAppInst.app_out.toString() );
     }
 };
