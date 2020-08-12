@@ -4406,4 +4406,4 @@ var lewdo_font = {
     }),
 };
 
-lewdo_app_prototype.all_apps.system["font"] = lewdo_font.app_demo;
+lewdo_app_prototype.all_apps.apps.shapes.font = lewdo_font.app_demo;

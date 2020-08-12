@@ -303,7 +303,7 @@ var string3_ui = {
 
         var storedSeq = "";
 
-        var depthScaling = (120 / info.source3.depth);
+        var depthScaling = Math.min( 10, (120 / info.source3.depth) );
 
         for (var i=0; i<layers.length; i++) {
             var el = layers[i];
