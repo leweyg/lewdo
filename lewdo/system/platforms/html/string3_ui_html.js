@@ -306,6 +306,8 @@ var string3_ui = {
 
         var depthScaling = Math.min( 10, (120 / info.source3.depth) );
 
+        
+
         for (var i=0; i<layers.length; i++) {
             var el = layers[i];
             var index = el.dataset.zdepth;
@@ -314,6 +316,9 @@ var string3_ui = {
 
             var sequence = storedSeq;
             if (sequence == "") {
+                if (info.source3.width < 10) {
+                    sequence += " translate(150px,0px) ";
+                }
                 //sequence += " translate3d(" + Math.floor(-w/2) + "px, " + Math.floor(-h/2) + "px, 0px ) ";
                 sequence += " perspective(450px) ";
                 //sequence += " translateZ(-30px) ";
