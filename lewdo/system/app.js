@@ -1,4 +1,11 @@
 
+
+/*
+var string3_system = require("./string3.js");
+var string3 = string3_system.string3;
+var string3_utils = string3_system.string3.string3_utils;
+*/
+
 var lewdo_app = function() {
     var app = Object.create( lewdo_app_prototype );
     app.setup();
@@ -24,4 +31,12 @@ var lewdo_app_prototype = {
 };
 
 var lewdo_this_app = null;
+
+try {
+    module.exports = { 
+        lewdo_app:lewdo_app, 
+        lewdo_app_prototype:lewdo_app_prototype };
+} catch {
+    
+}
 

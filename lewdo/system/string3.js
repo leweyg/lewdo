@@ -438,5 +438,13 @@ var string3_utils = {
 
 string3_utils._internal_setup();
 
+try {
+    module.exports = { string3:string3, string3_utils:string3_utils };
+} catch {
+    
+}
+
+
+
 
 
