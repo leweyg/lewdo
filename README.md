@@ -16,7 +16,7 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
 
 ## Example App
 
-![Hello World App](lewdo/examples/lewdo_helloworld.png)
+![Hello World App](lewdo/system/script/examples/lewdo_helloworld.png)
 
     function helloWorld(app) {
         app.app_out.copy(string3("Hello\v\nWorld"));
@@ -24,13 +24,13 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
     }
     lewdo_app_prototype.all_apps.apps["helloWorld"] = helloWorld;
 
-This application outputs a 3D "Hello World" to the display, with "Hello" at the closest depth, and "World" below that. `string3` treats the `\n` as `New Line`, but the `\v` is interpreted as `New Page`. The call to `frameStep()` informs any subscribers that the frame is now ready to be recieved (common in graphics architectures). Also the line at the bottom add this method to the standard list of apps.
+This application outputs a 3D "Hello World" to the display, with "Hello" at the closest depth, and "World" below that. `string3` treats the `\n` as `New Line`, but the `\v` is interpreted as `New Page`. The call to `frameStep()` informs any subscribers that the frame is now ready to be recieved (common in graphics architectures). Also the line at the bottom add this method to the standard list of apps. See [helloWorld.js](lewdo/system/script/examples/helloWorld.js)
 
 ## Example App with Input
 
-![Repeat Me App](lewdo/examples/lewdo_repeatMe.png)
+![Repeat Me App](lewdo/system/script/examples/lewdo_repeatMe.png)
 
-For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/examples/repeatMe.js)
+For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/system/script/examples/repeatMe.js)
 
 # Scripting Reference
 
