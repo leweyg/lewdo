@@ -29,4 +29,4 @@ var lewdo_button_app = function(app,content,callback) {
 }
 
 
-//lewdo_app_prototype.all_apps.system["button"] = lewdo_button_app;
+//lewdo.all_apps.shapes.button = lewdo_button_app;

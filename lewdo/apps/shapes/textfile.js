@@ -134,7 +134,7 @@ var lewdo_textfile = {
 
 };
 
-lewdo_app_prototype.all_apps.apps.shapes.textfile = lewdo_textfile.app;
+lewdo.all_apps.shapes.textfile = lewdo_textfile.app;
 
 
 

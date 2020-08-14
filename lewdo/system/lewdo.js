@@ -16,13 +16,12 @@ var lewdo = {
     lewdo_app : lewdo_app,
     string3 : string3,
     xyz : string3_utils.xyz,
-    all_apps : {apps:{games:{},shapes:{}},system:{}},
+    all_apps : {games:{},tools:{},shapes:{}},
 };
 
 var lewdo_app_prototype = {
     app_in : string3(),
     app_out : string3(),
-    all_apps : {apps:{games:{},shapes:{}},system:{}},
     setup : function() {
         this.app_in = string3();
         this.app_in.offset = string3_utils.xyz();

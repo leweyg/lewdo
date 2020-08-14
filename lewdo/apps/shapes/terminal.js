@@ -73,7 +73,7 @@ var lewdo_terminal_prototype = {
         var xyz = string3_utils.xyz;
         this.console3 = this.app.app_out;
 
-        var rawApps = this.app.all_apps;
+        var rawApps = {apps:lewdo.all_apps,system:{}};
         var allApps = [];
         var folderLayer = "\n";
         var fileLayer = "\n";
@@ -127,7 +127,8 @@ var lewdo_terminal_prototype = {
     
 };
 
-lewdo_app_prototype.all_apps.apps.shapes.terminal = lewdo_terminal;
+lewdo.all_apps.shapes.terminal = lewdo_terminal;
+
 
 
 

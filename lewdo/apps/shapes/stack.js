@@ -66,4 +66,4 @@ var lewdo_stack = {
     },
 };
 
-//lewdo_app_prototype.all_apps.system["stack"] = lewdo_stack.app;
+//lewdo.all_apps.shapes["stack"] = lewdo_stack.app;
