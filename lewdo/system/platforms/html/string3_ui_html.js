@@ -3,6 +3,11 @@ var string3_ui = {
     _topChildren : {
         "elementPtr":{ element:null, source3:null, pageElements:[], pageContents:[] },
     },
+    _mainApp : null,
+    setMainApp : function(parentElement,app) {
+        string3_ui._mainApp = app;
+        string3_ui.setInnerString3(parentElement,app.app_out);
+    },
     setInnerString3 : function(parent,str3) {
         var name = "";
         var html = string3_ui.toHTML(str3, function(elName){name = elName;});
@@ -224,7 +229,7 @@ var string3_ui = {
         "+":string3_utils.xyz(0,0,1),
     },
     doAppKeyInput : function(isDown,key) {
-        var app = lewdo_this_app;
+        var app = string3_ui._mainApp;
 
         if (isDown) {
             if (key in string3_ui.keyDirectionToXYZ) {

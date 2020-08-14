@@ -12,6 +12,13 @@ var lewdo_app = function() {
     return app;
 };
 
+var lewdo = {
+    lewdo_app : lewdo_app,
+    string3 : string3,
+    xyz : string3_utils.xyz,
+    all_apps : {apps:{games:{},shapes:{}},system:{}},
+};
+
 var lewdo_app_prototype = {
     app_in : string3(),
     app_out : string3(),
@@ -41,8 +48,10 @@ var lewdo_this_app = null;
 
 try {
     module.exports = { 
+        lewdo : lewdo,
         lewdo_app:lewdo_app, 
-        lewdo_app_prototype:lewdo_app_prototype };
+        lewdo_app_prototype:lewdo_app_prototype,
+    };
 } catch {
     
 }
