@@ -28,10 +28,22 @@ var lewdo_textfile = {
         return "symbol";
     },
 
+    _symbolPairs : {
+        "(":{delta:1,pair:")"},
+        ")":{delta:-1,pair:"("},
+        "{":{delta:1,pair:"}"},
+        "}":{delta:-1,pair:"{"},
+        "[":{delta:1,pair:"]"},
+        "]":{delta:-1,pair:"["},
+        "\"":{delta:0,pair:"\""},
+        "'":{delta:0,pair:"'"},
+    },
+
     tokens_arrange_depth : function(tokenInfo) {
         var knownWords = {};
         var knownWordsCount = 0;
         var tokens = tokenInfo.tokens;
+        var pairStack = [];
         // first arrange words
         for (var ti=0; ti<tokens.length; ti++) {
             var t = tokens[ti];
@@ -49,6 +61,22 @@ var lewdo_textfile = {
             var t = tokens[ti];
             if (t.type != "words") {
                 t.pos.z = recentZ; //knownWordsCount;
+                if (t.text in this._symbolPairs) {
+                    var sym = this._symbolPairs[t.text];
+                    if (pairStack.length > 0) {
+                        var top = pairStack[pairStack.length-1];
+                        if (top.sym.pair == t.text) {
+                            var toZ = top.token.pos.z;
+                            t.pos.z = toZ;
+                            recentZ = toZ;
+                            pairStack.pop();
+                        } else {
+                            pairStack.push({token:t,sym:sym});
+                        }
+                    } else {
+                        pairStack.push({token:t,sym:sym});
+                    }
+                }
             } else {
                 recentZ = t.pos.z;
             }
