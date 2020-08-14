@@ -46,8 +46,20 @@ var lewdo_flip = {
         return plan;
     },
 
+    app : function(_app,flipFormat=null) {
+        flipFormat = (flipFormat || {y:"-z",z:"y"} );
+        _app.app_in.subscribe((input) => {
+            var str = input.toString();
+            if (str == "") {
+                str = "flip\v\nthis";
+            }
+            var str3 = string3( str );
+            lewdo_flip.flipString3(flipFormat, str3, _app.app_out );
+            _app.app_out.frameStep();
+        });
+    },
 
-    app : function(_app) {
+    app_demo : function(_app) {
         _app = (_app || lewdo_app());
         var testInput = string3( "Hello\v\nWorld" );
         var testTransform = {y:"-y"};
@@ -58,3 +70,4 @@ var lewdo_flip = {
 }
 
 //lewdo.all_apps.shapes.flip = lewdo_flip.app;
+
