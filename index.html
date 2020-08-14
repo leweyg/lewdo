@@ -42,6 +42,8 @@
         
         <script src="lewdo/system/script/examples/helloworld.js"></script>
         <script src="lewdo/system/script/examples/repeatMe.js"></script>
+
+        <!-- <script src="out.js"></script> -->
         
         <div id="main_lewdo"> 
             <p>Loading...</p>
@@ -53,6 +55,7 @@
             var mainApp = lewdo_app();
 
             lewdo_terminal( mainApp ); 
+            //mainApp.app_out.copy( string3( example_string3_json ) );
 
             // Connect to web page UI:
             string3_ui.setMainApp( main_lewdo, mainApp );

@@ -26,11 +26,11 @@ var lewdo_node = {
             var test = lewdo_text.toString3( textContent );
             var jsonContent = test.toJSON();
             console.log(jsonContent);
-            fs.writeFileSync( "./out.json", jsonContent );
+            fs.writeFileSync( "./out.js", "var example_string3_json = " + jsonContent );
         }
 
         if (false) {
-            var textContent = fs.readFileSync('./out.json', 'utf8');
+            var textContent = fs.readFileSync('./out.js', 'utf8');
             var val = JSON.parse( textContent );
             var str3 = string3( val );
             var flat = lewdo_flat.flatten( str3 );
