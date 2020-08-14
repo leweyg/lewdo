@@ -3,13 +3,19 @@ function string3(initial,w,h,d) {
     var ans = Object.create(string3_prototype);
     ans.subscribers = []; 
     if (initial) {
-        if (typeof(initial) == "string") {
+        var tp = typeof(initial);
+        if (tp == "string") {
             ans = ans.fromString(initial);
             if (!w) {
                 return ans;
             }
             ans = ans.resize(w, h, d);
             return ans;
+        }
+        if (tp == "object") {
+            if (initial.array1d) {
+                return string3().copy(initial);
+            }
         }
     } else if (!w) {
         w = 0;
@@ -33,13 +39,18 @@ var string3_prototype = {
     _catchFrameExceptions : false,
 
     copy : function(other) {
-        this.width = other.width;
-        this.height = other.height;
-        this.depth = other.depth;
+        this.copyShallow(other);
         this.array1d = [];
         for (var i=0; i<other.array1d.length; i++) {
             this.array1d[i] = other.array1d[i];
         }
+        return this;
+    },
+    copyShallow : function(other) {
+        this.width = other.width;
+        this.height = other.height;
+        this.depth = other.depth;
+        this.array1d = other.array1d;
         if (other.offset) {
             if (!this.offset) this.offset = string3_utils.xyz();
             this.offset.copy(other.offset);
@@ -252,13 +263,33 @@ var string3_prototype = {
     fromString : function(str) {
         return this.copy( string3_utils.fromString(str) );
     },
+    fromJSON : function(jsonText) {
+        return this.copyShallow( string3_utils.fromJSON( jsonText ) );
+    },
     toHTML : function() {
         return string3_ui.toHTML(this);
     },
     toString : function() {
         return string3_utils.toString(this);
     },
-    
+    toJSON : function() {
+        var ans = "{ \"isString3\":true ";
+        var attrib = ((name,val) => {
+            return ",\"" + name + "\":" + val + " ";
+        });
+        ans += attrib("width",1*this.width);
+        ans += attrib("height",1*this.height);
+        ans += attrib("depth",1*this.depth);
+        var ar = "[";
+        for (var i=0; i<this.array1d.length; i++) {
+            if (i != 0) ar += ",";
+            ar += JSON.stringify(this.array1d[i]);
+        }
+        ar += "]";
+        ans += attrib("array1d",ar);
+        ans += "}";
+        return ans;
+    },
 };
 
 var string3_utils = {
@@ -377,6 +408,10 @@ var string3_utils = {
                 callback(v,t);
             }
         }
+    },
+    fromJSON : function(jsonText) {
+        var data = JSON.parse(jsonText);
+        return string3( data );
     },
     fromString : function(text) {
         var page_lines = string3_utils.split_page_lines(text);

@@ -35,6 +35,7 @@ var lewdo_app_prototype = {
         this.app_in.resize(size,size,size);
     },
     pipedInto : function(otherApp) {
+        otherApp = ( otherApp || lewdo_app() );
         this.app_out.subscribe((output) => {
             otherApp.app_in.copy(output);
             otherApp.app_in.frameStep();
