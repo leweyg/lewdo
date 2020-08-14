@@ -1,7 +1,7 @@
 
-var lewdo_textfile = {
+var lewdo_text = {
     toString3 : function(str) {
-        var info = lewdo_textfile.tokenize_text( str.toString() );
+        var info = lewdo_text.tokenize_text( str.toString() );
         var result = string3();
         result.resizeXYZ(info.size);
 
@@ -90,7 +90,7 @@ var lewdo_textfile = {
             return result;
 
         var startIndex = 0;
-        var startType = lewdo_textfile.char_type(line_str[startIndex]);
+        var startType = lewdo_text.char_type(line_str[startIndex]);
         var startCount = 1;
         var pushCurrent = (() => {
             var str = line_str.substr(startIndex, startCount);
@@ -102,7 +102,7 @@ var lewdo_textfile = {
         });
 
         while ((startIndex + startCount) < line_str.length) {
-            var nextType = lewdo_textfile.char_type(line_str[startIndex+startCount]);
+            var nextType = lewdo_text.char_type(line_str[startIndex+startCount]);
             if ((nextType == startType) && (startType != "symbol")) {
                 startCount++;
                 continue;
@@ -125,7 +125,7 @@ var lewdo_textfile = {
             var lines = pages[pi].split("\n");
             for (var li=0; li<lines.length; li++) {
                 size.y = Math.max(size.y,li+1);
-                var lineTokens = lewdo_textfile.tokenize_line( lines[li] );
+                var lineTokens = lewdo_text.tokenize_line( lines[li] );
                 for (var ti=0; ti<lineTokens.length; ti++) {
                     var token = lineTokens[ti];
                     token.pos.y = li;
@@ -140,7 +140,7 @@ var lewdo_textfile = {
             tokens : result,
             size : size,
         };
-        lewdo_textfile.tokens_arrange_depth( result );
+        lewdo_text.tokens_arrange_depth( result );
         return result;
     },
 
@@ -148,11 +148,11 @@ var lewdo_textfile = {
         _app.app_in.subscribe((input) => {
             var str = "";
             if (input.width == 0) {
-                str = lewdo_textfile._exampleText;
+                str = lewdo_text._exampleText;
             } else {
                 str = input.toString();
             }
-            var str3 = lewdo_textfile.toString3( str );
+            var str3 = lewdo_text.toString3( str );
             _app.app_out.copy( str3 );
             _app.app_out.frameStep();
         });
@@ -162,7 +162,7 @@ var lewdo_textfile = {
 
 };
 
-lewdo.all_apps.shapes.textfile = lewdo_textfile.app;
+lewdo.all_apps.shapes.text = lewdo_text.app;
 
 
 
