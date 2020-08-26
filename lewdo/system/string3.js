@@ -332,6 +332,11 @@ var string3_utils = {
         clone : function() {
             return string3_utils.xyz(this.x, this.y, this.z);
         },
+        equals : function(other) {
+            return ((this.x==other.x)
+                &&(this.y==other.y)
+                &&(this.z == other.z));
+        },
         toZero : function() {
             this.set(0,0,0);
             return this;

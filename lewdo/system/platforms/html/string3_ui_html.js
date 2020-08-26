@@ -167,6 +167,8 @@ var string3_ui = {
             tp.z = 0;
             tp.x = Math.max(0, tp.x);
             tp.y = Math.max(0, tp.y);
+            var isDown = (moveEvent.button != 0);
+            this.doAppSingleTouchInput(isDown,tp);
             
             //console.log("TopElementMouseMove=" + tp.toString() );
         });
@@ -263,6 +265,23 @@ var string3_ui = {
             app.app_in_reset(0);
             app.app_in.frameStep();
         }
+    },
+    _latestTouchInput : {isDown:false, posXYZ:string3_utils.xyz() },
+    doAppSingleTouchInput : function(isDown,xyz) {
+        
+        var prev = this._latestTouchInput;
+        if ((prev.isDown==isDown) && (prev.posXYZ.equals(xyz)))
+            return;
+        prev.isDown = isDown;
+        prev.posXYZ.copy(xyz);
+
+        return; // TODO: enable this next:
+
+        var app = string3_ui._mainApp;
+        app.app_in_reset(1);
+        app.app_in.array1d[0] = (isDown ? "●" : "○");
+        app.app_in.offset.copy(xyz);
+        app.app_in.frameStep();
     },
     onKeyChange : function(isDown,event,element) {
         //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
