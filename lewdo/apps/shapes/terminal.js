@@ -40,8 +40,20 @@ var lewdo_terminal_prototype = {
             }
             if (input.width > 0) {
                 var letter = input.array1d[0];
-                if (letter == 'Enter' || letter=="►" ) {
+                if ((letter == 'Enter') || (letter=="►") 
+                    || (letter == "●")) {
                     this.launchSelected();
+                }
+                if (letter == "○") {
+                    var row_y = input.offset.y;
+                    for (var si in this.selected_from) {
+                        var entry = this.selected_from[si];
+                        if (row_y == entry.row_y) {
+                            this.selected_index = si;
+                            this.redraw();
+                            return;
+                        }
+                    }
                 }
             } else if (!input.scroll.isZero()) {
                 var n = this.selected_from.length;
@@ -81,18 +93,21 @@ var lewdo_terminal_prototype = {
         var genreLayer = "\n";
         var curIndex = 0;
         this.selected_from = [];
+        var row_y = 0;
         var prefix = "";
         for (var folder in rawApps) {
             folderLayer += "    " + folder + "\n";
             fileLayer += "\n";
             selectLayer += "\n";
             genreLayer += "\n";
+            row_y++;
             for (var genre in rawApps[folder]) {
                 prefix = "   ";
                 genreLayer += "    " + prefix + genre + "\n";
                 folderLayer += "\n";
                 fileLayer += "\n";
                 selectLayer += "\n";
+                row_y++;
                 prefix = "           ";
                 for (var app in rawApps[folder][genre]) {
                     folderLayer += "\n";
@@ -105,7 +120,8 @@ var lewdo_terminal_prototype = {
                     var fullname = "lewdo." + folder + "." + genre + "." + app;
                     this.selected_from.push({ 
                         name:fullname,
-                        method:(rawApps[folder][genre][app]) 
+                        method:(rawApps[folder][genre][app]),
+                        row_y:row_y,
                     } );
                     if (this.selected_index == curIndex) {
                         fileLayer += " \n";
@@ -115,6 +131,7 @@ var lewdo_terminal_prototype = {
                         selectLayer += "\n";
                     }
                     curIndex++;
+                    row_y++;
                 }
             }
         }

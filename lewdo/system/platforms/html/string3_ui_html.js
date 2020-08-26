@@ -157,21 +157,21 @@ var string3_ui = {
             string3_ui.onTouchEventTop(evnt,element,false); 
             return false; };
 
-        var topElement = pageElements[0];
-        var topEventPos = string3_utils.xyz();
-        topElement.onmousemove = ((moveEvent) => {
-            var tp = topEventPos;
-            var str3 = _this._topChildren[element].source3;
-            tp.x = Math.floor( moveEvent.offsetX / ( topElement.scrollWidth / str3.width ) );
-            tp.y = Math.floor( moveEvent.offsetY / ( topElement.scrollHeight / str3.height ) );
-            tp.z = 0;
-            tp.x = Math.max(0, tp.x);
-            tp.y = Math.max(0, tp.y);
-            var isDown = (moveEvent.button != 0);
-            this.doAppSingleTouchInput(isDown,tp);
-            
-            //console.log("TopElementMouseMove=" + tp.toString() );
-        });
+        var supportLewdoTouch = false; // TODO: set to true
+        if (supportLewdoTouch) {
+            var topElement = pageElements[0];
+            var topEventPos = string3_utils.xyz();
+            topElement.onmousemove = ((moveEvent) => {
+                _this._processTopElementMouseEvent(element,moveEvent,false);
+            });
+            topElement.onmousedown = ((moveEvent) => {
+                _this._processTopElementMouseEvent(element,moveEvent,true);
+            });
+            topElement.onmouseup = ((moveEvent) => {
+                _this._processTopElementMouseEvent(element,moveEvent,true);
+            });
+            this._processTopElementCache.topElement = topElement;
+        }
 
         //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
         //element.addEventListener("ontouchend",(event) => { string3_ui.onTouchEventTop(event,element,false); return false; }, { passive: false } );
@@ -179,6 +179,23 @@ var string3_ui = {
         //document.ontouchend = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),false); });
 
         //string3_ui.onMouseMoveTop({},element);
+    },
+    _processTopElementCache : {
+        posXYZ : string3_utils.xyz(),
+        topElement : null,
+    },
+    _processTopElementMouseEvent : function(element,moveEvent,isButtonChange) {
+        var _this = this;
+        var topElement = this._processTopElementCache.topElement;
+        var tp = this._processTopElementCache.posXYZ;
+        var str3 = _this._topChildren[element].source3;
+        tp.x = Math.floor( moveEvent.offsetX / ( topElement.scrollWidth / str3.width ) );
+        tp.y = Math.floor( moveEvent.offsetY / ( topElement.scrollHeight / str3.height ) );
+        tp.z = 0;
+        tp.x = Math.max(0, tp.x);
+        tp.y = Math.max(0, tp.y);
+        var isDown = (moveEvent.buttons != 0);
+        this.doAppSingleTouchInput(isDown,tp);
     },
     _valuesByName : {},
     nameByValue : function(value) {
@@ -275,7 +292,7 @@ var string3_ui = {
         prev.isDown = isDown;
         prev.posXYZ.copy(xyz);
 
-        return; // TODO: enable this next:
+        //return; // TODO: enable this next:
 
         var app = string3_ui._mainApp;
         app.app_in_reset(1);
