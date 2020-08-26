@@ -106,9 +106,18 @@ var lewdo_connect4_prototype = {
         if (input.width > 0) {
             var letter = input.array1d[0];
             //console.log("Terminal got input '" + letter + "' !");
-            if (letter == 'Enter' || letter=="►" ) {
+            if (letter == 'Enter' || letter==lewdo.letter.play
+                || letter==lewdo.letter.touch ) {
                 this.take_turn();
                 return;
+            }
+            if (letter == lewdo.letter.hover) {
+                if (this.cursor_display.isValidXYZ(input.offset)) {
+                    this.cursor.copy(input.offset);
+                    this.cursor.z = this.best_height_for_xyz(this.cursor);
+                    this.redraw();
+                    return;
+                }
             }
         } else if (!input.scroll.isZero()) {
             var t = string3_utils._tempVec1;

@@ -40,8 +40,8 @@ var lewdo_terminal_prototype = {
             }
             if (input.width > 0) {
                 var letter = input.array1d[0];
-                if ((letter == 'Enter') || (letter=="►") 
-                    || (letter == "●")) {
+                if ((letter == 'Enter') || (letter==lewdo.letter.play) 
+                    || (letter == lewdo.letter.touch )) {
                     this.launchSelected();
                 }
                 if (letter == "○") {

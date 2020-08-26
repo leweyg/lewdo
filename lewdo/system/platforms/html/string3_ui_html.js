@@ -157,7 +157,7 @@ var string3_ui = {
             string3_ui.onTouchEventTop(evnt,element,false); 
             return false; };
 
-        var supportLewdoTouch = false; // TODO: set to true
+        var supportLewdoTouch = true; // TODO: set to true
         if (supportLewdoTouch) {
             var topElement = pageElements[0];
             var topEventPos = string3_utils.xyz();
@@ -296,7 +296,7 @@ var string3_ui = {
 
         var app = string3_ui._mainApp;
         app.app_in_reset(1);
-        app.app_in.array1d[0] = (isDown ? "●" : "○");
+        app.app_in.array1d[0] = (isDown ? lewdo.letter.touch : lewdo.letter.hover );
         app.app_in.offset.copy(xyz);
         app.app_in.frameStep();
     },

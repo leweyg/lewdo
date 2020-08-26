@@ -128,9 +128,16 @@ var lewdo_soduko_prototype = {
         if (input.width > 0) {
             var letter = input.array1d[0];
             //console.log("Terminal got input '" + letter + "' !");
-            if (letter == 'Enter' || letter=="►" ) {
+            if (letter == 'Enter' || letter=="►" || letter==lewdo.letter.touch ) {
                 this.playAtCurrent();
                 return;
+            }
+            if (letter == lewdo.letter.hover) {
+                if (this.board.isValidXYZ(input.offset)) {
+                    this.cursor.copy(input.offset);
+                    this.redraw();
+                    return;
+                }
             }
             if (letter != letter.trim()) {
                 this.board.setByXYZ(this.cursor, letter);
