@@ -144,7 +144,8 @@ var lewdo_terminal_prototype = {
     
 };
 
-lewdo.all_apps.shapes.terminal = lewdo_terminal;
+//lewdo.all_apps.shapes.terminal = lewdo_terminal;
+
 
 
 

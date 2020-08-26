@@ -8,6 +8,9 @@ var lewdo_system_keyboard = function ( app ) {
 var lewdo_system_keyboard_prototype = {
     console3 : string3(),
     app : null,
+    cursor : string3_utils.xyz(),
+    cursor_active : false,
+    cursor_down : false,
 
     isShiftHeld : false,
 
@@ -38,6 +41,18 @@ var lewdo_system_keyboard_prototype = {
                 } else {
                     this.isShiftHeld = false;
                 }
+                var isDown = input.array1d[0] == lewdo.letter.touch;
+                if (input.array1d[0] == lewdo.letter.hover
+                    || isDown ) {
+                    if (this.refKeyboard.isValidXYZ(input.offset)) {
+                        this.cursor_active = true;
+                        this.cursor_down = isDown;
+                        this.cursor.copy( input.offset );
+                    }
+                } else {
+                    this.cursor_active = false;
+                    this.cursor_down = false;
+                }
             } else {
                 this.isShiftHeld = false;
             }
@@ -51,8 +66,20 @@ var lewdo_system_keyboard_prototype = {
         var end = this.refKeyboard.sizeXYZ().clone();
         end.z = start.z + 1;
         var layer = this.refKeyboard.subString3XYZ(start,end);
-        this.app.app_out.copy( layer );
-        this.app.app_out.frameStep();
+        var into = this.app.app_out;
+        into.resize(layer.width, layer.height, 3);
+        into.drawString3XYZ(layer,string3_utils.xyz(0,0,0));
+        if (this.cursor_active) {
+            this.cursor.z = 0;
+            var raise = layer.getByXYZ(this.cursor);
+            into.drawTextXYZ( " ",this.cursor);
+            this.cursor.z = this.cursor_down ? 2 : 1;
+            into.drawTextXYZ(raise,this.cursor);
+            
+            
+            
+        }
+        into.frameStep();
     },
 };
 
