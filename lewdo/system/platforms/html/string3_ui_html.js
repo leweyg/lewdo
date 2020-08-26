@@ -32,8 +32,10 @@ var string3_ui = {
             var clr = 'black';//(fz == 0) ? 'black' : 'lightgray';
             var opacity = 1.0 - (fz / (pagesToMake + 1));
             opacity = Math.pow(opacity,1.61);
+            var style = "position:absolute;transform-origin : 50% 50%;opacity:" + opacity + ";color:" + clr + ";";
+            if (fz != 0) style += "pointer-events: none;"
 
-            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='position:absolute;transform-origin : 50% 50%;pointer-events: none;opacity:" + opacity + ";color:" + clr + ";' >";
+            ans += "<div class='page_slice'  data-zdepth=" + fz + " style='" + style + "' >";
             ans += "<pre style='margin:0px;'>";
             ans += "<code class='page_content'>";
             if (fz < str3.depth) {
@@ -110,6 +112,7 @@ var string3_ui = {
         }
     },
     _setup_element : function(element,str3) {
+        var _this = this;
         
         var pageElementsQuery = element.getElementsByClassName('page_slice');
         var pageSpacers = element.getElementsByClassName( 'page_sizer' );
@@ -153,6 +156,21 @@ var string3_ui = {
         element.ontouchend = (evnt) => { 
             string3_ui.onTouchEventTop(evnt,element,false); 
             return false; };
+
+        var topElement = pageElements[0];
+        var topEventPos = string3_utils.xyz();
+        topElement.onmousemove = ((moveEvent) => {
+            var tp = topEventPos;
+            var str3 = _this._topChildren[element].source3;
+            tp.x = Math.floor( moveEvent.offsetX / ( topElement.scrollWidth / str3.width ) );
+            tp.y = Math.floor( moveEvent.offsetY / ( topElement.scrollHeight / str3.height ) );
+            tp.z = 0;
+            tp.x = Math.max(0, tp.x);
+            tp.y = Math.max(0, tp.y);
+            
+            //console.log("TopElementMouseMove=" + tp.toString() );
+        });
+
         //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
         //element.addEventListener("ontouchend",(event) => { string3_ui.onTouchEventTop(event,element,false); return false; }, { passive: false } );
         //document.ontouchmove = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),true); });

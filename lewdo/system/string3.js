@@ -342,6 +342,9 @@ var string3_utils = {
         select2 : function(other,foo) {
             return this.set(foo(this.x,other.x),foo(this.y,other.y),foo(this.z,other.z));
         },
+        toString : function() {
+            return "{'x':" + this.x + ",'y':" + this.y + ",'z':" + this.z + "}";
+        },
     },
     repeat_array : function(c,n) {
         var ans = [];
