@@ -147,7 +147,7 @@ var lewdo_text = {
     app : function(_app) {
         _app.app_in.subscribe((input) => {
             var str = "";
-            if (input.width == 0) {
+            if (input.width == 0 || input.array1d[0]==lewdo.letter.hover) {
                 str = lewdo_text._exampleText;
             } else {
                 str = input.toString();

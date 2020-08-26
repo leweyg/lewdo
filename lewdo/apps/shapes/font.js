@@ -4398,7 +4398,7 @@ var lewdo_font = {
     }),
     app_demo : ((_app) => {
         _app.app_in.subscribe((input) => {
-            if (input.width < 1) {
+            if (input.width < 1 || (input.array1d[0] == lewdo.letter.hover)) {
                 input.copy( string3( "lewdo" ) );
             }
         });
