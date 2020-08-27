@@ -58,19 +58,37 @@ var lewdo_stack = {
             }
             var finalSize = maxSizes.clone();
             finalSize[this.axis] = sumSizes[this.axis];
+            var maxSize = finalSize.clone();
 
             // then draw
             var to = this.myApp.app_out;
             to.resize(finalSize.x,finalSize.y,finalSize.z, ' ');
-            var drawOffset = string3_utils.xyz(0,0,0);
+            var runningOffset = string3_utils.xyz(0,0,0);
+            var drawOffset = runningOffset.clone();
             for (var si in this.stackedApps) {
                 var stackItem = this.stackedApps[si];
                 var src = stackItem.app.app_out;
+                var srcSize = src.sizeXYZ();
+
+                maxSize.copy(finalSize);
+                maxSize[this.axis] = srcSize[this.axis];
+                drawOffset.copy(maxSize).minus(srcSize);
+                if (stackItem.align == "center") {
+                    drawOffset.select(k => Math.floor(k/2));
+                } else if (stackItem.align == "start") {
+                    drawOffset.set(0,0,0);
+                } else if (stackItem.align == "end") {
+                    // already there
+                } else {
+                    throw new "Unknown alignment type '" + stackItem.align + "' ";
+                }
+                drawOffset.add(runningOffset);
+
                 stackItem.offset.copy(drawOffset);
                 if (isRender) {
                     to.drawString3XYZ(src, drawOffset);
                 }
-                drawOffset[this.axis] += src.sizeXYZ()[this.axis];
+                runningOffset[this.axis] += srcSize[this.axis];
             }
             if (isRender) {
                 to.frameStep();
