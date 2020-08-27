@@ -260,6 +260,22 @@ var string3_prototype = {
         }
         return this;
     },
+    trim : function() {
+        var solidStart = this.sizeXYZ().clone();
+        var solidEnd = string3_utils.xyz(0,0,0);
+        this.visitEachXYZ((val,v)=>{
+            if ((val != " ") && (val != 0)) {
+                solidStart.min(v);
+                solidEnd.max(v);
+            }
+        });
+        var ans = string3();
+        var ansSize = solidEnd.clone().minus(solidStart);
+        ans.resizeXYZ(ansSize);
+        ans.offset = solidStart.clone();
+        ans.drawString3XYZ( this, solidStart.multiply1D(-1) );
+        return ans;
+    },
     fromString : function(str) {
         return this.copy( string3_utils.fromString(str) );
     },
@@ -346,6 +362,21 @@ var string3_utils = {
         },
         select2 : function(other,foo) {
             return this.set(foo(this.x,other.x),foo(this.y,other.y),foo(this.z,other.z));
+        },
+        max : function(other) {
+            return this.select2(other,(a,b)=>Math.max(a,b));
+        },
+        min : function(other) {
+            return this.select2(other,(a,b)=>Math.min(a,b));
+        },
+        minus : function(other) {
+            return this.select2(other,(a,b)=>(a-b));
+        },
+        add : function(other) {
+            return this.select2(other,(a,b)=>(a-b));
+        },
+        multiply1D : function(other) {
+            return this.select((a)=>(a*other));
         },
         toString : function() {
             return "{'x':" + this.x + ",'y':" + this.y + ",'z':" + this.z + "}";
