@@ -14,7 +14,7 @@ var lewdo_stack = {
         }
         stack.redraw();
         app.app_in.subscribe((input) => {
-            stack.redraw();
+            stack.recieveInput(input);
         });
     },
     _lewdo_stack_prototype : {
@@ -23,8 +23,14 @@ var lewdo_stack = {
         axis : "y",
         pushApp : function(app) {
             this.stackedApps.push(app);
+
+            var _this = this;
+            app.app_out.subscribe(() => _this.redraw());
         },
         redraw : function() {
+            this.layoutAndRender(true);
+        },
+        layoutAndRender : function(isRender) {
             // first measure:
             var maxSizes = string3_utils.xyz(1,1,1);
             var sumSizes = string3_utils.xyz(1,1,1);
@@ -42,14 +48,36 @@ var lewdo_stack = {
             var drawOffset = string3_utils.xyz(0,0,0);
             for (var si in this.stackedApps) {
                 var src = this.stackedApps[si].app_out;
-                to.drawString3XYZ(src, drawOffset);
+                src.offset.copy(drawOffset);
+                if (isRender) {
+                    to.drawString3XYZ(src, drawOffset);
+                }
                 drawOffset[this.axis] += src.sizeXYZ()[this.axis];
             }
-            to.frameStep();
+            if (isRender) {
+                to.frameStep();
+            }
         },
         setup : function(app) {
             this.stackedApps = [];
             this.myApp = app;
+        },
+        recieveInput : function(input) {
+            this.layoutAndRender(true); // to get size right
+            var originalOffset = input.offset;
+            var t = string3_utils.xyz();
+            for (var si in this.stackedApps) {
+                var sapp = this.stackedApps[si];
+                var aout = sapp.app_out;
+                t.copy(input.offset);
+                t.minus(aout.offset);
+                if (aout.isValidXYZ(t)) {
+                    input.offset = t;
+                    sapp.app_in.copy(input);
+                    sapp.app_in.frameStep();
+                    input.offset = originalOffset;
+                }
+            }
         },
     },
     _labelApp : function(text) {
@@ -66,4 +94,4 @@ var lewdo_stack = {
     },
 };
 
-//lewdo.all_apps.shapes["stack"] = lewdo_stack.app;
+lewdo.all_apps.shapes["stack"] = lewdo_stack.app;
