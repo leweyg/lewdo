@@ -193,8 +193,12 @@ var string3_prototype = {
                 for (var w=0; w<other.width; w++) {
                     f.x = w;
                     t.x = (w + xyz.x);
-                    var val = other.getByXYZ(f);
-                    this.setByXYZ(val, t);
+                    if (other.isValidXYZ(f)) {
+                        var val = other.getByXYZ(f);
+                        if (this.isValidXYZ(t)) {
+                            this.setByXYZ(val, t);
+                        }
+                    }
                 }
             }
         }
@@ -266,14 +270,21 @@ var string3_prototype = {
         this.visitEachXYZ((val,v)=>{
             if ((val != " ") && (val != 0)) {
                 solidStart.min(v);
+                v.x++;v.y++;v.z++;
                 solidEnd.max(v);
             }
         });
         var ans = string3();
         var ansSize = solidEnd.clone().minus(solidStart);
         ans.resizeXYZ(ansSize);
-        ans.offset = solidStart.clone();
-        ans.drawString3XYZ( this, solidStart.multiply1D(-1) );
+        ans.drawString3XYZ( this, solidStart.clone().multiply1D(-1) );
+        var ansOffset = solidStart.clone();
+        if (this.offset) {
+            ansOffset = ansOffset.add(this.offset);
+        }
+        ans.offset = ansOffset;
+        ans.scroll = this.scroll;
+        
         return ans;
     },
     fromString : function(str) {
@@ -340,7 +351,7 @@ var string3_utils = {
             return this;
         },
         add : function(other) {
-            this.set( this.x + other.x, this.y + other.y, this.z + other.z );
+            return this.set( this.x + other.x, this.y + other.y, this.z + other.z );
         },
         isZero : function() {
             return ((this.x==0)&&(this.y==0)&&(this.z==0));
@@ -370,9 +381,6 @@ var string3_utils = {
             return this.select2(other,(a,b)=>Math.min(a,b));
         },
         minus : function(other) {
-            return this.select2(other,(a,b)=>(a-b));
-        },
-        add : function(other) {
             return this.select2(other,(a,b)=>(a-b));
         },
         multiply1D : function(other) {

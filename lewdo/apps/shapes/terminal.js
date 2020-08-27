@@ -38,13 +38,14 @@ var lewdo_terminal_prototype = {
                 this.hosted_app.app_in.frameStep();
                 return;
             }
+            input = input.trim();
             if (input.width > 0) {
                 var letter = input.array1d[0];
                 if ((letter == 'Enter') || (letter==lewdo.letter.play) 
                     || (letter == lewdo.letter.touch )) {
                     this.launchSelected();
                 }
-                if (letter == "○") {
+                if (letter == lewdo.letter.hover) {
                     var row_y = input.offset.y;
                     for (var si in this.selected_from) {
                         var entry = this.selected_from[si];
@@ -55,7 +56,7 @@ var lewdo_terminal_prototype = {
                         }
                     }
                 }
-            } else if (!input.scroll.isZero()) {
+            } else if (input.scroll && !input.scroll.isZero()) {
                 var n = this.selected_from.length;
                 this.selected_index = ( this.selected_index + input.scroll.y + input.scroll.x + input.scroll.z + n ) % n;
                 this.redraw();
