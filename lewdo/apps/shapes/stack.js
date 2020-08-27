@@ -28,6 +28,12 @@ var lewdo_stack = {
         stackedApps : [],
         myApp : lewdo_app(),
         axis : "y",
+        currentFocusItem : lewdo_app(),
+        setup : function(app) {
+            this.stackedApps = [];
+            this.myApp = app;
+            this.currentFocusItem = null;
+        },
         pushApp : function(app) {
             this.stackedApps.push({
                 app:app,
@@ -35,7 +41,6 @@ var lewdo_stack = {
                 align:"center",
                 offset : string3_utils.xyz(),
             });
-
             var _this = this;
             app.app_out.subscribe(() => _this.redraw());
         },
@@ -71,14 +76,16 @@ var lewdo_stack = {
                 to.frameStep();
             }
         },
-        setup : function(app) {
-            this.stackedApps = [];
-            this.myApp = app;
-        },
+
         recieveInput : function(input) {
             this.layoutAndRender(true); // to get size right
             var originalOffset = input.offset;
             var t = string3_utils.xyz();
+            var didSend = false;
+            if (input.width == 0) {
+                this._clearCurrentFocus();
+                return;
+            }
             for (var si in this.stackedApps) {
                 var stackItem = this.stackedApps[si];
                 var sapp = stackItem.app;
@@ -86,13 +93,28 @@ var lewdo_stack = {
                 t.copy(input.offset);
                 t.minus(stackItem.offset);
                 if (aout.isValidXYZ(t)) {
+                    didSend = true;
+                    if (this.currentFocusItem != stackItem) {
+                        this._clearCurrentFocus();
+                    }
+                    this.currentFocusItem = stackItem;
                     input.offset = t;
                     sapp.app_in.copy(input);
                     sapp.app_in.frameStep();
                     input.offset = originalOffset;
                 }
             }
+            if (!didSend) {
+                this._clearCurrentFocus();
+            }
         },
+        _clearCurrentFocus : function() {
+            if (!this.currentFocusItem)
+                return;
+            this.currentFocusItem.app.app_in_reset();
+            this.currentFocusItem.app.app_in.frameStep();
+            this.currentFocusItem = null;
+        }
     },
     _labelApp : function(text) {
         var app = lewdo_app();
