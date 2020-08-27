@@ -13,7 +13,8 @@ var lewdo_app = function() {
 };
 
 var lewdo = {
-    lewdo_app : lewdo_app,
+    app : lewdo_app,
+    lewdo_app : lewdo_app, // deprecated
     string3 : string3,
     xyz : string3_utils.xyz,
     apps : {
@@ -58,8 +59,7 @@ var lewdo_this_app = null;
 try {
     module.exports = { 
         lewdo : lewdo,
-        lewdo_app:lewdo_app, 
-        lewdo_app_prototype:lewdo_app_prototype,
+        lewdo_app:lewdo_app,
     };
 } catch {
     

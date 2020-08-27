@@ -1,7 +1,7 @@
 
 var lewdo_laptop = {
     create : function(app) {
-        var laptop = Object.create(lewdo_laptop._lewdo_app_prototype);
+        var laptop = Object.create(lewdo_laptop._lewdo_laptop_prototype);
         laptop.setup(app || lewdo_app());
         return laptop;
     },
@@ -9,7 +9,7 @@ var lewdo_laptop = {
         var laptop = lewdo_laptop.create(app);
         return laptop.app;
     },
-    _lewdo_app_prototype : {
+    _lewdo_laptop_prototype : {
         app : lewdo_app(),
         root : lewdo_app(),
         setup : function(_app) {
