@@ -86,7 +86,7 @@ var lewdo_terminal_prototype = {
         var xyz = string3_utils.xyz;
         this.console3 = this.app.app_out;
 
-        var rawApps = {apps:lewdo.all_apps,system:{}};
+        var rawApps = {apps:lewdo.apps,system:{}};
         var allApps = [];
         var folderLayer = "\n";
         var fileLayer = "\n";
@@ -103,12 +103,14 @@ var lewdo_terminal_prototype = {
             genreLayer += "\n";
             row_y++;
             for (var genre in rawApps[folder]) {
+                
                 prefix = "   ";
                 genreLayer += "    " + prefix + genre + "\n";
                 folderLayer += "\n";
                 fileLayer += "\n";
                 selectLayer += "\n";
                 row_y++;
+                if (genre == "shapes") continue;
                 prefix = "           ";
                 for (var app in rawApps[folder][genre]) {
                     folderLayer += "\n";
@@ -145,7 +147,7 @@ var lewdo_terminal_prototype = {
     
 };
 
-lewdo.all_apps.shapes.terminal = lewdo_terminal;
+lewdo.apps.shapes.terminal = lewdo_terminal;
 
 
 

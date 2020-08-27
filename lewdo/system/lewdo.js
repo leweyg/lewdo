@@ -16,7 +16,11 @@ var lewdo = {
     lewdo_app : lewdo_app,
     string3 : string3,
     xyz : string3_utils.xyz,
-    all_apps : {games:{},tools:{},shapes:{}},
+    apps : {
+        games:{},
+        tools:{},
+        shapes:{},
+    },
     letter:{
         hover:"○",
         touch:"●",

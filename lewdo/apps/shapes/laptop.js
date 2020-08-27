@@ -15,10 +15,10 @@ var lewdo_laptop = {
         setup : function(_app) {
             this.app = _app;
 
-            var keyboard = lewdo.all_apps.shapes.keyboard(lewdo_app());
-            var terminal = lewdo.all_apps.shapes.terminal(lewdo_app());
+            var keyboard = lewdo.apps.shapes.keyboard(lewdo_app());
+            var terminal = lewdo.apps.shapes.terminal(lewdo_app());
 
-            var stacker = lewdo.all_apps.shapes.stack(_app, 
+            var stacker = lewdo.apps.shapes.stack(_app, 
                 [ terminal.app, keyboard.app ]
                 ,"y");
             this.root = stacker.app;
@@ -27,4 +27,5 @@ var lewdo_laptop = {
     },
 };
 
-lewdo.all_apps.shapes.laptop = lewdo_laptop.app;
+lewdo.apps.shapes.laptop = lewdo_laptop.app;
+lewdo.apps.tools.laptop = lewdo_laptop.app;

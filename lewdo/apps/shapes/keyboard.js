@@ -83,6 +83,7 @@ var lewdo_system_keyboard_prototype = {
     },
 };
 
-lewdo.all_apps.shapes.keyboard = lewdo_system_keyboard;
+lewdo.apps.shapes.keyboard = lewdo_system_keyboard;
+lewdo.apps.tools.keyboard = lewdo_system_keyboard;
 
 

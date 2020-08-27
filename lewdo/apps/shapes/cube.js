@@ -75,7 +75,8 @@ var lewdo_cube = {
     },
 };
 
-//lewdo.all_apps.shapes["cube"] = lewdo_cube.aroundApp;
+lewdo.apps.shapes.cube = lewdo_cube.aroundApp;
+
 
 
 

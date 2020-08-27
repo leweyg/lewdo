@@ -37,5 +37,5 @@
         });
         redraw();
     }
-    //lewdo.all_apps.shapes["repeatMe"] = repeatMe;
+    //lewdo.apps.tools["repeatMe"] = repeatMe;
     

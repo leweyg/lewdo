@@ -30,11 +30,4 @@ var lewdo_flat = {
     }
 };
 
-try {
-    module.exports = {
-        lewdo_flat : lewdo_flat
-    };
-
-} catch {
-
-}
+lewdo.apps.shapes.flat = lewdo_flat.app;

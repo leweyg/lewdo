@@ -162,7 +162,8 @@ var lewdo_text = {
 
 };
 
-lewdo.all_apps.shapes.text = lewdo_text.app;
+lewdo.apps.shapes.text = lewdo_text.app;
+lewdo.apps.tools.text = lewdo_text.app;
 
 
 

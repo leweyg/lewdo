@@ -141,4 +141,4 @@ var lewdo_stack = {
     },
 };
 
-lewdo.all_apps.shapes["stack"] = lewdo_stack.app;
+lewdo.apps.shapes.stack = lewdo_stack.app;

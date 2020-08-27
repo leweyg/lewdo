@@ -69,5 +69,5 @@ var lewdo_flip = {
     },
 }
 
-//lewdo.all_apps.shapes.flip = lewdo_flip.app;
+lewdo.apps.shapes.flip = lewdo_flip.app;
 

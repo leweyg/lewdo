@@ -141,4 +141,4 @@ var lewdo_connect4_prototype = {
     
 };
 
-lewdo.all_apps.games.connect4 = lewdo_connect4;
+lewdo.apps.games.connect4 = lewdo_connect4;
