@@ -5,17 +5,24 @@ var lewdo_stack = {
         stack.setup(app || lewdo_app());
         return stack;
     },
-    app : function(app,stackOfApps) {
+    app : function(app,stackOfApps,axis) {
         var stack = lewdo_stack.create(app);
         if (!stackOfApps) {
             stack.pushApp(lewdo_stack._labelApp("Heading"));
             stack.pushApp(lewdo_stack._labelApp("Next"));
             stack.pushApp(lewdo_stack._labelApp("\vAnd Last"));
+        } else {
+            for (var si in stackOfApps) {
+                stack.pushApp(stackOfApps[si]);
+            }
         }
+        if (axis)
+            stack.axis = axis;
         stack.redraw();
         app.app_in.subscribe((input) => {
             stack.recieveInput(input);
         });
+        return this;
     },
     _lewdo_stack_prototype : {
         stackedApps : [],

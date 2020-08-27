@@ -22,7 +22,7 @@ var lewdo_terminal_prototype = {
         this.redraw();
 
         this.app.app_in.subscribe(() => {
-            console.log("Terminal input frame...");
+            //console.log("Terminal input frame...");
             var input = this.app.app_in;
             if ((input.array1d.length > 0) && (input.array1d[0] == "Escape") 
                     || (input.array1d[0]=="~")
@@ -145,7 +145,7 @@ var lewdo_terminal_prototype = {
     
 };
 
-//lewdo.all_apps.shapes.terminal = lewdo_terminal;
+lewdo.all_apps.shapes.terminal = lewdo_terminal;
 
 
 
