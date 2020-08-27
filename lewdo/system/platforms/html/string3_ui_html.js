@@ -161,6 +161,7 @@ var string3_ui = {
         if (supportLewdoTouch) {
             var topElement = pageElements[0];
             var topEventPos = string3_utils.xyz();
+            this._processTopElementCache.topElement = topElement;
             topElement.onmousemove = ((moveEvent) => {
                 _this._processTopElementMouseEvent(element,moveEvent,false);
             });
@@ -170,7 +171,23 @@ var string3_ui = {
             topElement.onmouseup = ((moveEvent) => {
                 _this._processTopElementMouseEvent(element,moveEvent,true);
             });
-            this._processTopElementCache.topElement = topElement;
+            var doTouch = function(evnt,_element,isDown) {
+                for (var ti=0; ti<evnt.touches.length; ti++) {
+                    var touch = evnt.touches[ti];
+                    _this._processTopElementMouseEvent(element,touch,isDown);
+                }
+            };
+            //for (var ti=0; ti<evnt.touches.length; ti++) {
+            topElement.ontouchstart = (evnt) => { 
+                doTouch(evnt,element,false); 
+                return false; };
+            topElement.ontouchmove = (evnt) => { 
+                doTouch(evnt,element,false); 
+                return false; };
+            topElement.ontouchend = (evnt) => { 
+                doTouch(evnt,element,false); 
+                return false; };
+            
         }
 
         //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
@@ -189,12 +206,14 @@ var string3_ui = {
         var topElement = this._processTopElementCache.topElement;
         var tp = this._processTopElementCache.posXYZ;
         var str3 = _this._topChildren[element].source3;
-        tp.x = Math.floor( moveEvent.offsetX / ( topElement.scrollWidth / str3.width ) );
-        tp.y = Math.floor( moveEvent.offsetY / ( topElement.scrollHeight / str3.height ) );
+        var x = 0.5 + (moveEvent.offsetX || moveEvent.clientX);
+        var y = 0.5 + (moveEvent.offsetY || moveEvent.clientY);
+        tp.x = Math.floor( x / ( topElement.scrollWidth / str3.width ) );
+        tp.y = Math.floor( y / ( topElement.scrollHeight / str3.height ) );
         tp.z = 0;
         tp.x = Math.max(0, tp.x);
         tp.y = Math.max(0, tp.y);
-        var isDown = (moveEvent.buttons != 0);
+        var isDown = !(!(moveEvent.buttons));
         this.doAppSingleTouchInput(isDown,tp);
     },
     _valuesByName : {},
