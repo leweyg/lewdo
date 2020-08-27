@@ -82,7 +82,18 @@ var lewdo_stack = {
     },
     _labelApp : function(text) {
         var app = lewdo_app();
-        app.app_out.copy(string3(text));
+        if (false) {
+            app.app_out.copy(string3(text));
+        } else {
+            app.app_in.subscribe((input) => {
+                var output = app.app_out;
+                output.copy(string3(text));
+                if (input.offset && output.isValidXYZ(input.offset)) {
+                    output.setByXYZ("*",input.offset);
+                }
+                output.frameStep();
+            });
+        };
         return app;
     },
     _buttonApp : function(text) {
