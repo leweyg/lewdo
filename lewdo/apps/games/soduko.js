@@ -9,8 +9,9 @@ var lewdo_soduko_prototype = {
     app : null,
     app_out : null,
     board : string3(),
+    board2d : string3(),
     cursor : string3_utils.xyz(),
-    sizeN : 9,
+    sizeN : 5,
 
     setup : function(_app) {
     
@@ -22,6 +23,10 @@ var lewdo_soduko_prototype = {
         this.app_out.clear(" ");
 
         this.cursor = string3_utils.xyz(2,2,2);
+
+        this.board2d = string3();
+        this.board2d.resize(sizeN,sizeN,1);
+        this.board2d.clear();
 
         this.board = string3();
         this.board.resize(sizeN,sizeN,sizeN);
@@ -37,8 +42,19 @@ var lewdo_soduko_prototype = {
         });
     },
 
+    ZToLetter : function(z) {
+        console.assert(z < 10);
+        console.assert(z >= 0);
+        return String.fromCharCode( z + ("1".charCodeAt(0)) );
+    },
+
+    letterToZ : function(letter) {
+        var z = letter.charCodeAt(0) - ("1".charCodeAt(0));
+        return z;
+    },
+
     currentLetter : function() {
-        var letter = String.fromCharCode( this.cursor.z + ("1".charCodeAt(0)) );
+        var letter = this.ZToLetter( this.cursor.z );
         return letter;
     },
 
@@ -53,39 +69,52 @@ var lewdo_soduko_prototype = {
         for (var z=0; z<this.sizeN; z++) {
             t.copy(xyz); t.x = z; cb(t);
             t.copy(xyz); t.y = z; cb(t);
-            t.copy(xyz); t.z = z; cb(t);
+            //t.copy(xyz); t.z = z; cb(t);
         }
     },
 
     redraw : function() {
         var xyz = string3_utils.xyz;
-        var t = string3_utils._tempVec1;
+        var t = xyz();
         var n = this.sizeN;
 
         this.app_out.clear(' ');
+        var _this = this;
 
-        this.app_out.drawString3XYZ( this.board, xyz(0,0,0) );
-        //this.app_out.clearPlane(this.sizeN, '●'); // ○
-        this.app_out.drawRangeXYZ('+',xyz(0,0,n),xyz(n,n,n+1))
-        this.app_out.drawRangeXYZ('○',xyz(0,n+1,n),xyz(n,n+2,n+1))
+        this.app_out.drawString3XYZ( this.board2d, xyz(0,0,this.sizeN) );
+        this.board2d.visitEachXYZ((letter,pos)=> {
+            if (letter == " ") return;
+            pos.z = _this.letterToZ(letter);
+            this.app_out.drawTextXYZ("○",pos);
+        });
+        this.app_out.drawRangeXYZ('○',xyz(0,n+1,n),xyz(n,n+2,n+1));
+        this.app_out.drawTextXYZ(
+            this.ZToLetter(this.cursor.z),
+            xyz(this.cursor.z,n+1,n));
 
         t.copy( this.cursor );
-        //this.app_out.drawTextXYZ( "*", t );
         var curLetter = this.currentLetter();
         var numbersUsed = {};
-        this.visitAllDirections(t,(loc) => {
-            var cur = this.app_out.getByXYZ(loc);
-            if (cur != ' ')  {
-                numbersUsed[cur] = true;
+        var wasOverlap = false;
+        this.visitAllDirections(t,(sidePos)=>{
+            var letter = this.app_out.getByXYZ(sidePos);
+            if (letter != " ") {
+                if (t.equals(sidePos))
+                    return;
+                wasOverlap = true;
+                this.app_out.drawTextXYZ("●",sidePos);
                 return;
             }
-            this.app_out.setByXYZ( ':',loc);
+            var showAs = ((sidePos.x==t.x) ? "│" : "─");
+            this.app_out.drawTextXYZ(showAs,sidePos);
         });
+        this.app_out.drawTextXYZ( wasOverlap ? "●" : "○", t );
+        t.z = this.sizeN;
         this.app_out.drawTextXYZ( curLetter, t );
 
-        for (var i=1; i<10; i++) {
-            t.set(i-1,10,i);
-            var num = "" + i;
+        for (var i=0; i<this.sizeN; i++) {
+            t.set(i,this.sizeN+1,i);
+            var num = this.ZToLetter(i);
             if (!(num in numbersUsed))
                 this.app_out.drawTextXYZ(num, t );
         }
@@ -94,7 +123,7 @@ var lewdo_soduko_prototype = {
     },
 
     randomInt : function() {
-        return Math.floor( Math.random() * 8 ) + 1;
+        return Math.floor( Math.random() * this.sizeN );
     },
 
     randomBoard : function() {
@@ -105,16 +134,18 @@ var lewdo_soduko_prototype = {
         while ((placed < goal) && (tries < 100)) {
             tries++;
             t.set(this.randomInt(),this.randomInt(),this.randomInt());
+            var testVal = this.ZToLetter(t.z);
+            t.z = 0;
             var good = true;
             this.visitAllDirections(t, (other) => {
-                var otherVal = this.board.getByXYZ(other);
-                if (otherVal != " ")
+                var otherVal = this.board2d.getByXYZ(other);
+                if (otherVal == testVal)
                     good = false;
             });
             if (!good) continue;
                 
             placed++;
-            this.board.setByXYZ("" + t.z,t);
+            this.board2d.setByXYZ(testVal,t);
         }
     },
 
@@ -134,7 +165,16 @@ var lewdo_soduko_prototype = {
             }
             if (letter == lewdo.letter.hover) {
                 if (this.board.isValidXYZ(input.offset)) {
-                    this.cursor.copy(input.offset);
+                    this.cursor.x = input.offset.x;
+                    this.cursor.y = input.offset.y;
+                    this.redraw();
+                    return;
+                }
+                var t = input.offset.clone();
+                t.y-=2;
+                if (this.board.isValidXYZ(t)) {
+                    // then it's selecting which value:
+                    this.cursor.z = t.x;
                     this.redraw();
                     return;
                 }
@@ -148,9 +188,6 @@ var lewdo_soduko_prototype = {
             var t = string3_utils._tempVec1;
             t.copy(this.cursor);
             t.add(this.app.app_in.scroll);
-            if (!this.board.isValidXYZ(t))
-                return;
-
             if (this.board.isValidXYZ(t)) {
                 this.cursor.copy(t);
                 this.redraw();
