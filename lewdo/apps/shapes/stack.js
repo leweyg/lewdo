@@ -73,6 +73,7 @@ var lewdo_stack = {
                 maxSize.copy(finalSize);
                 maxSize[this.axis] = srcSize[this.axis];
                 drawOffset.copy(maxSize).minus(srcSize);
+                drawOffset.z = 0;
                 if (stackItem.align == "center") {
                     drawOffset.select(k => Math.floor(k/2));
                 } else if (stackItem.align == "start") {
