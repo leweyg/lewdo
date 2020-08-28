@@ -26,6 +26,10 @@ var lewdo = {
         hover:"○",
         touch:"●",
         play:"►",
+        left:"←",
+        right:"→",
+        up:"↑",
+        down:"↓",
     },
 };
 

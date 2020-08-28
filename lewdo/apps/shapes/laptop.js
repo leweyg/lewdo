@@ -22,6 +22,18 @@ var lewdo_laptop = {
                 [ terminal.app, keyboard.app ]
                 ,"y");
             this.root = stacker.app;
+
+            var isFirst = true;
+            keyboard.text.subscribe((typedText)=>{
+                if (isFirst) {
+                    isFirst = false;
+                    return;
+                }
+                var to = terminal.app;
+                to.app_in_reset();
+                to.app_in.copy(typedText);
+                to.app_in.frameStep();
+            });
             
         },
     },

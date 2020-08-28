@@ -350,6 +350,10 @@ var string3_utils = {
             this.set(other.x, other.y, other.z);
             return this;
         },
+        copyIf : function(other) {
+            this.setIf(other.x, other.y, other.z);
+            return this;
+        },
         add : function(other) {
             return this.set( this.x + other.x, this.y + other.y, this.z + other.z );
         },
@@ -388,6 +392,14 @@ var string3_utils = {
         },
         toString : function() {
             return "{'x':" + this.x + ",'y':" + this.y + ",'z':" + this.z + "}";
+        },
+        fromLetter : function(letter) {
+            var dir = string3_utils.letterToXYZ(letter);
+            if (dir) {
+                this.copy(dir);
+                return this;
+            }
+            return undefined;
         },
     },
     repeat_array : function(c,n) {
@@ -433,6 +445,19 @@ var string3_utils = {
             }
         }
         return ans;
+    },
+    _refLettersToXYZ : {
+        "←":{x:-1},
+        "→":{x:1},
+        "↑":{y:-1},
+        "↓":{y:1},
+    },
+    letterToXYZ : function(letter) {
+        var refs = string3_utils._refLettersToXYZ;
+        if (letter in refs) {
+            return refs[letter];
+        }
+        return undefined;
     },
     visitEachXYZ : function(str3,callback) {
         if (!str3.visitEachXYZ) str3.visitEachXYZ = string3_prototype.visitEachXYZ;

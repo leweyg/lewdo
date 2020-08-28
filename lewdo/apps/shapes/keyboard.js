@@ -8,6 +8,7 @@ var lewdo_system_keyboard = function ( app ) {
 var lewdo_system_keyboard_prototype = {
     console3 : string3(),
     app : null,
+    text : string3(),
     cursor : string3_utils.xyz(),
     cursor_active : false,
     cursor_down : false,
@@ -17,12 +18,12 @@ var lewdo_system_keyboard_prototype = {
     refKeyboard : string3( "" +
         "`  1  2  3  4  5  6  7  8  9  0  -  = DEL\n"+     
         "TAB q  w  e  r  t  y  u  i  o  p  [  ]  \\\n"+     
-        "CAP  a  s  d  f  g  h  j  k  l  ;  '  # ┘\n"+    
+        "CAP  a  s  d  f  g  h  j  k  l  ;  '  # ►\n"+    
         "SFT   z  x  c  v  b  n  m  ,  .  /  ↑ SFT\n"+    
         "c  o  a  ____________________ c o ← ↓ →  \n\v"+
         "~  !  @  #  $  %  ^  &  *  (  )  _  + del\n"+
         "tab Q  W  E  R  T  Y  U  I  O  P  {  }  |\n"+    
-        "cap  A  S  D  F  G  H  J  K  L  :  \"  # ┘\n"+     
+        "cap  A  S  D  F  G  H  J  K  L  :  \"  # ►\n"+     
         "sft   Z  X  C  V  B  N  M  <  >  ?  ↑ sft\n"+   
         "c  o  a  ____________________ c o ← ↓ →  \n"+
         "" ),
@@ -33,15 +34,19 @@ var lewdo_system_keyboard_prototype = {
 
     setup : function(_app) {
         this.app = _app;
+        this.text = string3();
+        this.text.scroll = string3_utils.xyz();
         this.redraw();
         this.app.app_in.subscribe((input) => {
+            var wasDown = this.cursor_down;
+            var isDown = false;
             if (input.width > 0) {
                 if (input.array1d[0] == "Shift") {
                     this.isShiftHeld = true;
                 } else {
                     this.isShiftHeld = false;
                 }
-                var isDown = input.array1d[0] == lewdo.letter.touch;
+                isDown = (input.array1d[0] == lewdo.letter.touch);
                 if (input.array1d[0] == lewdo.letter.hover
                     || isDown ) {
                     if (this.refKeyboard.isValidXYZ(input.offset)) {
@@ -55,6 +60,24 @@ var lewdo_system_keyboard_prototype = {
                 }
             } else {
                 this.isShiftHeld = false;
+                this.cursor_down = false;
+            }
+            if (isDown != wasDown) {
+                this.text.scroll.set(0,0,0);
+                this.text.resize(0,0,0);
+                if (isDown) {
+                    var raise = this.refKeyboard.getByXYZ(this.cursor);
+                    if (raise != " ") {
+                        var arrowKey = string3_utils.letterToXYZ(raise);
+                        if (arrowKey) {
+                            this.text.resize(0,0,0);
+                            this.text.scroll.copyIf(arrowKey);
+                        } else {
+                            this.text.copy(string3(raise));
+                        }
+                    }
+                }
+                this.text.frameStep();
             }
             this.redraw();
         });
