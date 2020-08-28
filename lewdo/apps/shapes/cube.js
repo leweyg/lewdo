@@ -1,7 +1,7 @@
 
 // TODO: fix this for all HTML displays:
 
-var _lewdo_square_string = "┌-┐\n┃ ┃\n└-┘";
+var _lewdo_square_string = "┌─┐\n│ │\n└─┘";
 var _lewdo_square_corners_string = "┌ ┐\n   \n└ ┘";
 //var _lewdo_square_string = "/-\\\n┃ ┃\n\\-/";
 //var _lewdo_square_corners_string = "/ \\\n   \n\\ /";

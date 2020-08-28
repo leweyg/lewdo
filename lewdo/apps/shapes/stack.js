@@ -22,23 +22,23 @@ var lewdo_stack = {
         app.app_in.subscribe((input) => {
             stack.recieveInput(input);
         });
-        return this;
+        return stack;
     },
     _lewdo_stack_prototype : {
         stackedApps : [],
-        myApp : lewdo_app(),
+        app : lewdo_app(),
         axis : "y",
         currentFocusItem : lewdo_app(),
         setup : function(app) {
             this.stackedApps = [];
-            this.myApp = app;
+            this.app = app;
             this.currentFocusItem = null;
         },
-        pushApp : function(app) {
+        pushApp : function(app,align="center") {
             this.stackedApps.push({
                 app:app,
                 index:(this.stackedApps.length),
-                align:"center",
+                align:align,
                 offset : string3_utils.xyz(),
             });
             var _this = this;
@@ -61,7 +61,7 @@ var lewdo_stack = {
             var maxSize = finalSize.clone();
 
             // then draw
-            var to = this.myApp.app_out;
+            var to = this.app.app_out;
             to.resize(finalSize.x,finalSize.y,finalSize.z, ' ');
             var runningOffset = string3_utils.xyz(0,0,0);
             var drawOffset = runningOffset.clone();

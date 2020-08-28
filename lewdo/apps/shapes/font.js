@@ -4385,7 +4385,7 @@ var lewdo_font = {
             input.visitEachXYZ((letter,inputXYZ) => {
                 // TODO: dereference the letter into the font
                 string3_utils.visitEachXYOnZ(font, letter.charCodeAt(0), ((isOn,fontXYZ) => {
-                    var val = (isOn ? "●" : " ");
+                    var val = (isOn ? "▊" : " ");
                     t.x = ( inputXYZ.x * font.width ) + fontXYZ.x;
                     t.y = ( inputXYZ.y * font.height ) + fontXYZ.y;
                     t.z = inputXYZ.z;
