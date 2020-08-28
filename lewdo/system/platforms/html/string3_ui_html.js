@@ -373,7 +373,7 @@ var string3_ui = {
         var angleY = this.recentAngle.y;
         //var angleNow = string3_utils.xyz();
 
-        var maxAngle = Math.max( angleX, angleY );
+        var maxAngle = Math.max( Math.abs( angleX ), Math.abs( angleY ) );
         var offset = 0; //maxAngle * -1.5;
 
         // element level:
@@ -383,7 +383,7 @@ var string3_ui = {
         var storedSeq = "";
 
         var depthScaling = Math.min( 10, (120 / info.source3.depth) );
-
+        depthScaling *= (maxAngle / 45.0);
         
 
         for (var i=0; i<layers.length; i++) {
