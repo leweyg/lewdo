@@ -59,7 +59,10 @@ var lewdo_soduko_prototype = {
     },
 
     playAtCurrent : function() {
-        this.board.setByXYZ(this.currentLetter(),this.cursor);
+        var letter = this.currentLetter();
+        var t = this.cursor.clone();
+        t.z = 0;
+        this.board2d.setByXYZ(letter,t);
         this.redraw();
     },
 
@@ -67,10 +70,12 @@ var lewdo_soduko_prototype = {
     visitAllDirections : function(xyz,cb) {
         var t = this._visitTemp;
         for (var z=0; z<this.sizeN; z++) {
-            t.copy(xyz); t.x = z; cb(t);
-            t.copy(xyz); t.y = z; cb(t);
-            //t.copy(xyz); t.z = z; cb(t);
+            t.copy(xyz); t.x = z; if (!t.equals(xyz)) cb(t);
+            t.copy(xyz); t.y = z; if (!t.equals(xyz)) cb(t);
+            t.copy(xyz); t.z = z; if (!t.equals(xyz)) cb(t);
         }
+        t.copy(xyz);
+        cb(t);
     },
 
     redraw : function() {
@@ -85,9 +90,9 @@ var lewdo_soduko_prototype = {
         this.board2d.visitEachXYZ((letter,pos)=> {
             if (letter == " ") return;
             pos.z = _this.letterToZ(letter);
-            this.app_out.drawTextXYZ("○",pos);
+            this.app_out.drawTextXYZ("◌",pos);
         });
-        this.app_out.drawRangeXYZ('○',xyz(0,n+1,n),xyz(n,n+2,n+1));
+        this.app_out.drawRangeXYZ('─',xyz(0,n+1,n),xyz(n,n+2,n+1));
         this.app_out.drawTextXYZ(
             this.ZToLetter(this.cursor.z),
             xyz(this.cursor.z,n+1,n));
@@ -99,13 +104,12 @@ var lewdo_soduko_prototype = {
         this.visitAllDirections(t,(sidePos)=>{
             var letter = this.app_out.getByXYZ(sidePos);
             if (letter != " ") {
-                if (t.equals(sidePos))
-                    return;
                 wasOverlap = true;
                 this.app_out.drawTextXYZ("●",sidePos);
                 return;
             }
             var showAs = ((sidePos.x==t.x) ? "│" : "─");
+            if (sidePos.z != t.z) showAs = "+";
             this.app_out.drawTextXYZ(showAs,sidePos);
         });
         this.app_out.drawTextXYZ( wasOverlap ? "●" : "○", t );
@@ -130,7 +134,7 @@ var lewdo_soduko_prototype = {
         var t = this.cursor.clone();
         var placed = 0;
         var tries = 0;
-        var goal = 20;
+        var goal = Math.floor((this.sizeN * this.sizeN)/4);
         while ((placed < goal) && (tries < 100)) {
             tries++;
             t.set(this.randomInt(),this.randomInt(),this.randomInt());
@@ -138,6 +142,7 @@ var lewdo_soduko_prototype = {
             t.z = 0;
             var good = true;
             this.visitAllDirections(t, (other) => {
+                if (other.z != 0) return;
                 var otherVal = this.board2d.getByXYZ(other);
                 if (otherVal == testVal)
                     good = false;
