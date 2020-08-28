@@ -54,10 +54,14 @@ var string3_prototype = {
         if (other.offset) {
             if (!this.offset) this.offset = string3_utils.xyz();
             this.offset.copy(other.offset);
+        } else if (this.offset) {
+            this.offset.set(0,0,0);
         }
         if (other.scroll) {
             if (!this.scroll) this.scroll = string3_utils.xyz();
             this.scroll.copy(other.scroll);
+        } else if (this.scroll) {
+            this.scroll.set(0,0,0);
         }
         return this;
     },

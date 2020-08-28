@@ -65,6 +65,21 @@ var lewdo_host = {
             var t = string3_utils.xyz();
             var didSend = false;
             if (input.width == 0) {
+                if (!input.scroll.isZero()) {
+                    var focus = this.currentFocusItem;
+                    if (this.stackedApps.length>0) {
+                        focus = this.stackedApps[0];
+                    }
+                    if (focus != this.currentFocusItem) {
+                        this._clearCurrentFocus();
+                    }
+                    if (!focus) return;
+                    this.currentFocusItem = focus;
+                    var sapp = focus.app;
+                    sapp.app_in.copy(input);
+                    sapp.app_in.frameStep();
+                    return;
+                }
                 this._clearCurrentFocus();
                 return;
             }
