@@ -22,6 +22,9 @@ var lewdo_host = {
         stackedApps : [],
         app : lewdo_app(),
         currentFocusItem : lewdo_app(),
+        _isUpdating : false,
+        _needsRedraw : false,
+        _skippedRedraws : 0,
         setup : function(app) {
             this.stackedApps = [];
             this.app = app;
@@ -36,7 +39,13 @@ var lewdo_host = {
             this.stackedApps.push(item);
             var _this = this;
             app.app_out.subscribe(() => {
-                _this.redraw();
+                _this._needsRedraw = true;
+                if (!_this._isUpdating) {
+                    _this.redraw();
+                } else {
+                    // skipping redraw for now...
+                    _this._skippedRedraws++;
+                }
             });
             return item;
         },
@@ -44,6 +53,7 @@ var lewdo_host = {
             return this.pushAppBase(app);
         },
         redraw : function() {
+            this._needsRedraw = false;
             this.layout();
             this.render();
         },
@@ -58,8 +68,19 @@ var lewdo_host = {
             }
             this.app.app_out.frameStep();
         },
-
         recieveInput : function(input) {
+            this._isUpdating = true;
+            this._skippedRedraws = 0;
+
+            this._recieveInputInner(input);
+
+            this._isUpdating = false;
+            if (this._needsRedraw) {
+                this._needsRedraw = false;
+                this.redraw();
+            }
+        },
+        _recieveInputInner : function(input) {
             this.layout();
             var originalOffset = input.offset;
             var t = string3_utils.xyz();
