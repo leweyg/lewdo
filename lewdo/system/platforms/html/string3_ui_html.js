@@ -72,6 +72,16 @@ var string3_ui = {
     },
     _previousPageSize : string3_utils.xyz(),
     _updatePageText : function(element) {
+        if (!element) {
+            for (var ei in string3_ui._topChildren) {
+                var eInfo = string3_ui._topChildren[ei];
+                if (eInfo.element) {
+                    element = eInfo.element;
+                    break;
+                }
+            }
+            console.assert(element);
+        }
         var info = string3_ui._topChildren[element];
         var str3 = info.source3;
         element.style["font-size"] = this.fontSizeForString3(str3);
@@ -111,6 +121,27 @@ var string3_ui = {
             this._updatePageTransforms(element);
         }
     },
+    _update_isDirty : false,
+    _update_isUpdating : false,
+    _update_skippedCount : 0,
+    _updateBegin : function() {
+        this._update_isUpdating = true;
+    },
+    _updateRequest : function() {
+        this._update_isDirty = true;
+        if (this._update_isUpdating) {
+            this._update_skippedCount++;
+        } else {
+            this._updateEnd();
+        }
+    },
+    _updateEnd : function() {
+        this._update_isUpdating = false;
+        if (this._update_isDirty) {
+            this._update_isDirty = false;
+            this._updatePageText();
+        }
+    },
     _setup_element : function(element,str3) {
         var _this = this;
         
@@ -136,9 +167,7 @@ var string3_ui = {
             pageElements:pageElements,
             pageContents:pageContents,
             pageSpacer:pageSpacer };
-        str3.subscribe(() => {
-            this._updatePageText(element,str3);
-        });
+
 
         document.onkeydown = (event) => { 
             string3_ui.onKeyChange(true,event,element);
@@ -189,6 +218,11 @@ var string3_ui = {
                 return false; };
             
         }
+
+        str3.subscribe(() => {
+            this._updateRequest();
+            //this._updatePageText(element,str3);
+        });
 
         //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
         //element.addEventListener("ontouchend",(event) => { string3_ui.onTouchEventTop(event,element,false); return false; }, { passive: false } );
@@ -313,11 +347,15 @@ var string3_ui = {
 
         //return; // TODO: enable this next:
 
+        this._updateBegin();
+
         var app = string3_ui._mainApp;
         app.app_in_reset(1);
         app.app_in.array1d[0] = (isDown ? lewdo.letter.touch : lewdo.letter.hover );
         app.app_in.offset.copy(xyz);
         app.app_in.frameStep();
+        
+        this._updateEnd();
     },
     onKeyChange : function(isDown,event,element) {
         //console.log("Key code=" + event.code + " key=" + event.key + " isDown=" + isDown);
