@@ -25,14 +25,36 @@ var lewdo_hike = {
 
             this.app.app_in.subscribe((input) => {
                 if (!input.scroll.isZero()) {
-                    var offset = this.tryGetPlayerOffset( input.scroll );
-                    if (offset) {
-                        this.viewOffset.add(offset);
-                        this.playerPosWorld.add(offset);
-                        this.redraw();
+                    this.tryDoPlayerInput(input.scroll);
+                    return;
+                }
+                if (input.width > 0) {
+                    if (input.toString() == lewdo.letter.touch) {
+                        var delta = lewdo.xyz().copy( input.offset );
+                        delta.select2(this.displaySize,(a,b)=>{
+                            return (a - (b/2))
+                        });
+                        if (Math.abs(delta.x) > Math.abs(delta.y)) {
+                            delta.y = 0;
+                            delta.x = Math.sign(delta.x);
+                        } else {
+                            delta.x = 0;
+                            delta.y = Math.sign(delta.y);
+                        }
+                        delta.z = 0;
+                        this.tryDoPlayerInput(delta);
                     }
                 }
             });
+        },
+        tryDoPlayerInput : function(scroll) {
+            var offset = this.tryGetPlayerOffset( scroll );
+            if (offset) {
+                this.viewOffset.add(offset);
+                this.playerPosWorld.add(offset);
+                this.redraw();
+            }
+            return;
         },
         tryGetPlayerOffset : function(offset) {
             var curHeight = this.playerPosWorld.z;
