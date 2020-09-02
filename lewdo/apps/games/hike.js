@@ -13,8 +13,6 @@ var lewdo_hike = {
         app : lewdo_app(),
         displaySize : lewdo.xyz(16,9,5),
         gradient : ".:-+*=%@#",
-        fracalScale : 1,
-        maxSteps : 10,
 
         setup : function(_app) {
             this.app = _app;
@@ -24,21 +22,17 @@ var lewdo_hike = {
             this.fracalScale++;
 
             this.app.app_in.subscribe((input) => {
-                var was = this.fracalScale;
-                if (this.fracalScale != was) {
-                    this.redraw();
-                }
+                // todo
             });
         },
         redraw : function() {
             var display = this.app.app_out;
             display.resizeXYZ(this.displaySize);
             display.modifyEachXYZ((was,pos)=> {
-                var fracValue = this.mandelbrot(
-                    pos.x*this.fracalScale,
-                    pos.y*this.fracalScale,
-                    this.maxSteps) / this.maxSteps;
-                if ((fracValue == 0))
+                var h = this.evalHeightAtScreenXY(pos.x, pos.y);
+                return String.fromCharCode("0".charCodeAt(0) + h);
+
+                if ((h == 0))
                     return " ";
                 var t = Math.floor(fracValue * this.gradient.length) % this.gradient.length;
                 if ((this.displaySize.z - pos.z) > t) return " ";
@@ -63,6 +57,22 @@ var lewdo_hike = {
             }
             return maxIter - i;
         },
+        defaultRangeOptions : {
+            xmin : 0.1,// -2,
+            xmax : 0.13,// 1,
+            ymin : 0.63, //-1,
+            ymax : 0.64,// 1,
+            iterations : 200,
+            stepSize : 10,
+        },
+        evalHeightAtScreenXY : function(sx, sy) {
+            var ops = this.defaultRangeOptions;
+            var showSize = this.displaySize;
+            var x = ops.xmin + ((ops.xmax - ops.xmin)*((sx * ops.stepSize)/((showSize.x * ops.stepSize)-1)));
+            var y = ops.ymin + ((ops.ymax - ops.ymin)*((sy * ops.stepSize)/((showSize.y * ops.stepSize)-1)));
+            var i = this.mandelbrot(x, y, ops.iterations);
+            return Math.floor((i * 9)/200);
+        },
         debugUI_HTML : function() {
             var canvas = document.createElement('canvas');
             canvas.width = 160;
@@ -76,14 +86,7 @@ var lewdo_hike = {
             document.body.appendChild(controlsBlock);
             //this.mandelbrotIntoCanvas(canvas, -2, 1, -1, 1, 1000);
 
-            var options = {
-                xmin : 0.1,// -2,
-                xmax : 0.13,// 1,
-                ymin : 0.63, //-1,
-                ymax : 0.64,// 1,
-                iterations : 200,
-                stepSize : 10,
-            };
+            var options = this.defaultRangeOptions;
 
             var _this = this;
             var refractal = function() {
