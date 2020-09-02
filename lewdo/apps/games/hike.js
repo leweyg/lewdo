@@ -12,7 +12,7 @@ var lewdo_hike = {
     lewdo_hike_prototype : {
         app : lewdo_app(),
         displaySize : lewdo.xyz(16,9,5),
-        playerPos : lewdo.xyz(8,4,3),
+        playerPosWorld : lewdo.xyz(8,4,2),
         viewOffset : lewdo.xyz(0,0,0),
         gradient : ".:-+*=%@#",
 
@@ -25,24 +25,60 @@ var lewdo_hike = {
 
             this.app.app_in.subscribe((input) => {
                 if (!input.scroll.isZero()) {
-                    this.viewOffset.add(input.scroll);
-                    this.redraw();
+                    var offset = this.tryGetPlayerOffset( input.scroll );
+                    if (offset) {
+                        this.viewOffset.add(offset);
+                        this.playerPosWorld.add(offset);
+                        this.redraw();
+                    }
                 }
             });
+        },
+        tryGetPlayerOffset : function(offset) {
+            var curHeight = this.playerPosWorld.z;
+            var newPos = lewdo.xyz().copy(this.playerPosWorld).add(offset);
+            var newHeight = this.evalHeightAtWorldXY(newPos.x, newPos.y);
+            if ((newHeight+1) == curHeight) {
+                return offset;
+            }
+            if (newHeight == curHeight) {
+                var move = lewdo.xyz().copy(offset);
+                move.z += 1;
+                return move;
+            }
+            if (newHeight == (curHeight-2)) {
+                var move = lewdo.xyz().copy(offset);
+                move.z += -1;
+                return move;
+            }
+            return undefined;
+        },
+        _temp_Draw : lewdo.xyz(),
+        displayFromWorldXYZ : function(worldPos,into) {
+            if (!into) into = lewdo.xyz();
+            into.copy(worldPos);
+            into.minus(this.viewOffset);
+            into.z = (this.displaySize.z - 1) - into.z;
+            return into;
         },
         redraw : function() {
             var display = this.app.app_out;
             display.resizeXYZ(this.displaySize);
             display.modifyEachXYZ((was,pos)=> {
-                var h = this.evalHeightAtWorldXY(
+                var h = ( this.evalHeightAtWorldXY(
                     pos.x + this.viewOffset.x, 
-                    pos.y + this.viewOffset.y );
-                var p = (this.displaySize.z - pos.z);
+                    pos.y + this.viewOffset.y ) );
+
+                var p = (this.displaySize.z - pos.z - 1) + this.viewOffset.z;
                 //if (p < h) return "+";
-                if (p != h) return " ";
+                if (p != h) return ' ';
                 return String.fromCharCode("0".charCodeAt(0) + h);
             });
-            display.setByXYZ(lewdo.letter.touch,this.playerPos);
+            var t = this._temp_Draw;
+            this.displayFromWorldXYZ(this.playerPosWorld, t);
+            if (display.isValidXYZ(t)) {
+                display.setByXYZ(lewdo.letter.touch,t);
+            }
             display.frameStep();
         },
         mandelbrot : function (cx, cy, maxIter) {
