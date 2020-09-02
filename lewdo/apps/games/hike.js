@@ -78,11 +78,11 @@ var lewdo_hike = {
 
             var options = {
                 xmin : 0.1,// -2,
-                xmax : 0.15,// 1,
-                ymin : 0.62, //-1,
-                ymax : 0.65,// 1,
-                iterations : 150,
-                stepSize : 3,
+                xmax : 0.13,// 1,
+                ymin : 0.63, //-1,
+                ymax : 0.64,// 1,
+                iterations : 200,
+                stepSize : 10,
             };
 
             var _this = this;

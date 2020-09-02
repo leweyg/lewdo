@@ -168,13 +168,13 @@ var string3_ui = {
             pageContents:pageContents,
             pageSpacer:pageSpacer };
 
-
+            var isAllowNormalKeyPresses = false;
         document.onkeydown = (event) => { 
             string3_ui.onKeyChange(true,event,element);
-            return false; };
+            return isAllowNormalKeyPresses; };
         document.onkeyup = (event) => { 
             string3_ui.onKeyChange(false,event,element);
-            return false; };
+            return isAllowNormalKeyPresses; };
 
         element.ontouchstart = (evnt) => { 
             string3_ui.onTouchEventTop(evnt,element,true); 
