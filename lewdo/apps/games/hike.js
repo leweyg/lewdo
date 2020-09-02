@@ -74,7 +74,7 @@ var lewdo_hike = {
             controlsBlock.appendChild(document.createElement("br"));
 
             document.body.appendChild(controlsBlock);
-            this.mandelbrotIntoCanvas(canvas, -2, 1, -1, 1, 1000);
+            //this.mandelbrotIntoCanvas(canvas, -2, 1, -1, 1, 1000);
 
             var options = {
                 xmin : 0.1,// -2,
@@ -82,6 +82,7 @@ var lewdo_hike = {
                 ymin : 0.62, //-1,
                 ymax : 0.65,// 1,
                 iterations : 150,
+                stepSize : 3,
             };
 
             var _this = this;
@@ -89,7 +90,7 @@ var lewdo_hike = {
                 _this.mandelbrotIntoCanvas(canvas,
                     options.xmin, options.xmax,
                     options.ymin, options.ymax,
-                    options.iterations);
+                    options.iterations, options.stepSize );
             };
             refractal();
 
@@ -114,20 +115,23 @@ var lewdo_hike = {
                 makeOption(optionName);
             }
         },
-        mandelbrotIntoCanvas : function(canvas, xmin, xmax, ymin, ymax, iterations) {
+        mandelbrotIntoCanvas : function(canvas, xmin, xmax, ymin, ymax, iterations, stepSize=1) {
             var width = canvas.width;
             var height = canvas.height;
            
             var ctx = canvas.getContext('2d');
-            var img = ctx.getImageData(0, 0, width, height);
+            var img = ctx.getImageData(0, 0, 1, 1);
             var pix = img.data;
            
-            for (var ix = 0; ix < width; ++ix) {
-              for (var iy = 0; iy < height; ++iy) {
+            for (var ix = 0; ix < width; ix += stepSize) {
+                //var ix = Math.floor(rix / stepSize);
+                for (var iy = 0; iy < height; iy += stepSize) {
+                  //var iy = Math.floor(riy / stepSize);
+
                 var x = xmin + (xmax - xmin) * ix / (width - 1);
                 var y = ymin + (ymax - ymin) * iy / (height - 1);
                 var i = this.mandelbrot(x, y, iterations);
-                var ppos = 4 * (width * iy + ix);
+                var ppos = 0; //4 * (width * iy + ix);
            
                 if (i > iterations) {
                   pix[ppos] = 0;
@@ -152,10 +156,19 @@ var lewdo_hike = {
                   }
                 }
                 pix[ppos + 3] = 255;
+
+                for (var sx=0; sx<stepSize; sx++) {
+                    for (var sy=0; sy<stepSize; sy++) {
+                        ctx.putImageData(img, ix+sx, iy+sy);
+                    }
+                }
+                
               }
             }
            
-            ctx.putImageData(img, 0, 0);
+            //ctx.putImageData(img, 0, 0);
+            //ctx.putImageData(img, 0, 0, 0, 0, stepSize, stepSize);
+            //ctx.fillRect(20, 20, 150, 100);
           }
     }
 };
