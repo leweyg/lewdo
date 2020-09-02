@@ -71,6 +71,14 @@ var lewdo_hike = {
 
                 var p = (this.displaySize.z - pos.z - 1) + this.viewOffset.z;
                 //if (p < h) return "+";
+                if (pos.z == 0) {
+                    if (h >= (this.viewOffset.z + this.displaySize.z))
+                        return "|";
+                }
+                if (pos.z == this.displaySize.z-1) {
+                    if (h < this.viewOffset.z)
+                        return "-";
+                }
                 if (p != h) return ' ';
                 return String.fromCharCode("0".charCodeAt(0) + h);
             });
