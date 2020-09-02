@@ -12,6 +12,8 @@ var lewdo_hike = {
     lewdo_hike_prototype : {
         app : lewdo_app(),
         displaySize : lewdo.xyz(16,9,5),
+        playerPos : lewdo.xyz(8,4,3),
+        viewOffset : lewdo.xyz(0,0,0),
         gradient : ".:-+*=%@#",
 
         setup : function(_app) {
@@ -22,25 +24,25 @@ var lewdo_hike = {
             this.fracalScale++;
 
             this.app.app_in.subscribe((input) => {
-                // todo
+                if (!input.scroll.isZero()) {
+                    this.viewOffset.add(input.scroll);
+                    this.redraw();
+                }
             });
         },
         redraw : function() {
             var display = this.app.app_out;
             display.resizeXYZ(this.displaySize);
             display.modifyEachXYZ((was,pos)=> {
-                var h = this.evalHeightAtScreenXY(pos.x, pos.y);
+                var h = this.evalHeightAtWorldXY(
+                    pos.x + this.viewOffset.x, 
+                    pos.y + this.viewOffset.y );
                 var p = (this.displaySize.z - pos.z);
                 //if (p < h) return "+";
                 if (p != h) return " ";
                 return String.fromCharCode("0".charCodeAt(0) + h);
-
-                if ((h == 0))
-                    return " ";
-                var t = Math.floor(fracValue * this.gradient.length) % this.gradient.length;
-                
-                return this.gradient[t];
             });
+            display.setByXYZ(lewdo.letter.touch,this.playerPos);
             display.frameStep();
         },
         mandelbrot : function (cx, cy, maxIter) {
@@ -68,7 +70,7 @@ var lewdo_hike = {
             iterations : 200,
             stepSize : 10,
         },
-        evalHeightAtScreenXY : function(sx, sy) {
+        evalHeightAtWorldXY : function(sx, sy) {
             var ops = this.defaultRangeOptions;
             var showSize = this.displaySize;
             var x = ops.xmin + ((ops.xmax - ops.xmin)*((sx * ops.stepSize)/((showSize.x * ops.stepSize)-1)));
