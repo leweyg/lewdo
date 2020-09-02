@@ -30,12 +30,15 @@ var lewdo_hike = {
             display.resizeXYZ(this.displaySize);
             display.modifyEachXYZ((was,pos)=> {
                 var h = this.evalHeightAtScreenXY(pos.x, pos.y);
+                var p = (this.displaySize.z - pos.z);
+                //if (p < h) return "+";
+                if (p != h) return " ";
                 return String.fromCharCode("0".charCodeAt(0) + h);
 
                 if ((h == 0))
                     return " ";
                 var t = Math.floor(fracValue * this.gradient.length) % this.gradient.length;
-                if ((this.displaySize.z - pos.z) > t) return " ";
+                
                 return this.gradient[t];
             });
             display.frameStep();
