@@ -20,7 +20,7 @@ var lewdo_editor = {
 
             var keyboard = all_shapes.keyboard();
             var fileList = all_shapes.text(null,"\ntest.js\vFiles");
-            var textEditor = all_shapes.text(null,"Hello World!\n-lewdo");
+            var textEditor = all_shapes.text(null);//,"Hello World!\n-lewdo");
             var aroundText = all_shapes.cube(null, textEditor.app );
             var blades = all_shapes.stack(null,[ fileList.app, aroundText.app ],"x");
 
