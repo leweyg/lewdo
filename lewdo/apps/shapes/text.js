@@ -144,18 +144,28 @@ var lewdo_text = {
         return result;
     },
 
-    app : function(_app) {
+    app : function(_app,defaultText=null,inputAsOutput=false) {
+        _app = (_app || lewdo.app());
+        var isFirst = true;
+        var result = {
+            app : _app,
+            text : (defaultText || lewdo_text._exampleText),
+        };
         _app.app_in.subscribe((input) => {
-            var str = "";
-            if (input.width == 0 || input.array1d[0]==lewdo.letter.hover) {
-                str = lewdo_text._exampleText;
-            } else {
-                str = input.toString();
+            var str = defaultText;
+            if (inputAsOutput || isFirst) {
+                if (input.width == 0 || input.array1d[0]==lewdo.letter.hover) {
+                    str = result.text;
+                } else {
+                    str = input.toString();
+                }
             }
+            isFirst = false;
             var str3 = lewdo_text.toString3( str );
             _app.app_out.copy( str3 );
             _app.app_out.frameStep();
         });
+        return result;
     },
 
     _exampleText : "function helloWorld(app) {\n    app.app_in.subscribe((input) => {\n        app.app_out.copy(input);\n        app.app_out.frameStep();\n    });\n}",

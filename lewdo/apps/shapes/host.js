@@ -6,6 +6,7 @@ var lewdo_host = {
         return host;
     },
     app : function(app,initialApps) {
+        app = (app || lewdo.app());
         var host = lewdo_host.create(app);
         if (initialApps) {
             for (var si in initialApps) {
@@ -60,12 +61,15 @@ var lewdo_host = {
         layout : function() {
             // customize
         },
-        render : function() {
+        renderBase : function() {
             this.app.app_out.clear(" ");
             for (var si in this.stackedApps) {
                 var sapp = this.stackedApps[si];
                 this.app.app_out.drawString3XYZ(sapp.app.app_out,sapp.offset);
             }
+        },
+        render : function() {
+            this.renderBase();
             this.app.app_out.frameStep();
         },
         recieveInput : function(input) {

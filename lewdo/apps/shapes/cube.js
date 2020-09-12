@@ -53,17 +53,22 @@ var lewdo_cube = {
         return ans;
     },
 
-    aroundApp : function(app) {
-        app.app_in.subscribe((input) => {
-            if (input.array1d.length > 0) {
-                if (input.array1d[0].length > 0) {
-                    input = string3( input.toString() );
-                }
-            }
-            app.app_out.copy( lewdo_cube.aroundString3( input ) );
-            app.app_out.frameStep();
+    aroundApp : function(app,appInside) {
+        app = (app || lewdo.app());
+        appInside = (appInside || lewdo.app());
+        var host = lewdo.apps.shapes.host(app);
+        host.pushApp(appInside).offset.set(1,1,1);
+        host.render = (() => {
+            host.renderBase();
+            host.app.app_out.copy(
+                lewdo_cube.aroundString3( appInside.app_out));
+            host.app.app_out.frameStep();
         });
-        return app;
+        host.redraw();
+        return {
+            app : app,
+            inner : appInside,
+        };
     },
 
     _clampIndex : function(i,n) {

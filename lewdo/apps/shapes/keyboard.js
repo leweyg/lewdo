@@ -33,7 +33,7 @@ var lewdo_system_keyboard_prototype = {
 
 
     setup : function(_app) {
-        this.app = _app;
+        this.app = ( _app || lewdo.app() );
         this.text = string3();
         this.text.scroll = string3_utils.xyz();
         this.redraw();

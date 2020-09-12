@@ -11,18 +11,24 @@ var lewdo_editor = {
     },
     lewdo_editor_prototype : {
         app : lewdo_app(),
-        displaySize : lewdo.xyz(16,9,7),
-        playerPosWorld : lewdo.xyz(8,4,2),
-        viewOffset : lewdo.xyz(0,0,0),
-        gradient : ".:-+*=%@#",
+        topStack : lewdo_app(),
+        allApps : [],
 
         setup : function(_app) {
             this.app = _app;
+            var all_shapes = lewdo.apps.shapes;
 
-            this.app.app_in.subscribe((input)=>{
-                this.app.app_out.copy(string3("lewdo\neditor"));
-                this.app.app_out.frameStep();
-            });
+            var keyboard = all_shapes.keyboard();
+            var fileList = all_shapes.text(null,"\ntest.js\vFiles");
+            var textEditor = all_shapes.text(null,"Hello World!\n-lewdo");
+            var aroundText = all_shapes.cube(null, textEditor.app );
+            var blades = all_shapes.stack(null,[ fileList.app, aroundText.app ],"x");
+
+            this.topStack = all_shapes.stack(this.app, [ 
+                blades.app,
+                keyboard.app
+            ], "y" );
+        
         },
 
         // end of lewdo_editor_prototype
