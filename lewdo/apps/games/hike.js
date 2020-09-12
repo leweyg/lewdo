@@ -11,7 +11,7 @@ var lewdo_hike = {
     },
     lewdo_hike_prototype : {
         app : lewdo_app(),
-        displaySize : lewdo.xyz(16,9,5),
+        displaySize : lewdo.xyz(16,9,7),
         playerPosWorld : lewdo.xyz(8,4,2),
         viewOffset : lewdo.xyz(0,0,0),
         gradient : ".:-+*=%@#",
@@ -57,6 +57,7 @@ var lewdo_hike = {
             return;
         },
         tryGetPlayerOffset : function(offset) {
+            return offset;
             var curHeight = this.playerPosWorld.z;
             var newPos = lewdo.xyz().copy(this.playerPosWorld).add(offset);
             var newHeight = this.evalHeightAtWorldXY(newPos.x, newPos.y);
@@ -102,7 +103,7 @@ var lewdo_hike = {
                         return "-";
                 }
                 if (p != h) return ' ';
-                return String.fromCharCode("0".charCodeAt(0) + h);
+                return String.fromCharCode("0".charCodeAt(0) + (h%10));
             });
             var t = this._temp_Draw;
             this.displayFromWorldXYZ(this.playerPosWorld, t);
@@ -142,7 +143,7 @@ var lewdo_hike = {
             var x = ops.xmin + ((ops.xmax - ops.xmin)*((sx * ops.stepSize)/((showSize.x * ops.stepSize)-1)));
             var y = ops.ymin + ((ops.ymax - ops.ymin)*((sy * ops.stepSize)/((showSize.y * ops.stepSize)-1)));
             var i = this.mandelbrot(x, y, ops.iterations);
-            return Math.floor((i * 9)/200);
+            return Math.floor((i * 20)/200);
         },
         debugUI_HTML : function() {
             var canvas = document.createElement('canvas');
