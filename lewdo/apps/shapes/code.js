@@ -30,19 +30,20 @@ var lewdo_code = {
             }
             break;
             case "helloWorld":{
-                var result = code.addProxyObject();
-                var val = code.addProxyValue();
-                result.arg = val;
-                result.copy = 2;
-                result.copy = result.arg;
+                
+                var func = code.addProxyObject();
+                code.addWrite("helloWorld",func);
+
+                var appVal = code.addProxyValue();
+                func.app = appVal;
+                appVal.app_in.subscribe;
+                //appVal.app_in.subscribe;
+                
 
 
             }
             break;
         }
-
-        
-
 
         code.redraw();
 
@@ -74,19 +75,22 @@ var lewdo_code = {
     _codeProxyObject_prototype : {
         code_owner : null,
         wrappedObject : {},
+        proxy : null,
         setupProxy : function(code_host) {
             this.code_owner = code_host;
             this.wrappedObject = {};
+            this.proxy = new Proxy( this, lewdo_code._codeProxyObjectHandler );
+            return this.proxy;
         },
     },
     _codeProxyObjectHandler : {
         set: function(target, prop, value) {
             target.wrappedObject[prop] = value;
-            target.code_owner.addWriteOffset(target,prop,value);
+            target.code_owner.addWriteOffset(target.proxy,prop,value);
         },
         get: function(target, prop, receiver) {
             var val = target.wrappedObject[prop];
-            target.code_owner.addReadOffset(target,prop,val);
+            target.code_owner.addReadOffset(target.proxy,prop,val);
             return val;
         },
         has: function(target,prop) {
@@ -97,26 +101,29 @@ var lewdo_code = {
         code_owner : null,
         wrappedObject : {},
         wrappedValue : null,
+        proxy : null,
         setupProxy : function(code_host) {
             this.code_owner = code_host;
             this.wrappedObject = {},
             this.wrappedValue = this.code_owner.values.addUnknown();
+            this.proxy = new Proxy( this, lewdo_code._codeProxyValueHandler );
+            return this.proxy;
         }
     },
     _codeProxyValueHandler : {
         set: function(target, prop, value) {
             target.wrappedObject[prop] = value;
-            target.code_owner.addWriteOffset(target,prop,value);
+            target.code_owner.addWriteOffset(target.proxy,prop,value);
         },
         get: function(target, prop, receiver) {
             if (prop in target.wrappedObject) {
                 var val = target.wrappedObject[prop];
-                target.code_owner.addReadOffset(target,prop,val);
+                target.code_owner.addReadOffset(target.proxy,prop,val);
                 return val;
             }
-            var gottenValue = target.code_host.addProxyValue();
+            var gottenValue = target.code_owner.addProxyValue();
             target.wrappedObject[prop] = gottenValue;
-            target.code_owner.addReadOffset(target,prop,gottenValue);
+            target.code_owner.addReadOffset(target.proxy,prop,gottenValue);
             return gottenValue;
         },
         has: function(target,prop) {
@@ -135,14 +142,12 @@ var lewdo_code = {
 
         addProxyObject : function() {
             var target = Object.create( lewdo_code._codeProxyObject_prototype );
-            target.setupProxy(this);
-            return new Proxy( target, lewdo_code._codeProxyObjectHandler );
+            return target.setupProxy(this);
         },
 
         addProxyValue : function() {
             var target = Object.create( lewdo_code._codeProxyValue_prototype );
-            target.setupProxy(this);
-            return new Proxy( target, lewdo_code._codeProxyValueHandler );
+            return target.setupProxy(this);
         },
 
         addReadOffset : function (addr,indx,val) {
@@ -213,7 +218,7 @@ var lewdo_code = {
             to.resize( 
                 ( this.times.length * wordWidth ) + addrWidth,
                 this.addresses.length,
-                this.values.length
+                Math.max( this.values.length, this.addresses.length )
                 );
 
             var pos = lewdo.xyz();
@@ -226,9 +231,23 @@ var lewdo_code = {
                 var str = op.valueInfo.toString();
                 to.drawStringXYZ(str,pos);
 
-                var strAddr = op.addressInfo.toString();
-                pos.x = 0;
-                to.drawStringXYZ(strAddr,pos);
+                if (!op.addressInfo.category.isProperty) {
+                    var strAddr = op.addressInfo.toString();
+                    pos.x = 0;
+                    to.drawStringXYZ(strAddr,pos);
+                } else {
+                    var objInfo = op.addressInfo.value.objectInfo;
+                    var strAddr = objInfo.toString() + ".";
+                    pos.x = 0;
+                    pos.z = objInfo.index;
+                    to.drawStringXYZ(strAddr,pos);
+
+                    pos.x += strAddr.length;
+                    var offsetInfo = op.addressInfo.value.indexInfo;
+                    pos.z = offsetInfo.index;
+                    strAddr = offsetInfo.toString();
+                    to.drawStringXYZ(strAddr,pos);
+                }
             }
 
             to.frameStep();
@@ -238,7 +257,7 @@ var lewdo_code = {
             this.app = _app;
             this.opsByIndex = [];
             this.values = lewdo.apps.shapes.values(),
-            this.addresses = lewdo.apps.shapes.values(),
+            this.addresses = this.values;// lewdo.apps.shapes.values(),
             this.times = lewdo.apps.shapes.values(),
 
             this.redraw();
