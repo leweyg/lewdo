@@ -12,8 +12,15 @@ var lewdo_code = {
     demo : function(_app) {
         var code = lewdo_code.app(_app);
 
-        code.addWrite("opcode","add");
-        code.addWrite("opcode","mult");
+        //code.addWrite("opcode","add");
+        //code.addWrite("opcode","mult");
+        var state = code.addProxyObject();
+        state.x = 0;
+        state.y = 0;
+        for (state.i=0; state.i<9; state.i++) {
+            state.x = state.i % 3;
+            state.y = Math.floor( state.i / 3 );
+        }
 
         code.redraw();
 
@@ -41,6 +48,25 @@ var lewdo_code = {
             return ((this.index < other.index) ? -1 : 1);
         },
     },
+    _codeProxyTarget_prototype : {
+        code_owner : null,
+        wrappedObject : {},
+        setupProxy : function(code_host) {
+            this.code_owner = code_host;
+            this.wrappedObject = {};
+        },
+    },
+    _codeProxyHandler : {
+        set: function(target, prop, value) {
+            target.wrappedObject[prop] = value;
+            target.code_owner.addWriteOffset(target,prop,value);
+        },
+        get: function(target, prop, receiver) {
+            var val = target.wrappedObject[prop];
+            target.code_owner.addReadOffset(target,prop,val);
+            return val;
+        },
+    },
     lewdo_code_prototype : {
         app : lewdo.app(),
         opsByIndex : [],
@@ -49,6 +75,12 @@ var lewdo_code = {
         addresses : lewdo.apps.shapes.values(),
         times : lewdo.apps.shapes.values(),
         currentTime : null,
+
+        addProxyObject : function() {
+            var target = Object.create( lewdo_code._codeProxyTarget_prototype );
+            target.setupProxy(this);
+            return new Proxy( target, lewdo_code._codeProxyHandler );
+        },
 
         addReadOffset : function (addr,indx,val) {
             this._addOp("read.",addr,val,true,indx);
@@ -107,13 +139,12 @@ var lewdo_code = {
         },
 
         redraw : function() {
-            var wordWidth = Math.max(
-                this.maxToStringLength(this.values),
-                this.maxToStringLength(this.addresses));
+            var addrWidth = this.maxToStringLength(this.addresses);
+            var wordWidth = this.maxToStringLength(this.values);
 
             var to = this.app.app_out;
             to.resize( 
-                wordWidth * ( this.times.length + 1),
+                ( this.times.length * wordWidth ) + addrWidth,
                 this.addresses.length,
                 this.values.length
                 );
@@ -121,7 +152,7 @@ var lewdo_code = {
             var pos = lewdo.xyz();
             for (var opIndex in this.opsByIndex) {
                 var op = this.opsByIndex[opIndex];
-                pos.x = ( op.timeInfo.index + 1 ) * wordWidth;
+                pos.x = ( op.timeInfo.index * wordWidth ) + addrWidth;
                 pos.y = op.addressInfo.index;
                 pos.z = op.valueInfo.index;
 
