@@ -52,7 +52,7 @@ var lewdo_values = {
         "object":{
             order:4,
             name:"object",
-            stringify:((a)=>"{..}"),
+            stringify:((a)=>"@"),
             compare:((a,b)=>{
                 if (a===b) return 0;
                 if (a.compareTo) {
@@ -71,7 +71,7 @@ var lewdo_values = {
             name:"property",
             isProperty:true,
             stringify:((a)=>{
-                return "{..}." + a.indexInfo.toString();
+                return "@" + a.objectInfo.index + "." + a.indexInfo.toString();
             }),
             compare:((a,b)=>{
                 var c = a.objectInfo.compareTo(b.objectInfo);

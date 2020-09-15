@@ -17,7 +17,7 @@ var lewdo_code = {
         var state = code.addProxyObject();
         state.x = 0;
         state.y = 0;
-        for (state.i=0; state.i<9; state.i++) {
+        for (state.i=0; state.i<9; state.i = state.i+1) {
             state.x = state.i % 3;
             state.y = Math.floor( state.i / 3 );
         }
@@ -27,10 +27,10 @@ var lewdo_code = {
         return code;
     },
     ActionsByName : {
-        "read":{name:"read"},
-        "read.":{name:"read property",isOffset:true},
-        "write":{name:"write",isWrite:true},
-        "write.":{name:"write.",isOffset:true,isWrite:true},
+        "read":{name:"read",short:"r"},
+        "read.":{name:"read property",isOffset:true,short:"r."},
+        "write":{name:"write",isWrite:true,short:"w"},
+        "write.":{name:"write.",isOffset:true,isWrite:true,short:"w."},
     },
     _code_op_prototype : {
         action:null,
@@ -42,6 +42,7 @@ var lewdo_code = {
         index : 0,
         valueInfo : null,
         opsInThisTime : [],
+        opsByAddr : {},
 
         compareTo : function(other) {
             if (this.index == other.index) return 0;
@@ -103,6 +104,7 @@ var lewdo_code = {
             step.opsInThisTime = [];
             step.index = this.times.length;
             step.valueInfo = this.times.add(step);
+            step.opsByAddr = {};
             this.currentTime = step;
             return step;
         },
@@ -115,7 +117,8 @@ var lewdo_code = {
             op.addressInfo = ( isIndex ? 
                 ( this.addresses.addProperty(addr1,indx) ) : 
                 ( this.addresses.add(addr1) ) );
-            if ((op.action.isWrite) && (oldAddressCount==this.addresses.length)) {
+            if ((op.action.isWrite) && (this.currentTime)
+                && (op.addressInfo in this.currentTime.opsByAddr)) {
                 this.addTime();
             }
             op.valueInfo = this.values.add(val);
@@ -124,6 +127,7 @@ var lewdo_code = {
             }
             op.timeInfo = this.currentTime.valueInfo;
             op.timeInfo.value.opsInThisTime.push( op );
+            op.timeInfo.value.opsByAddr[op.addressInfo] = op;
             op.index = this.opsByIndex.length;
             this.opsByIndex.push(op);
             return op;
@@ -139,10 +143,11 @@ var lewdo_code = {
         },
 
         redraw : function() {
-            var addrWidth = this.maxToStringLength(this.addresses);
+            var addrWidth = this.maxToStringLength(this.addresses)+1;
             var wordWidth = this.maxToStringLength(this.values);
 
             var to = this.app.app_out;
+            to._outOfBoundsWarnings = false;
             to.resize( 
                 ( this.times.length * wordWidth ) + addrWidth,
                 this.addresses.length,
