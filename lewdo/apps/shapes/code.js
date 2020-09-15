@@ -30,14 +30,56 @@ var lewdo_code = {
             }
             break;
             case "helloWorld":{
-                
-                var func = code.addProxyObject();
-                code.addWrite("helloWorld",func);
 
+                var kernelState = code.addProxyObject();
+                var cmdIndex = code.addProxyValue();
+                var cmdData = code.addProxyValue();
+                kernelState.cmdSeq = cmdData;
+                kernelState.cmdIndex = cmdIndex;
+                kernelState.context = code.addProxyValue();
+
+                code.addTime();
+                var opToDo = cmdData.indexedBy( cmdIndex );
+                kernelState.cmdOp = opToDo;
+                
+
+                code.addTime();
+                var nextCmd = code.addPlusOne( cmdIndex );
+                kernelState.cmdIndex = nextCmd;
+                
+                /*
+                var func = code.addProxyObject();
                 var appVal = code.addProxyValue();
+                
+                code.addWrite("helloWorld",func);
                 func.app = appVal;
-                appVal.app_in.subscribe;
+
+                var callback = code.addProxyObject();
+                var input = code.addProxyValue();
+                func.callback = callback;
+                callback.input = input;
+                var innerCode = code.addProxyObject();
+                callback.code = innerCode;
+                
+
+                function helloWorld_reference(app) 
+                {
+                    app.app_in.subscribe((input) => {
+                        app.app_out.copy(input);
+                        app.app_out.frameStep();
+                    });
+                }
+                */
+                
+                /*
+                func.callback = code.addProxyObject();
+                
+                code.addRead("pop",input);
+                func.callback.input = input;
+                code.addWrite("push",func.callback);
+                code.addWrite("call",func.app.app_in.subscribe);
                 //appVal.app_in.subscribe;
+                */
                 
 
 
@@ -49,11 +91,18 @@ var lewdo_code = {
 
         return code;
     },
+    _isSymbol : function(obj) {
+        return ((obj) && (typeof(obj)=="symbol"));
+    },
+    _isString : function(obj) {
+        return ((obj) && (typeof(obj)=="string"));
+    },
     ActionsByName : {
         "read":{name:"read",short:"r"},
-        "read.":{name:"read property",isOffset:true,short:"r."},
+        "read.":{name:"read property",isOffset:true,short:"r"},
         "write":{name:"write",isWrite:true,short:"w"},
-        "write.":{name:"write.",isOffset:true,isWrite:true,short:"w."},
+        "write.":{name:"write.",isOffset:true,isWrite:true,short:"w"},
+        "+1":{name:"+1",short:"+1"}
     },
     _code_op_prototype : {
         action:null,
@@ -85,11 +134,17 @@ var lewdo_code = {
     },
     _codeProxyObjectHandler : {
         set: function(target, prop, value) {
-            target.wrappedObject[prop] = value;
+            if (lewdo_code._isString(prop)) {
+                target.wrappedObject[prop] = value;
+            }
             target.code_owner.addWriteOffset(target.proxy,prop,value);
         },
         get: function(target, prop, receiver) {
+            if (prop == "indexedBy") {
+                return ((ndx)=>target.indexedBy(ndx));
+            }
             var val = target.wrappedObject[prop];
+            console.assert(val); // or generate new unknown?
             target.code_owner.addReadOffset(target.proxy,prop,val);
             return val;
         },
@@ -108,29 +163,37 @@ var lewdo_code = {
             this.wrappedValue = this.code_owner.values.addUnknown();
             this.proxy = new Proxy( this, lewdo_code._codeProxyValueHandler );
             return this.proxy;
-        }
+        },
+        indexedBy : function(prop) {
+            var target = this;
+            var gottenValue = target.code_owner.addProxyValue();
+            //target.wrappedObject[prop] = gottenValue;
+            target.code_owner.addReadOffset(target.proxy,prop,gottenValue);
+            return gottenValue;
+        },
     },
     _codeProxyValueHandler : {
         set: function(target, prop, value) {
-            target.wrappedObject[prop] = value;
+            //target.wrappedObject[prop] = value;
             target.code_owner.addWriteOffset(target.proxy,prop,value);
         },
         get: function(target, prop, receiver) {
+            if (prop == "indexedBy") {
+                return ((ndx)=>target.indexedBy(ndx));
+            }
             if (prop in target.wrappedObject) {
                 var val = target.wrappedObject[prop];
                 target.code_owner.addReadOffset(target.proxy,prop,val);
                 return val;
             }
-            var gottenValue = target.code_owner.addProxyValue();
-            target.wrappedObject[prop] = gottenValue;
-            target.code_owner.addReadOffset(target.proxy,prop,gottenValue);
-            return gottenValue;
+            return target.indexedBy(prop);
         },
         has: function(target,prop) {
             if (prop == "isUnknownValue") return true;
             return (prop in target.wrappedObject);
         },
     },
+    _uniqueIndex : 0,
     lewdo_code_prototype : {
         app : lewdo.app(),
         opsByIndex : [],
@@ -143,11 +206,13 @@ var lewdo_code = {
 
         addProxyObject : function() {
             var target = Object.create( lewdo_code._codeProxyObject_prototype );
+            target._uniqueIndex = lewdo_code._uniqueIndex++;
             return target.setupProxy(this);
         },
 
         addProxyValue : function() {
             var target = Object.create( lewdo_code._codeProxyValue_prototype );
+            target._uniqueIndex = lewdo_code._uniqueIndex++;
             return target.setupProxy(this);
         },
 
@@ -165,6 +230,12 @@ var lewdo_code = {
         
         addWrite : function (addr,val) {
             this._addOp("write",addr,val);
+        },
+
+        addPlusOne : function (val) {
+            var ans = this.addProxyValue();
+            this.addReadOffset(val,1,ans);
+            return ans;
         },
 
         addTime : function() {
@@ -212,7 +283,8 @@ var lewdo_code = {
 
         redraw : function() {
             var addrWidth = this.maxToStringLength(this.addresses)+1;
-            var wordWidth = this.maxToStringLength(this.values);
+            var wordWidth = this.maxToStringLength(this.values)+1;
+            wordWidth = 5; // total hack
 
             var to = this.app.app_out;
             to._outOfBoundsWarnings = false;
@@ -248,7 +320,7 @@ var lewdo_code = {
                 pos.y = viz.addresses.find( op.addressInfo ).index;
                 pos.z = viz.values.find( op.valueInfo ).index;
 
-                var str = op.valueInfo.toString();
+                var str = op.action.short + op.valueInfo.toString();
                 to.drawStringXYZ(str,pos);
 
                 if (!op.addressInfo.category.isProperty) {
