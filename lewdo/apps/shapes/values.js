@@ -132,6 +132,13 @@ var lewdo_values = {
         newKeyString : "\n", // "\v"
         length : 0,
 
+        clear : function() {
+            this.valueInfoByIndex = [];
+            this.length = 0;
+        },
+
+        allInfos : (() => this.valueInfoByIndex),
+
         add : function(val) {
             return this._ensureInfo( this.createInfo(val) );
         },
@@ -212,6 +219,10 @@ var lewdo_values = {
             return undefined;
         },
 
+        find : function(val) {
+            return this.tryFindInfoByValue(val);
+        },
+
         tryFindInfoByValue : function(val) {
             return this.tryFindInfoByInfo( this.createInfo( val ) );
         },
@@ -222,6 +233,7 @@ var lewdo_values = {
 
         createInfo : function(val) {
             var info = Object.create( this.value_prototype );
+            info.collection = this;
             info.value = val;
             info.hasIndex = false;
             info.category = lewdo_values.categoryOf(val);
@@ -254,8 +266,10 @@ var lewdo_values = {
 
         value_prototype : {
             value : undefined,
+            collection : null,
             category : undefined,
             index : undefined,
+            hasIndex : false,
 
             compareTo : function(other) {
                 if (this.category === other.category) {

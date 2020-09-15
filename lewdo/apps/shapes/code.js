@@ -137,6 +137,7 @@ var lewdo_code = {
 
         values : lewdo.apps.shapes.values(),
         addresses : lewdo.apps.shapes.values(),
+        visualLayout : { values:{}, addresses:{}, times:{} },
         times : lewdo.apps.shapes.values(),
         currentTime : null,
 
@@ -221,12 +222,31 @@ var lewdo_code = {
                 Math.max( this.values.length, this.addresses.length )
                 );
 
+            // First recalculate the usage indices:
+            var viz = this.visualLayout;
+            viz.values.clear();
+            viz.addresses.clear();
+            viz.times.clear();
+            this.opsByIndex.forEach(op => {
+                if (op.addressInfo.category.isProperty) {
+                    var prop = op.addressInfo.value;
+                    viz.values.add( prop.objectInfo );
+                    viz.values.add( prop.indexInfo );
+                } else {
+                    viz.values.add( op.addressInfo );
+                }
+                viz.addresses.add( op.addressInfo );
+                viz.values.add( op.valueInfo );
+                viz.times.add( op.timeInfo );
+            });
+
+
             var pos = lewdo.xyz();
             for (var opIndex in this.opsByIndex) {
                 var op = this.opsByIndex[opIndex];
-                pos.x = ( op.timeInfo.index * wordWidth ) + addrWidth;
-                pos.y = op.addressInfo.index;
-                pos.z = op.valueInfo.index;
+                pos.x = ( viz.times.find( op.timeInfo ).index * wordWidth ) + addrWidth;
+                pos.y = viz.addresses.find( op.addressInfo ).index;
+                pos.z = viz.values.find( op.valueInfo ).index;
 
                 var str = op.valueInfo.toString();
                 to.drawStringXYZ(str,pos);
@@ -234,17 +254,18 @@ var lewdo_code = {
                 if (!op.addressInfo.category.isProperty) {
                     var strAddr = op.addressInfo.toString();
                     pos.x = 0;
+                    pos.z = viz.addresses.find( op.addressInfo ).index;
                     to.drawStringXYZ(strAddr,pos);
                 } else {
                     var objInfo = op.addressInfo.value.objectInfo;
                     var strAddr = objInfo.toString() + ".";
                     pos.x = 0;
-                    pos.z = objInfo.index;
+                    pos.z = viz.values.find( objInfo ).index;
                     to.drawStringXYZ(strAddr,pos);
 
                     pos.x += strAddr.length;
                     var offsetInfo = op.addressInfo.value.indexInfo;
-                    pos.z = offsetInfo.index;
+                    pos.z = viz.values.find( offsetInfo ).index;
                     strAddr = offsetInfo.toString();
                     to.drawStringXYZ(strAddr,pos);
                 }
@@ -257,8 +278,13 @@ var lewdo_code = {
             this.app = _app;
             this.opsByIndex = [];
             this.values = lewdo.apps.shapes.values(),
-            this.addresses = this.values;// lewdo.apps.shapes.values(),
+            this.addresses = this.values;// share these: lewdo.apps.shapes.values(),
             this.times = lewdo.apps.shapes.values(),
+            this.visualLayout = {
+                values : lewdo.apps.shapes.values(),
+                addresses : lewdo.apps.shapes.values(),
+                times : lewdo.apps.shapes.values(),
+            };
 
             this.redraw();
         },
