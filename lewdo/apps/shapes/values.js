@@ -1,12 +1,12 @@
 
 var lewdo_values = {
-    create : function(app,values) {
+    create : function(app,includedValuesArray) {
         var values = Object.create(lewdo_values.lewdo_values_prototype);
-        values.setup(app || lewdo.app(),values);
+        values.setup(app || lewdo.app(),includedValuesArray);
         return values;
     },
-    app : function(_app,values) {
-        var values = lewdo_values.create(_app);
+    app : function(_app,includedValuesArray) {
+        var values = lewdo_values.create(_app,includedValuesArray);
         return values;
     },
     demo : function(_app) {
@@ -15,6 +15,11 @@ var lewdo_values = {
         values.add("One");
         values.add(1);
         values.add(null);
+        var testObj = { x:5 };
+        values.add(testObj);
+        var prop = values.addProperty(testObj, "x");
+        var test = values.addProperty(testObj, "x");
+        console.assert( prop === test );
         values.redraw();
         return values;
     },
@@ -44,11 +49,39 @@ var lewdo_values = {
             compare:((a,b)=>(a.localeCompare(b))),
             stringify:((a)=>a),
         },
-        "Object":{
+        "object":{
             order:4,
-            name:"Object",
+            name:"object",
+            stringify:((a)=>"{..}"),
             compare:((a,b)=>((a===b)?0:1)),
-            stringify:((a)=>"*"),
+            compareInfo:((a,b)=>(
+                ((a.value===b.value)?0:(
+                    (a.index<b.index)?-1:1
+                ))
+            )),
+        },
+        "property":{
+            order:5,
+            name:"property",
+            isProperty:true,
+            stringify:((a)=>{
+                return "{..}." + a.indexInfo.toString();
+            }),
+            compare:((a,b)=>{
+                var c = a.objectInfo.compareTo(b.objectInfo);
+                if (c != 0) return c;
+                return a.indexInfo.compareTo(b.indexInfo);
+            }),
+            PropertyPrototype : {
+                objectInfo:null,
+                indexInfo:null,
+            },
+        },
+        "function":{
+            order:4,
+            name:"function",
+            stringify:((a)=>"..()"),
+            compare:((a,b)=>((a===b)?0:1)),
             compareInfo:((a,b)=>(
                 ((a.value===b.value)?0:(
                     (a.index<b.index)?-1:1
@@ -69,12 +102,11 @@ var lewdo_values = {
         newKeyString : "\n", // "\v"
 
         add : function(val) {
-            var info = this.tryFindInfoByValue(val);
-            if (info) return info;
-            info = this.createInfo(val);
-            info.index = this.valueInfoByIndex.length;
-            this.valueInfoByIndex.push(info);
-            return info;
+            return this._ensureInfo( this.createInfo(val) );
+        },
+
+        addProperty : function(obj,ndx) {
+            return this._ensureInfo( this.createInfoProperty(obj,ndx) );
         },
 
         setup : function(_app,valuesArray) {
@@ -96,6 +128,25 @@ var lewdo_values = {
                     this.add(valuesArray[i]);
                 }
             }
+        },
+
+        _ensureInfo : function(info) {
+            if (info.hasIndex)
+                return info;
+
+            var existing = this.tryFindInfoByInfo(info);
+            if (existing)
+                return existing;
+
+            // adding to known set:
+            if (info.category.isProperty) {
+                info.value.objectInfo = this._ensureInfo(info.value.objectInfo);
+                info.value.indexInfo = this._ensureInfo(info.value.indexInfo);
+            }
+            info.index = this.valueInfoByIndex.length;
+            this.valueInfoByIndex.push(info);
+            info.hasIndex = true;
+            return info;
         },
 
         redraw : function() {
@@ -125,11 +176,30 @@ var lewdo_values = {
             return this.tryFindInfoByInfo( this.createInfo( val ) );
         },
 
+        tryFindInfoByProperty : function(obj,ndx) {
+            return this.tryFindInfoByInfo( this.createInfoProperty( obj, ndx ) );
+        },
+
         createInfo : function(val) {
             var info = Object.create( this.value_prototype );
             info.value = val;
+            info.hasIndex = false;
             info.category = lewdo_values.categoryOf(val);
             return info;
+        },
+
+        createInfoProperty : function(obj,ndx) {
+            var core = Object.create( this._property_prototype );
+            core.objectInfo = this.createInfo(obj);
+            core.indexInfo = this.createInfo(ndx);
+            var result = this.createInfo( core );
+            result.category = lewdo_values.categories.property;
+            return result;
+        },
+
+        _property_prototype : {
+            objectInfo : null,
+            indexInfo : null,
         },
 
 
@@ -155,6 +225,9 @@ var lewdo_values = {
             asString : function() {
                 return this.category.stringify(this.value);
             },
+            toString : function() {
+                return this.asString();
+            },
         },
 
         // end of lewdo_editor_prototype
@@ -163,7 +236,7 @@ var lewdo_values = {
 
 
 lewdo.apps.shapes.values = lewdo_values.app;
-//lewdo.apps.tools.values = lewdo_values.demo;
+lewdo.apps.tools.values = lewdo_values.demo;
 
 
 
