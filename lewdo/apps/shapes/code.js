@@ -12,15 +12,37 @@ var lewdo_code = {
     demo : function(_app) {
         var code = lewdo_code.app(_app);
 
-        //code.addWrite("opcode","add");
-        //code.addWrite("opcode","mult");
-        var state = code.addProxyObject();
-        state.x = 0;
-        state.y = 0;
-        for (state.i=0; state.i<9; state.i = state.i+1) {
-            state.x = state.i % 3;
-            state.y = Math.floor( state.i / 3 );
+        var demoMode = "helloWorld"; // iterator // simple
+        switch (demoMode) {
+            case "simple":{
+                code.addWrite("opcode","add");
+                code.addWrite("opcode","mult");
+            }
+            break;
+            case "iterator":{
+                var state = code.addProxyObject();
+                state.x = 0;
+                state.y = 0;
+                for (state.i=0; state.i<9; state.i = state.i+1) {
+                    state.x = state.i % 3;
+                    state.y = Math.floor( state.i / 3 );
+                }
+            }
+            break;
+            case "helloWorld":{
+                var result = code.addProxyObject();
+                var val = code.addProxyValue();
+                result.arg = val;
+                result.copy = 2;
+                result.copy = result.arg;
+
+
+            }
+            break;
         }
+
+        
+
 
         code.redraw();
 
@@ -49,7 +71,7 @@ var lewdo_code = {
             return ((this.index < other.index) ? -1 : 1);
         },
     },
-    _codeProxyTarget_prototype : {
+    _codeProxyObject_prototype : {
         code_owner : null,
         wrappedObject : {},
         setupProxy : function(code_host) {
@@ -57,7 +79,7 @@ var lewdo_code = {
             this.wrappedObject = {};
         },
     },
-    _codeProxyHandler : {
+    _codeProxyObjectHandler : {
         set: function(target, prop, value) {
             target.wrappedObject[prop] = value;
             target.code_owner.addWriteOffset(target,prop,value);
@@ -66,6 +88,40 @@ var lewdo_code = {
             var val = target.wrappedObject[prop];
             target.code_owner.addReadOffset(target,prop,val);
             return val;
+        },
+        has: function(target,prop) {
+            return (prop in target.wrappedObject);
+        },
+    },
+    _codeProxyValue_prototype : {
+        code_owner : null,
+        wrappedObject : {},
+        wrappedValue : null,
+        setupProxy : function(code_host) {
+            this.code_owner = code_host;
+            this.wrappedObject = {},
+            this.wrappedValue = this.code_owner.values.addUnknown();
+        }
+    },
+    _codeProxyValueHandler : {
+        set: function(target, prop, value) {
+            target.wrappedObject[prop] = value;
+            target.code_owner.addWriteOffset(target,prop,value);
+        },
+        get: function(target, prop, receiver) {
+            if (prop in target.wrappedObject) {
+                var val = target.wrappedObject[prop];
+                target.code_owner.addReadOffset(target,prop,val);
+                return val;
+            }
+            var gottenValue = target.code_host.addProxyValue();
+            target.wrappedObject[prop] = gottenValue;
+            target.code_owner.addReadOffset(target,prop,gottenValue);
+            return gottenValue;
+        },
+        has: function(target,prop) {
+            if (prop == "isUnknownValue") return true;
+            return (prop in target.wrappedObject);
         },
     },
     lewdo_code_prototype : {
@@ -78,9 +134,15 @@ var lewdo_code = {
         currentTime : null,
 
         addProxyObject : function() {
-            var target = Object.create( lewdo_code._codeProxyTarget_prototype );
+            var target = Object.create( lewdo_code._codeProxyObject_prototype );
             target.setupProxy(this);
-            return new Proxy( target, lewdo_code._codeProxyHandler );
+            return new Proxy( target, lewdo_code._codeProxyObjectHandler );
+        },
+
+        addProxyValue : function() {
+            var target = Object.create( lewdo_code._codeProxyValue_prototype );
+            target.setupProxy(this);
+            return new Proxy( target, lewdo_code._codeProxyValueHandler );
         },
 
         addReadOffset : function (addr,indx,val) {

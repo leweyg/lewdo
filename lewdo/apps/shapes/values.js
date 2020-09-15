@@ -49,10 +49,24 @@ var lewdo_values = {
             compare:((a,b)=>(a.localeCompare(b))),
             stringify:((a)=>a),
         },
-        "object":{
+        "unknown":{
             order:4,
+            name:"unknown",
+            isUnknownValue:true,
+            stringify:((a)=>"?"),
+            stringifyInfo:((a)=>("?"+a.index)),
+            compare:((a,b)=>((a===b)?0:1)),
+            compareInfo:((a,b)=>(
+                ((a.value===b.value)?0:(
+                    (a.index<b.index)?-1:1
+                ))
+            )),
+        },
+        "object":{
+            order:5,
             name:"object",
             stringify:((a)=>"@"),
+            stringifyInfo:((a)=>("@"+a.index)),
             compare:((a,b)=>{
                 if (a===b) return 0;
                 if (a.compareTo) {
@@ -67,7 +81,7 @@ var lewdo_values = {
             )),
         },
         "property":{
-            order:5,
+            order:6,
             name:"property",
             isProperty:true,
             stringify:((a)=>{
@@ -84,7 +98,7 @@ var lewdo_values = {
             },
         },
         "function":{
-            order:4,
+            order:7,
             name:"function",
             stringify:((a)=>"..()"),
             compare:((a,b)=>((a===b)?0:1)),
@@ -99,7 +113,12 @@ var lewdo_values = {
         if (val===undefined) return lewdo_values.categories["undefined"];
         if (val===null) return lewdo_values.categories["null"];
         var tp = (typeof val);
-        if (tp in lewdo_values.categories) return lewdo_values.categories[tp];
+        if (tp=="object") {
+            if ("isUnknownValue" in val)
+                return lewdo_values.categories.unknown;
+        }
+        if (tp in lewdo_values.categories)
+            return lewdo_values.categories[tp];
         throw new "Unknown value category: '" + tp + "'";
     },
     lewdo_values_prototype : {
@@ -114,6 +133,14 @@ var lewdo_values = {
 
         addProperty : function(obj,ndx) {
             return this._ensureInfo( this.createInfoProperty(obj,ndx) );
+        },
+
+        addUnknown : function() {
+            var coreValue = { isUnknownValue:true };
+            var i = this.createInfo(coreValue);
+            i.category = lewdo_values.categories.unknown;
+            coreValue.unknownInfo = i;
+            return this._ensureInfo(i);
         },
 
         setup : function(_app,valuesArray) {
@@ -193,6 +220,7 @@ var lewdo_values = {
             info.value = val;
             info.hasIndex = false;
             info.category = lewdo_values.categoryOf(val);
+            console.assert(info.category);
             return info;
         },
 
@@ -231,6 +259,8 @@ var lewdo_values = {
                 return lewdo_values.compareNumbers(this.category.order, other.category.order);
             },
             asString : function() {
+                if (this.category.stringifyInfo)
+                    return this.category.stringifyInfo(this);
                 return this.category.stringify(this.value);
             },
             toString : function() {
