@@ -53,7 +53,13 @@ var lewdo_values = {
             order:4,
             name:"object",
             stringify:((a)=>"{..}"),
-            compare:((a,b)=>((a===b)?0:1)),
+            compare:((a,b)=>{
+                if (a===b) return 0;
+                if (a.compareTo) {
+                    return a.compareTo(b);
+                }
+                return 1;
+            }),
             compareInfo:((a,b)=>(
                 ((a.value===b.value)?0:(
                     (a.index<b.index)?-1:1
@@ -100,6 +106,7 @@ var lewdo_values = {
         app : lewdo_app(),
         valueInfoByIndex : [],
         newKeyString : "\n", // "\v"
+        length : 0,
 
         add : function(val) {
             return this._ensureInfo( this.createInfo(val) );
@@ -145,6 +152,7 @@ var lewdo_values = {
             }
             info.index = this.valueInfoByIndex.length;
             this.valueInfoByIndex.push(info);
+            this.length = this.valueInfoByIndex.length;
             info.hasIndex = true;
             return info;
         },
@@ -236,7 +244,7 @@ var lewdo_values = {
 
 
 lewdo.apps.shapes.values = lewdo_values.app;
-lewdo.apps.tools.values = lewdo_values.demo;
+//lewdo.apps.tools.values = lewdo_values.demo;
 
 
 

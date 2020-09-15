@@ -1,7 +1,7 @@
 
 var lewdo_text = {
     toString3 : function(str) {
-        var info = lewdo_text.tokenize_text( str.toString() );
+        var info = lewdo_text.tokenize_text( str ? str.toString() : "" );
         var result = string3();
         result.resizeXYZ(info.size);
 
@@ -152,10 +152,10 @@ var lewdo_text = {
             text : (defaultText || lewdo_text._exampleText),
         };
         _app.app_in.subscribe((input) => {
-            var str = defaultText;
+            var str = result.text;
             if (inputAsOutput || isFirst) {
                 if (input.width == 0 || input.array1d[0]==lewdo.letter.hover) {
-                    str = result.text;
+                    //str = result.text;
                 } else {
                     str = input.toString();
                 }

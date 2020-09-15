@@ -210,6 +210,9 @@ var string3_prototype = {
     drawTextXYZ : function(text,xyz) {
         string3_utils.drawString(this, text, xyz);
     },
+    drawStringXYZ : function(text,xyz) {
+        string3_utils.drawString(this, text, xyz);
+    },
     clear : function(fill) {
         fill = ( fill || " " );
         var c = this.array1d.length;
