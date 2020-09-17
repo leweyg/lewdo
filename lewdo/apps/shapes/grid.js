@@ -8,7 +8,7 @@ var lewdo_grid = {
             str3 = lewdo.string3(str3); // ensure it's a string3
             var sz = str3.sizeXYZ();
             sz.selectAxes((axisSize,axis)=>{
-                var data = maxSizesByAxisByIndex[axis];
+                var data = maxSizesByAxisByIndex[axis]; // read and write
                 var index = pos[axis];
                 var hasItem = (index in data);
                 var mx = (hasItem ? data[index] : 0);
@@ -52,7 +52,7 @@ var lewdo_grid = {
                 var mySize = str3.sizeXYZ();
                 offset.selectAxes((v,axis)=>{
                     if (options && options.dontCenterZ && (axis == "z")) return v;
-                    
+
                     var available = maxSizesByAxisByIndex[axis][pos[axis]];
                     return v + Math.floor( ( available - mySize[axis] ) / 2 );
                 });

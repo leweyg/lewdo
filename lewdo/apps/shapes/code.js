@@ -201,6 +201,7 @@ var lewdo_code = {
         values : lewdo.apps.shapes.values(),
         addresses : lewdo.apps.shapes.values(),
         visualLayout : { values:{}, addresses:{}, times:{} },
+        grid : lewdo.apps.shapes.grid(),
         times : lewdo.apps.shapes.values(),
         currentTime : null,
 
@@ -256,8 +257,9 @@ var lewdo_code = {
             op.addressInfo = ( isIndex ? 
                 ( this.addresses.addProperty(addr1,indx) ) : 
                 ( this.addresses.add(addr1) ) );
-            if ((op.action.isWrite) && (this.currentTime)
-                && (op.addressInfo in this.currentTime.opsByAddr)) {
+            if ((this.currentTime) //&& (op.action.isWrite)
+                //&& (op.addressInfo in this.currentTime.opsByAddr)
+                ) {
                 this.addTime();
             }
             op.valueInfo = this.values.add(val);
@@ -281,7 +283,64 @@ var lewdo_code = {
             return maxLength;
         },
 
+        _updateVizIndices : function() {
+            // First recalculate the usage indices:
+            var viz = this.visualLayout;
+            viz.values.clear();
+            viz.addresses.clear();
+            viz.times.clear();
+            this.opsByIndex.forEach(op => {
+                if (op.addressInfo.category.isProperty) {
+                    var prop = op.addressInfo.value;
+                    viz.values.add( prop.objectInfo );
+                    viz.values.add( prop.indexInfo );
+                } else {
+                    viz.values.add( op.addressInfo );
+                }
+                viz.addresses.add( op.addressInfo );
+                //viz.values.add( op.addressInfo ); // optional
+                viz.values.add( op.valueInfo );
+                viz.times.add( op.timeInfo );
+            });
+        },
+
         redraw : function() {
+            this._updateVizIndices();
+            var viz = this.visualLayout;
+
+            var grid = this.grid.app.app_in;
+            grid.resize(
+                viz.values.length,
+                viz.values.length,
+                viz.times.length,
+            );
+            this.opsByIndex.forEach(op => {
+                var centerPos = lewdo.xyz();
+                centerPos.set(
+                    viz.values.find( op.valueInfo ).index,
+                    viz.addresses.find( op.addressInfo ).index,
+                    viz.times.find( op.timeInfo ).index
+                );
+                if (op.addressInfo.category.isProperty) {
+                    var addrPos = centerPos.clone();
+                    addrPos.x = viz.addresses.find( op.addressInfo ).index;
+                    grid.setByXYZ(
+                        lewdo.string3( "&" ),
+                        addrPos
+                    );
+                }
+                grid.setByXYZ(
+                    lewdo.string3( "*" ),
+                    centerPos
+                );
+            });
+            grid.frameStep(); // renders
+
+            this.app.app_out.copy( grid );
+            this.app.app_out.frameStep();
+        },
+
+        redraw_Older : function() {
             var addrWidth = this.maxToStringLength(this.addresses)+1;
             var wordWidth = this.maxToStringLength(this.values)+1;
             wordWidth = 5; // total hack
@@ -295,6 +354,8 @@ var lewdo_code = {
                 );
 
             // First recalculate the usage indices:
+            this._updateVizIndices();
+            /*
             var viz = this.visualLayout;
             viz.values.clear();
             viz.addresses.clear();
@@ -311,6 +372,7 @@ var lewdo_code = {
                 viz.values.add( op.valueInfo );
                 viz.times.add( op.timeInfo );
             });
+            */
 
 
             var pos = lewdo.xyz();
@@ -349,9 +411,11 @@ var lewdo_code = {
         setup : function(_app,valuesArray) {
             this.app = _app;
             this.opsByIndex = [];
+
             this.values = lewdo.apps.shapes.values(),
             this.addresses = this.values;// share these: lewdo.apps.shapes.values(),
             this.times = lewdo.apps.shapes.values(),
+            this.grid = lewdo.apps.shapes.grid(),
             this.visualLayout = {
                 values : lewdo.apps.shapes.values(),
                 addresses : lewdo.apps.shapes.values(),
