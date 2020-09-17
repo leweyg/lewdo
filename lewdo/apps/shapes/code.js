@@ -36,13 +36,15 @@ var lewdo_code = {
                 var kernelState_cmdData = code.addProxyObject();
                 var kernelState_cmdIndex = code.addProxyObject();
                 var kernelState_cmdOp = code.addProxyObject();
+
+                //var fiberState = code.addProxyValue();
                 
                 var cmdIndex = code.addProxyValue();
                 var cmdData = code.addProxyValue();
                 var cmdStack = code.addProxyValue();
                 //kernelState.cmdOp = "loading";
                 
-                kernelState_stackPtr.getWhole( cmdStack );
+                //kernelState_stackPtr.getWhole( cmdStack );
                 kernelState_cmdData.getWhole( cmdData );
                 kernelState_cmdIndex.getWhole( cmdIndex );
                 
@@ -58,16 +60,47 @@ var lewdo_code = {
                 kernelState_cmdIndex.setWhole( nextCmd );
 
                 code.addTime();
+
+                if (false) {
+                    kernelState_stackPtr.getWhole( cmdStack );
+                    var len = code.addProxyValue();
+                    //cmdStack.length = len;
+                    code.addReadOffset(cmdStack,"length",len);
+
+                    var top = code.addPlus( len, -1 );
+                    var nextTop = code.addPlus( top, -1 );
+                    var a = cmdStack.indexedBy(top);
+                    var b = cmdStack.indexedBy(nextTop);
+                    var c = code.addPlus(a,b);
+                    code.addWriteOffset(cmdStack,nextTop,c);
+                    cmdStack.length = top;
+                    //code.addWriteOffset(cmdStack,"length",top);
+
+                    /*
+                    var isAdding = code.addIsNotEqual(opToDo,"add");
+                    //var a = code.addProxyValue();
+                    var b = code.addProxyValue();
+                    code.addExecuteOffsetOut(cmdStack,"pop",b);
+                    code.addTime();
+                    var c = code.addPlus(a,b);
+                    code.addExecuteOffsetIn(cmdStack,"push",c);
+                    */
+                    //code.addWrite(a,b);
+                }
                 
-                //kernelState_stackPtr.getWhole( cmdStack );
-                var isAdding = code.addIsNotEqual(opToDo,"add");
-                var a = code.addProxyValue();
-                code.addExecuteOffsetOut(cmdStack,"pop",a);
-                var b = code.addProxyValue();
-                code.addExecuteOffsetOut(cmdStack,"pop",b);
-                var c = code.addPlus(a,b);
-                code.addExecuteOffsetIn(cmdStack,"push",c);
-                //code.addWrite(a,b);
+                if (false) {
+                    kernelState_stackPtr.getWhole( cmdStack );
+                    var isAdding = code.addIsNotEqual(opToDo,"add");
+                    var a = code.addProxyValue();
+                    code.addExecuteOffsetOut(cmdStack,"pop",a);
+                    code.addTime();
+                    var b = code.addProxyValue();
+                    code.addExecuteOffsetOut(cmdStack,"pop",b);
+                    code.addTime();
+                    var c = code.addPlus(a,b);
+                    code.addExecuteOffsetIn(cmdStack,"push",c);
+                    //code.addWrite(a,b);
+                }
                 
                 
                 /*
@@ -422,8 +455,9 @@ var lewdo_code = {
                     );
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
+                var identity_string = "↔"; // "&"
                 grid.setByXYZ(
-                    lewdo.string3( op.action.isExecute ? lewdo.letter.play : " " ),// + val.indexInfo.toString() ),
+                    lewdo.string3( op.action.isExecute ? lewdo.letter.play : identity_string ),// + val.indexInfo.toString() ),
                     addrPos
                 );
                 grid.setByXYZ(
