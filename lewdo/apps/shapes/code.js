@@ -454,13 +454,20 @@ var lewdo_code = {
                         addrPos
                     );
                     addrPos.x = viz.values.find( val.indexInfo ).index;
+                    var letter = op.action.asNumbers ? "#" : ".";
+                    if (op.action.isOffset) {
+                        var valInfo = op.action.isOffset ? op.addressInfo.value.indexInfo : op.valueInfo;
+                        if (valInfo.category.name == "number") {
+                            letter = valInfo.toString();
+                        }
+                    }
                     grid.setByXYZ(
-                        lewdo.string3( op.action.asNumbers ? "#" : "." ),// + val.indexInfo.toString() ),
+                        lewdo.string3( letter ),// + val.indexInfo.toString() ),
                         addrPos
                     );
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
-                var identity_string = "↕"; // "&"
+                var identity_string = "↔"; //"↕"; // "&"
                 grid.setByXYZ(
                     lewdo.string3( op.action.isExecute ? lewdo.letter.play : identity_string ),// + val.indexInfo.toString() ),
                     addrPos
@@ -475,14 +482,30 @@ var lewdo_code = {
             //var code = string3("b=a[c];\nc++;\n ");
             var code = string3("  a[ ]\v    c\vb=    ;\v\nc++\n \v\n   ;");
 
-            var info = string3("3Dtime\v\n↕addresses ↔values\v\n\n\n○read ●write .dot\n#number @bject");
+            var info = string3("3D\v  time\v\n↔         ↕\v\n variable  value\n ");
+            //var legend = string3("○read ●write .dot\n#number @bject\n+add");
+            var legend = string3(
+                //"○read ●write .dot\n#number @bject\n+add"
+                "○     ●      .   \n#       @      \n+   \v" +
+                " read  write  dot\n number  object\n add"
+                /*
+                "○             \v" +
+                " read             \v" +
+                "      .           \n#       @      \n+   \v" +
+                "       dot        \n number  object\n add\v" +
+                "           ●      \v" +
+                "            write \v" 
+                */
+              );
             var stack = this.stack.app.app_in;
             stack.centered = true;
-            stack.resize(1,4,1);
+            stack.resize(1,5,1);
             stack.setBySeperateXYZ(grid,0,0,0);
             stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);
             stack.setBySeperateXYZ(code,0,2,0);
             stack.setBySeperateXYZ(info,0,3,0);
+            stack.setBySeperateXYZ(legend,0,4,0);
+            
             stack.frameStep();
 
             this.app.app_out.copy( this.stack.app.app_out );
