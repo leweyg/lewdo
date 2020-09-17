@@ -258,8 +258,8 @@ var lewdo_code = {
             op.addressInfo = ( isIndex ? 
                 ( this.addresses.addProperty(addr1,indx) ) : 
                 ( this.addresses.add(addr1) ) );
-            if ((this.currentTime) //&& (op.action.isWrite)
-                //&& (op.addressInfo in this.currentTime.opsByAddr)
+            if ((this.currentTime) && (op.action.isWrite)
+                && (op.addressInfo in this.currentTime.opsByAddr)
                 ) {
                 this.addTime();
             }
@@ -293,13 +293,14 @@ var lewdo_code = {
             this.opsByIndex.forEach(op => {
                 if (op.addressInfo.category.isProperty) {
                     var prop = op.addressInfo.value;
+                    viz.addresses.add( prop.objectInfo );
                     viz.values.add( prop.objectInfo );
                     viz.values.add( prop.indexInfo );
                 } else {
                     viz.values.add( op.addressInfo );
                 }
                 viz.addresses.add( op.addressInfo );
-                //viz.values.add( op.addressInfo ); // optional
+                viz.values.add( op.addressInfo ); // optional
                 viz.values.add( op.valueInfo );
                 viz.times.add( op.timeInfo );
             });
@@ -324,9 +325,15 @@ var lewdo_code = {
                 );
                 if (op.addressInfo.category.isProperty) {
                     var addrPos = centerPos.clone();
-                    addrPos.x = viz.addresses.find( op.addressInfo ).index;
+                    var val = op.addressInfo.value;
+                    addrPos.x = viz.addresses.find( val.objectInfo ).index;
                     grid.setByXYZ(
                         lewdo.string3( "&" ),
+                        addrPos
+                    );
+                    addrPos.x = viz.values.find( val.indexInfo ).index;
+                    grid.setByXYZ(
+                        lewdo.string3( "+" ),
                         addrPos
                     );
                 }
