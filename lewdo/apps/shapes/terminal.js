@@ -64,6 +64,16 @@ var lewdo_terminal_prototype = {
         });
     },
 
+    launchApp : function(app_inst) {
+        this.hosted_app = app_inst;
+        this.hosted_app.app_out.subscribe(() => {
+            if (app_inst != this.hosted_app)
+                return;
+            this.app.app_out.copy(app_inst.app_out);
+            this.app.app_out.frameStep();
+        });
+    },
+
     launchSelected : function() {
         var toLaunch = this.selected_from[this.selected_index];
         var name = toLaunch.name;
@@ -73,12 +83,7 @@ var lewdo_terminal_prototype = {
         this.hosted_app = app_inst;
         var game = starter( app_inst );
 
-        this.hosted_app.app_out.subscribe(() => {
-            if (app_inst != this.hosted_app)
-                return;
-            this.app.app_out.copy(app_inst.app_out);
-            this.app.app_out.frameStep();
-        });
+        this.launchApp( app_inst );
     },
 
 
