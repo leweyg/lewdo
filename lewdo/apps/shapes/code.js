@@ -276,6 +276,7 @@ var lewdo_code = {
         addresses : lewdo.apps.shapes.values(),
         visualLayout : { values:{}, addresses:{}, times:{} },
         grid : lewdo.apps.shapes.grid(),
+        stack : lewdo.apps.shapes.grid(),
         times : lewdo.apps.shapes.values(),
         currentTime : null,
 
@@ -455,7 +456,7 @@ var lewdo_code = {
                     );
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
-                var identity_string = "↔"; // "&"
+                var identity_string = "↕"; // "&"
                 grid.setByXYZ(
                     lewdo.string3( op.action.isExecute ? lewdo.letter.play : identity_string ),// + val.indexInfo.toString() ),
                     addrPos
@@ -465,9 +466,16 @@ var lewdo_code = {
                     centerPos
                 );
             });
-            grid.frameStep(); // renders
+            grid.frameStep();
 
-            this.app.app_out.copy( grid );
+            var info = string3("↕addresses ↔values\n(g)et (s)et (.)dot\n#number @bject");
+            var stack = this.stack.app.app_in;
+            stack.resize(1,2,1);
+            stack.setBySeperateXYZ(grid,0,0,0);
+            stack.setBySeperateXYZ(info,0,1,0);
+            stack.frameStep();
+
+            this.app.app_out.copy( this.stack.app.app_out );
             this.app.app_out.frameStep();
         },
 
