@@ -31,22 +31,24 @@ var lewdo_code = {
             break;
             case "helloWorld":{
 
-                var kernelState = code.addProxyObject();
+                //var kernelState = code.addProxyObject();
+                var kernelState_cmdData = code.addProxyObject();
+                var kernelState_cmdIndex = code.addProxyObject();
+                var kernelState_cmdOp = code.addProxyObject();
                 var cmdIndex = code.addProxyValue();
                 var cmdData = code.addProxyValue();
                 //kernelState.cmdOp = "loading";
-                kernelState.cmdSeq = cmdData;
-                kernelState.cmdIndex = cmdIndex;
-                kernelState.context = code.addProxyValue();
+                kernelState_cmdData.getWhole( cmdData );
+                kernelState_cmdIndex.getWhole( cmdIndex );
+                //kernelState.context = code.addProxyValue();
 
                 code.addTime();
                 var opToDo = cmdData.indexedBy( cmdIndex );
-                kernelState.cmdOp = opToDo;
+                kernelState_cmdOp.setWhole( opToDo );
                 
-
-                code.addTime();
                 var nextCmd = code.addPlusOne( cmdIndex );
-                kernelState.cmdIndex = nextCmd;
+                code.addTime();
+                kernelState_cmdIndex.setWhole( nextCmd );
                 
                 /*
                 var func = code.addProxyObject();
@@ -103,7 +105,7 @@ var lewdo_code = {
         "read.":{name:"read property",isOffset:true,short:"r"},
         "write":{name:"write",isWrite:true,short:"w"},
         "write.":{name:"write.",isOffset:true,isWrite:true,short:"w"},
-        "+1":{name:"+1",short:"+1"}
+        "add":{name:"add",short:"+",isOffset:true,asNumbers:true}
     },
     _code_op_prototype : {
         action:null,
@@ -143,6 +145,18 @@ var lewdo_code = {
         get: function(target, prop, receiver) {
             if (prop == "indexedBy") {
                 return ((ndx)=>target.indexedBy(ndx));
+            }
+            if (prop == "setWhole") {
+                return ((val)=>{
+                    target.code_owner.addWrite(target.proxy,val);
+                    return target.proxy;
+                });
+            }
+            if (prop == "getWhole") {
+                return ((val)=>{
+                    target.code_owner.addRead(target.proxy,val);
+                    return target.proxy;
+                });
             }
             var val = target.wrappedObject[prop];
             console.assert(val); // or generate new unknown?
@@ -234,9 +248,13 @@ var lewdo_code = {
             this._addOp("write",addr,val);
         },
 
+        addAddition : function (addr,indx,val) {
+            this._addOp("add",addr,val,true,indx);
+        },
+
         addPlusOne : function (val) {
             var ans = this.addProxyValue();
-            this.addReadOffset(val,1,ans);
+            this.addAddition(val,1,ans);
             return ans;
         },
 
@@ -293,7 +311,7 @@ var lewdo_code = {
             this.opsByIndex.forEach(op => {
                 if (op.addressInfo.category.isProperty) {
                     var prop = op.addressInfo.value;
-                    viz.addresses.add( prop.objectInfo );
+                    //viz.addresses.add( prop.objectInfo );
                     viz.values.add( prop.objectInfo );
                     viz.values.add( prop.indexInfo );
                 } else {
@@ -323,20 +341,25 @@ var lewdo_code = {
                     viz.addresses.find( op.addressInfo ).index,
                     viz.times.find( op.timeInfo ).index
                 );
+                var addrPos = centerPos.clone();
                 if (op.addressInfo.category.isProperty) {
-                    var addrPos = centerPos.clone();
                     var val = op.addressInfo.value;
-                    addrPos.x = viz.addresses.find( val.objectInfo ).index;
+                    addrPos.x = viz.values.find( val.objectInfo ).index;
                     grid.setByXYZ(
-                        lewdo.string3( "&" ),
+                        lewdo.string3( op.action.asNumbers ? "#" : "@" ),
                         addrPos
                     );
                     addrPos.x = viz.values.find( val.indexInfo ).index;
                     grid.setByXYZ(
-                        lewdo.string3( "+" ),
+                        lewdo.string3( op.action.asNumbers ? "#" : "." ),// + val.indexInfo.toString() ),
                         addrPos
                     );
                 }
+                addrPos.x = viz.values.find( op.addressInfo ).index;
+                grid.setByXYZ(
+                    lewdo.string3( "&" ),// + val.indexInfo.toString() ),
+                    addrPos
+                );
                 grid.setByXYZ(
                     lewdo.string3( op.action.short ),
                     centerPos
