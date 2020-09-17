@@ -34,6 +34,7 @@ var lewdo_code = {
                 var kernelState = code.addProxyObject();
                 var cmdIndex = code.addProxyValue();
                 var cmdData = code.addProxyValue();
+                //kernelState.cmdOp = "loading";
                 kernelState.cmdSeq = cmdData;
                 kernelState.cmdIndex = cmdIndex;
                 kernelState.context = code.addProxyValue();
@@ -330,7 +331,7 @@ var lewdo_code = {
                     );
                 }
                 grid.setByXYZ(
-                    lewdo.string3( "*" ),
+                    lewdo.string3( op.action.short ),
                     centerPos
                 );
             });
