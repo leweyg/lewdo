@@ -16,6 +16,7 @@ var lewdo = {
     app : lewdo_app,
     lewdo_app : lewdo_app, // deprecated
     string3 : string3,
+    string3_utils : string3_utils,
     xyz : string3_utils.xyz,
     apps : {
         games:{},

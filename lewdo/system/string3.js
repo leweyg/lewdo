@@ -1,5 +1,8 @@
 
 function string3(initial,w,h,d) {
+    if (string3_utils.isString3(initial)) {
+        return initial;
+    }
     var ans = Object.create(string3_prototype);
     ans.subscribers = []; 
     if (initial) {
@@ -37,6 +40,7 @@ var string3_prototype = {
         throw "out of bounds:" + pos;
     },
     _catchFrameExceptions : false,
+    isString3 : true,
 
     copy : function(other) {
         this.copyShallow(other);
@@ -256,6 +260,16 @@ var string3_prototype = {
         }
         return this;
     },
+    visitEachAxisXYZ : function(pos, cb_val_pos_axis) {
+        var p = lewdo.xyz();
+        pos.selectAxes((index,axis)=>{
+            for (var i=0; i<index; i++) {
+                p.copy( pos );
+                p[axis] = i;
+                cb_val_pos_axis( this.getByXYZ(p), p, axis );
+            }
+        });
+    },
     modifyEachXYZ : function(cb) {
         var t = string3_utils.xyz(); // TODO: recycle this
         for (var d=0; d<this.depth; d++) {
@@ -340,6 +354,13 @@ var string3_utils = {
         ans.setIf(x,y,z);
         return ans;
     },
+    isString3 : function(obj) {
+        if (!obj) return false;
+        if (typeof(obj)=="object") {
+            return ("array1d" in obj);
+        }
+        return false;
+    },
     _xyz_prototype : {
         x : 0, y : 0, z : 0,
         setIf : function(_x,_y,_z) {
@@ -379,11 +400,21 @@ var string3_utils = {
             this.set(0,0,0);
             return this;
         },
+        selectAxes : function(foo) {
+            return this.set(foo(this.x,"x"),foo(this.y,"y"),foo(this.z,"z"));
+        },
         select : function(foo) {
             return this.set(foo(this.x),foo(this.y),foo(this.z));
         },
         select2 : function(other,foo) {
             return this.set(foo(this.x,other.x),foo(this.y,other.y),foo(this.z,other.z));
+        },
+        combine : function(foo) {
+            foo = (foo || ((a,b)=>(a+b)));
+            return foo(foo(this.x,this.y),this.z);
+        },
+        sum : function() {
+            return this.combine((a,b)=>(a+b));
         },
         max : function(other) {
             return this.select2(other,(a,b)=>Math.max(a,b));
