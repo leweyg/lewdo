@@ -32,23 +32,43 @@ var lewdo_code = {
             case "helloWorld":{
 
                 //var kernelState = code.addProxyObject();
+                var kernelState_stackPtr = code.addProxyObject();
                 var kernelState_cmdData = code.addProxyObject();
                 var kernelState_cmdIndex = code.addProxyObject();
                 var kernelState_cmdOp = code.addProxyObject();
+                
                 var cmdIndex = code.addProxyValue();
                 var cmdData = code.addProxyValue();
+                var cmdStack = code.addProxyValue();
                 //kernelState.cmdOp = "loading";
+                
+                kernelState_stackPtr.getWhole( cmdStack );
                 kernelState_cmdData.getWhole( cmdData );
                 kernelState_cmdIndex.getWhole( cmdIndex );
+                
                 //kernelState.context = code.addProxyValue();
 
                 code.addTime();
                 var opToDo = cmdData.indexedBy( cmdIndex );
                 kernelState_cmdOp.setWhole( opToDo );
                 
+                
                 var nextCmd = code.addPlusOne( cmdIndex );
                 code.addTime();
                 kernelState_cmdIndex.setWhole( nextCmd );
+
+                code.addTime();
+                
+                //kernelState_stackPtr.getWhole( cmdStack );
+                var isAdding = code.addIsNotEqual(opToDo,"add");
+                var a = code.addProxyValue();
+                code.addExecuteOffsetOut(cmdStack,"pop",a);
+                var b = code.addProxyValue();
+                code.addExecuteOffsetOut(cmdStack,"pop",b);
+                var c = code.addPlus(a,b);
+                code.addExecuteOffsetIn(cmdStack,"push",c);
+                //code.addWrite(a,b);
+                
                 
                 /*
                 var func = code.addProxyObject();
@@ -101,11 +121,17 @@ var lewdo_code = {
         return ((obj) && (typeof(obj)=="string"));
     },
     ActionsByName : {
-        "read":{name:"read",short:"r"},
-        "read.":{name:"read property",isOffset:true,short:"r"},
-        "write":{name:"write",isWrite:true,short:"w"},
-        "write.":{name:"write.",isOffset:true,isWrite:true,short:"w"},
-        "add":{name:"add",short:"+",isOffset:true,asNumbers:true}
+        "read":{name:"read",short:"g"},
+        "read.":{name:"read property",isOffset:true,short:"g"},
+        "write":{name:"write",isWrite:true,short:"s"},
+        "write.":{name:"write.",isOffset:true,isWrite:true,short:"s"},
+        //"execute":{name:"execute",short:"x"},
+        "execute.out":{name:"execute property",isOffset:true,short:"s",isExecute:true,isWrite:true},
+        "execute.in":{name:"execute property",isOffset:true,short:"g",isExecute:true},
+        //"execute.in.out":{name:"execute property",isOffset:true,short:"w",isExecute:true,isWrite:true},
+        "add":{name:"add",short:"+",isOffset:true,asNumbers:true},
+        "equals":{name:"equals",short:"=",isOffset:true,asNumbers:true},
+        "not_equals":{name:"not_equals",short:"!",isOffset:true,asNumbers:true},
     },
     _code_op_prototype : {
         action:null,
@@ -252,9 +278,48 @@ var lewdo_code = {
             this._addOp("add",addr,val,true,indx);
         },
 
+        addEquality : function(addr,indx,val) {
+            this._addOp("equals",addr,val,true,indx);
+        },
+
+        addNotEquality : function(addr,indx,val) {
+            this._addOp("not_equals",addr,val,true,indx);
+        },
+
+        addExecute : function (addr,val) {
+            throw "TODO";
+            //this._addOp("execute",addr,val);
+        },
+
+        addExecuteOffsetOut : function(addr,indx,val) {
+            this._addOp("execute.out",addr,val,true,indx);
+        },
+
+        addExecuteOffsetIn : function(addr,indx,val) {
+            this._addOp("execute.in",addr,val,true,indx);
+        },
+
         addPlusOne : function (val) {
             var ans = this.addProxyValue();
             this.addAddition(val,1,ans);
+            return ans;
+        },
+
+        addPlus : function (val,other) {
+            var ans = this.addProxyValue();
+            this.addAddition(val,other,ans);
+            return ans;
+        },
+
+        addIsEqual : function (val,other) {
+            var ans = this.addProxyValue();
+            this.addEquality(val,other,ans);
+            return ans;
+        },
+
+        addIsNotEqual : function (val,other) {
+            var ans = this.addProxyValue();
+            this.addNotEquality(val,other,ans);
             return ans;
         },
 
@@ -272,11 +337,12 @@ var lewdo_code = {
         _addOp : function(actionName,addr1,val,isIndex,indx) {
             var op = Object.create( lewdo_code._code_op_prototype );
             op.action = lewdo_code.ActionsByName[actionName];
+            console.assert(op.action);
             var oldAddressCount = this.addresses.length;
             op.addressInfo = ( isIndex ? 
                 ( this.addresses.addProperty(addr1,indx) ) : 
                 ( this.addresses.add(addr1) ) );
-            if ((this.currentTime) && (op.action.isWrite)
+            if ((this.currentTime) && (op.action.isWrite) && (!op.action.isExecute)
                 && (op.addressInfo in this.currentTime.opsByAddr)
                 ) {
                 this.addTime();
@@ -357,7 +423,7 @@ var lewdo_code = {
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
                 grid.setByXYZ(
-                    lewdo.string3( "&" ),// + val.indexInfo.toString() ),
+                    lewdo.string3( op.action.isExecute ? lewdo.letter.play : " " ),// + val.indexInfo.toString() ),
                     addrPos
                 );
                 grid.setByXYZ(
