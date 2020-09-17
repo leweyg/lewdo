@@ -482,9 +482,9 @@ var lewdo_code = {
             //var code = string3("b=a[c];\nc++;\n ");
             var code = string3("  a[ ]\v    c\vb=    ;\v\nc++\n \v\n   ;");
 
-            var info = string3("3D\v  time\v\n↔         ↕\v\n variable  value\n ");
+            var info = string3("3D\v  time    \v\n↔         ↕\v  \n variable  value\n ");
             //var legend = string3("○read ●write .dot\n#number @bject\n+add");
-            var legend = string3(
+            var legend = string3( "\v\v" +
                 //"○read ●write .dot\n#number @bject\n+add"
                 "○     ●      .   \n#       @      \n+   \v" +
                 " read  write  dot\n number  object\n add"
