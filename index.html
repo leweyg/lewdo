@@ -65,11 +65,28 @@
             // App instance
             var mainApp = lewdo_app();
 
-            lewdo_terminal( mainApp ); 
+            var mainTerminal = lewdo_terminal( mainApp ); 
+
             //mainApp.app_out.copy( string3( example_string3_json ) );
 
             // Connect to web page UI:
             string3_ui.setMainApp( main_lewdo, mainApp );
+
+            if (window.location.search) {
+                var appName = window.location.search.replace("?","");
+                var starter = lewdo.apps.shapes[appName];
+                for (var genre in lewdo.apps) {
+                    if (genre == "shapes") continue;
+                    if (appName in lewdo.apps[genre]) {
+                        starter = lewdo.apps[genre][appName];
+                    }
+                }
+                if (starter) {
+                    var app = lewdo.app();
+                    var api = starter(app);
+                    mainTerminal.launchApp(app);
+                }
+            }
 
         </script>
 
