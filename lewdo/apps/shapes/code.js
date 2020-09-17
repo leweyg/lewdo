@@ -42,10 +42,14 @@ var lewdo_code = {
                 var cmdIndex = code.addProxyValue();
                 var cmdData = code.addProxyValue();
                 var cmdStack = code.addProxyValue();
+                var unknownValueOfC = code.addProxyValue();
                 //kernelState.cmdOp = "loading";
                 
                 //kernelState_stackPtr.getWhole( cmdStack );
                 kernelState_cmdData.getWhole( cmdData );
+                code.addTime();
+                kernelState_cmdOp.getWhole(unknownValueOfC);
+                code.addTime();
                 kernelState_cmdIndex.getWhole( cmdIndex );
                 
                 //kernelState.context = code.addProxyValue();
@@ -53,7 +57,7 @@ var lewdo_code = {
                 code.addTime();
                 var opToDo = cmdData.indexedBy( cmdIndex );
                 kernelState_cmdOp.setWhole( opToDo );
-                
+                code.addTime();
                 
                 var nextCmd = code.addPlusOne( cmdIndex );
                 code.addTime();
@@ -154,13 +158,13 @@ var lewdo_code = {
         return ((obj) && (typeof(obj)=="string"));
     },
     ActionsByName : {
-        "read":{name:"read",short:"g"},
-        "read.":{name:"read property",isOffset:true,short:"g"},
-        "write":{name:"write",isWrite:true,short:"s"},
-        "write.":{name:"write.",isOffset:true,isWrite:true,short:"s"},
+        "read":{name:"read",short:lewdo.letter.hover},
+        "read.":{name:"read property",isOffset:true,short:lewdo.letter.hover},
+        "write":{name:"write",isWrite:true,short:lewdo.letter.touch},
+        "write.":{name:"write.",isOffset:true,isWrite:true,short:lewdo.letter.touch},
         //"execute":{name:"execute",short:"x"},
-        "execute.out":{name:"execute property",isOffset:true,short:"s",isExecute:true,isWrite:true},
-        "execute.in":{name:"execute property",isOffset:true,short:"g",isExecute:true},
+        "execute.out":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true,isWrite:true},
+        "execute.in":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true},
         //"execute.in.out":{name:"execute property",isOffset:true,short:"w",isExecute:true,isWrite:true},
         "add":{name:"add",short:"+",isOffset:true,asNumbers:true},
         "equals":{name:"equals",short:"=",isOffset:true,asNumbers:true},
@@ -431,7 +435,7 @@ var lewdo_code = {
             var grid = this.grid.app.app_in;
             grid.resize(
                 viz.values.length,
-                viz.values.length,
+                viz.addresses.length,
                 viz.times.length,
             );
             this.opsByIndex.forEach(op => {
@@ -468,11 +472,17 @@ var lewdo_code = {
             });
             grid.frameStep();
 
-            var info = string3("↕addresses ↔values\n(g)et (s)et (.)dot\n#number @bject");
+            //var code = string3("b=a[c];\nc++;\n ");
+            var code = string3("  a[ ]\v    c\vb=    ;\v\nc++\n \v\n   ;");
+
+            var info = string3("3Dtime\v\n↕addresses ↔values\v\n\n\n○read ●write .dot\n#number @bject");
             var stack = this.stack.app.app_in;
-            stack.resize(1,2,1);
+            stack.centered = true;
+            stack.resize(1,4,1);
             stack.setBySeperateXYZ(grid,0,0,0);
-            stack.setBySeperateXYZ(info,0,1,0);
+            stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);
+            stack.setBySeperateXYZ(code,0,2,0);
+            stack.setBySeperateXYZ(info,0,3,0);
             stack.frameStep();
 
             this.app.app_out.copy( this.stack.app.app_out );
@@ -555,6 +565,7 @@ var lewdo_code = {
             this.addresses = this.values;// share these: lewdo.apps.shapes.values(),
             this.times = lewdo.apps.shapes.values(),
             this.grid = lewdo.apps.shapes.grid(),
+            this.grid.centered = true;
             this.visualLayout = {
                 values : lewdo.apps.shapes.values(),
                 addresses : lewdo.apps.shapes.values(),
