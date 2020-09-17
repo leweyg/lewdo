@@ -64,6 +64,7 @@ var lewdo_code = {
                 kernelState_cmdIndex.setWhole( nextCmd );
 
                 code.addTime();
+                code.addExecuteIn(opToDo, cmdData );
 
                 if (false) {
                     kernelState_stackPtr.getWhole( cmdStack );
@@ -163,7 +164,10 @@ var lewdo_code = {
         "write":{name:"write",isWrite:true,short:lewdo.letter.touch},
         "write.":{name:"write.",isOffset:true,isWrite:true,short:lewdo.letter.touch},
         //"execute":{name:"execute",short:"x"},
+        "execute_out":{name:"execute property",short:lewdo.letter.touch,isExecute:true,isWrite:true},
+        "execute_in":{name:"execute property",short:lewdo.letter.touch,isExecute:true},
         "execute.out":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true,isWrite:true},
+        
         "execute.in":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true},
         //"execute.in.out":{name:"execute property",isOffset:true,short:"w",isExecute:true,isWrite:true},
         "add":{name:"add",short:"+",isOffset:true,asNumbers:true},
@@ -329,6 +333,14 @@ var lewdo_code = {
             //this._addOp("execute",addr,val);
         },
 
+        addExecuteIn : function(addr,val) {
+            this._addOp("execute_in",addr,val);
+        },
+
+        addExecuteOut : function(addr,val) {
+            this._addOp("execute_out",addr,val);
+        },
+
         addExecuteOffsetOut : function(addr,indx,val) {
             this._addOp("execute.out",addr,val,true,indx);
         },
@@ -481,14 +493,14 @@ var lewdo_code = {
             grid.frameStep();
 
             //var code = string3("b=a[c];\nc++;\n ");
-            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;");
+            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;\v\n\nb(a);\n ");
 
             var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
             //var legend = string3("○read ●write .dot\n#number @bject\n+add");
             var legend = string3( "\v\v" +
                 //"○read ●write .dot\n#number @bject\n+add"
-                "○     ●      .   \n#       @      \n+   \v" +
-                " read  write  dot\n number  object\n add"
+                "○     ●      .   \n#       @      \n+    ►\v" +
+                " read  write  dot\n number  object\n add  call"
                 /*
                 "○             \v" +
                 " read             \v" +
