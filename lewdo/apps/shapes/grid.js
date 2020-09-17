@@ -1,6 +1,6 @@
 
 var lewdo_grid = {
-    gridify : function(metaStr3,into) {
+    gridify : function(metaStr3,into,options) {
 
         // First measure max sizes per axis per index:
         var maxSizesByAxisByIndex = lewdo.xyz().select(()=>{return [];});
@@ -48,6 +48,15 @@ var lewdo_grid = {
                 }
             });
             // Draw the sub string:
+            if (options && options.centered) {
+                var mySize = str3.sizeXYZ();
+                offset.selectAxes((v,axis)=>{
+                    if (options && options.dontCenterZ && (axis == "z")) return v;
+                    
+                    var available = maxSizesByAxisByIndex[axis][pos[axis]];
+                    return v + Math.floor( ( available - mySize[axis] ) / 2 );
+                });
+            }
             into.drawString3XYZ( str3, offset );
         });
 
@@ -72,25 +81,25 @@ var lewdo_grid = {
             return r;
         });
         
+        grid.centered = true;
         grid.app.app_in.copy(into);
         grid.app.app_in.frameStep();
-        grid.enabled = false;
+        grid.fromInput = false;
 
         return grid;
     },
     grid_prototype : {
         app : null, 
-        enabled : true,
+        fromInput : true,
+        centered : false,
+        dontCenterZ : true,
 
-        setup : function(_app, isSkipSubscribe) {
+        setup : function(_app) {
             this.app = (_app || lewdo.app() );
 
-            if (isSkipSubscribe) return;
-
             this.app.app_in.subscribe((input)=>{
-                if (!this.enabled) return;
-                var gridded = lewdo_grid.gridify(input);
-                this.app.app_out.copy(gridded);
+                if (!this.fromInput) return;
+                lewdo_grid.gridify( input, this.app.app_out, this );
                 this.app.app_out.frameStep();
             });
         }

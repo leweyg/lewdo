@@ -403,6 +403,9 @@ var string3_utils = {
         selectAxes : function(foo) {
             return this.set(foo(this.x,"x"),foo(this.y,"y"),foo(this.z,"z"));
         },
+        selectAxis : function(foo) {
+            return this.selectAxes(foo);
+        },
         select : function(foo) {
             return this.set(foo(this.x),foo(this.y),foo(this.z));
         },
