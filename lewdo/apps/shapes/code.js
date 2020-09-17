@@ -481,7 +481,7 @@ var lewdo_code = {
             grid.frameStep();
 
             //var code = string3("b=a[c];\nc++;\n ");
-            var code = string3("  a[ ]\v    c\vb=    ;\v\nc++\n \v\n   ;");
+            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;");
 
             var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
             //var legend = string3("○read ●write .dot\n#number @bject\n+add");
