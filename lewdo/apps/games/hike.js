@@ -19,6 +19,10 @@ var lewdo_hike = {
         setup : function(_app) {
             this.app = _app;
 
+            var playerPos = this.playerPosWorld.clone();
+            playerPos.z = 1 + this.evalHeightAtWorldXY(playerPos.x, playerPos.y);
+            this.playerPosWorld.copy( playerPos );
+
             this.redraw();
             //this.app.app_out.copy(string3("\nhike\vlewdo"));
             this.fracalScale++;
@@ -57,7 +61,7 @@ var lewdo_hike = {
             return;
         },
         tryGetPlayerOffset : function(offset) {
-            return offset;
+            //return offset;
             var curHeight = this.playerPosWorld.z;
             var newPos = lewdo.xyz().copy(this.playerPosWorld).add(offset);
             var newHeight = this.evalHeightAtWorldXY(newPos.x, newPos.y);
