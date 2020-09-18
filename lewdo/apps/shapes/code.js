@@ -64,7 +64,16 @@ var lewdo_code = {
                 kernelState_cmdIndex.setWhole( nextCmd );
 
                 code.addTime();
-                code.addExecuteIn(opToDo, cmdData );
+                var methodResultVal = code.addProxyValue();
+                var methodResultVar = code.addProxyObject();
+                
+                //methodResultVar.getWhole( code.addProxyValue() );
+                
+                code.addExecuteRead(methodResultVar, opToDo );
+                methodResultVar.getWhole( methodResultVal );
+                
+                code.addTime();
+                //methodResultVar.setWhole( methodResultVal );
 
                 if (false) {
                     kernelState_stackPtr.getWhole( cmdStack );
@@ -164,8 +173,8 @@ var lewdo_code = {
         "write":{name:"write",isWrite:true,short:lewdo.letter.touch},
         "write.":{name:"write.",isOffset:true,isWrite:true,short:lewdo.letter.touch},
         //"execute":{name:"execute",short:"x"},
-        "execute_out":{name:"execute property",short:lewdo.letter.touch,isExecute:true,isWrite:true},
-        "execute_in":{name:"execute property",short:lewdo.letter.touch,isExecute:true},
+        "execute_read":{name:"execute property",short:lewdo.letter.play,isExecute:true},
+        "execute_write":{name:"execute property",short:lewdo.letter.play,isExecute:true,isWrite:true},
         "execute.out":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true,isWrite:true},
         
         "execute.in":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true},
@@ -333,12 +342,12 @@ var lewdo_code = {
             //this._addOp("execute",addr,val);
         },
 
-        addExecuteIn : function(addr,val) {
-            this._addOp("execute_in",addr,val);
+        addExecuteRead : function(addr,val) {
+            this._addOp("execute_read",addr,val);
         },
 
-        addExecuteOut : function(addr,val) {
-            this._addOp("execute_out",addr,val);
+        addExecuteWrite : function(addr,val) {
+            this._addOp("execute_write",addr,val);
         },
 
         addExecuteOffsetOut : function(addr,indx,val) {
@@ -480,7 +489,7 @@ var lewdo_code = {
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
                 var identity_string = "↕"; //"↔"; //"↕"; // "&"
-                var identity_letter = op.action.isExecute ? lewdo.letter.play : identity_string;
+                var identity_letter = identity_string; //op.action.isExecute ? lewdo.letter.play : identity_string;
                 grid.setByXYZ(
                     lewdo.string3( identity_letter ),// + val.indexInfo.toString() ),
                     addrPos
@@ -493,7 +502,7 @@ var lewdo_code = {
             grid.frameStep();
 
             //var code = string3("b=a[c];\nc++;\n ");
-            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;\v\n\nb(a);\n ");
+            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;\v\n\n  b()\v\n\nf=   ;\n ");
 
             var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
             //var legend = string3("○read ●write .dot\n#number @bject\n+add");
