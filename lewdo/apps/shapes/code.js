@@ -56,6 +56,7 @@ var lewdo_code = {
 
                 code.addTime();
                 var opToDo = cmdData.indexedBy( cmdIndex );
+                code.addTime();
                 kernelState_cmdOp.setWhole( opToDo );
                 code.addTime();
                 
@@ -70,7 +71,7 @@ var lewdo_code = {
                 //methodResultVar.getWhole( code.addProxyValue() );
                 
                 code.addExecuteRead(methodResultVar, opToDo );
-                methodResultVar.getWhole( methodResultVal );
+                methodResultVar.setWhole( methodResultVal );
                 
                 code.addTime();
                 //methodResultVar.setWhole( methodResultVal );
@@ -502,7 +503,7 @@ var lewdo_code = {
             grid.frameStep();
 
             //var code = string3("b=a[c];\nc++;\n ");
-            var code = string3("  a   \v\v    c\vb= [ ];\v\n  c+1\n\v\nc=   ;\v\n\n  b()\v\n\nf=   ;\n ");
+            var code = string3("  a   \v\v    c\v   [ ]\vb=    ;\v\n  c+1\n\v\nc=   ;\v\n\n      b()\v\n\nvar f=   ;\n ");
 
             var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
             //var legend = string3("○read ●write .dot\n#number @bject\n+add");
