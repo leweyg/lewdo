@@ -18,6 +18,7 @@ var lewdo = {
     string3 : string3,
     string3_utils : string3_utils,
     xyz : string3_utils.xyz,
+    lewey : true,
     apps : {
         games:{},
         tools:{},
