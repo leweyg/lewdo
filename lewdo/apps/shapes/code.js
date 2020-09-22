@@ -11,6 +11,7 @@ var lewdo_code = {
     },
     demo : function(_app) {
         var code = lewdo_code.app(_app);
+        code.legend = true;
 
         var demoMode = "helloWorld"; // iterator // simple
         switch (demoMode) {
@@ -289,7 +290,7 @@ var lewdo_code = {
     lewdo_code_prototype : {
         app : lewdo.app(),
         opsByIndex : [],
-
+        
         values : lewdo.apps.shapes.values(),
         addresses : lewdo.apps.shapes.values(),
         visualLayout : { values:{}, addresses:{}, times:{} },
@@ -297,6 +298,30 @@ var lewdo_code = {
         stack : lewdo.apps.shapes.grid(),
         times : lewdo.apps.shapes.values(),
         currentTime : null,
+        legend : false,
+
+
+        _toString3FromObjectRecursive : function(context,obj) {
+            for (var key in obj) {
+                context.addReadOffset(obj,key,obj[key]);
+            }
+        },
+        string3fromObject : function(obj, into) {
+            if (!into) {
+                into = this.app.app_out;
+            }
+    
+            this._toString3FromObjectRecursive(this, obj);
+            this.redraw();
+            var res = this.app.app_out;
+    
+            if (into != res) {
+                into.copy( res );
+                into.frameStep();
+            }
+
+            return into;
+        },
 
         addProxyObject : function() {
             var target = Object.create( lewdo_code._codeProxyObject_prototype );
@@ -502,32 +527,39 @@ var lewdo_code = {
             });
             grid.frameStep();
 
-            //var code = string3("b=a[c];\nc++;\n ");
-            var code = string3("  a   \v\v    c\v   [ ]\vb=    ;\v\n  c+1\n\v\nc=   ;\v\n\n      b()\v\n\nvar f=   ;\n ");
-
-            var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
-            //var legend = string3("○read ●write .dot\n#number @bject\n+add");
-            var legend = string3( "\v\v" +
-                //"○read ●write .dot\n#number @bject\n+add"
-                "○     ●      .   \n#       @      \n+    ►\v" +
-                " read  write  dot\n number  object\n add  call"
-                /*
-                "○             \v" +
-                " read             \v" +
-                "      .           \n#       @      \n+   \v" +
-                "       dot        \n number  object\n add\v" +
-                "           ●      \v" +
-                "            write \v" 
-                */
-              );
             var stack = this.stack.app.app_in;
-            stack.centered = true;
-            stack.resize(1,5,1);
-            stack.setBySeperateXYZ(grid,0,0,0);
-            stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);
-            stack.setBySeperateXYZ(code,0,2,0);
-            stack.setBySeperateXYZ(info,0,3,0);
-            stack.setBySeperateXYZ(legend,0,4,0);
+            if (this.legend) {
+                
+                //var code = string3("b=a[c];\nc++;\n ");
+                var code = string3("  a   \v\v    c\v   [ ]\vb=    ;\v\n  c+1\n\v\nc=   ;\v\n\n      b()\v\n\nvar f=   ;\n ");
+
+                var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
+                //var legend = string3("○read ●write .dot\n#number @bject\n+add");
+                var legend = string3( "\v\v" +
+                    //"○read ●write .dot\n#number @bject\n+add"
+                    "○     ●      .   \n#       @      \n+    ►\v" +
+                    " read  write  dot\n number  object\n add  call"
+                    /*
+                    "○             \v" +
+                    " read             \v" +
+                    "      .           \n#       @      \n+   \v" +
+                    "       dot        \n number  object\n add\v" +
+                    "           ●      \v" +
+                    "            write \v" 
+                    */
+                    );
+                
+                stack.centered = true;
+                stack.resize(1,5,1);
+                stack.setBySeperateXYZ(grid,0,0,0);
+                stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);
+                stack.setBySeperateXYZ(code,0,2,0);
+                stack.setBySeperateXYZ(info,0,3,0);
+                stack.setBySeperateXYZ(legend,0,4,0);
+            } else {
+                stack.resize(1,1,1);
+                stack.setBySeperateXYZ(grid,0,0,0);
+            }
             
             stack.frameStep();
 

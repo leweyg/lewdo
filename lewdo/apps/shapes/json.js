@@ -24,13 +24,33 @@ var lewdo_shapes_json = {
     lewdo_shapes_json_prototype : {
         app : lewdo.app(),
         skipInputUpdates : false,
+        catchExceptions : false,
 
         setup : function(_app) {
             this.app = _app;
             var _this = this;
             this.app.app_in.subscribe((input)=>{
                 if (_this && _this.skipInputUpdates) return;
-                _this.app.app_out.copy(input);
+                var json = input.toString();
+            
+                var obj = null;
+                if (json == "") {
+                    obj = "";
+                } else if (this.catchExceptions) {
+                    try {
+                        obj = JSON.parse( json );
+                        
+                    } catch (ex) {
+                        obj = ex.toString();
+                    }
+                } else {
+                    obj = JSON.parse( json );
+                }
+
+                var codifier = lewdo.apps.shapes.code();
+                var into = codifier.string3fromObject(obj);
+
+                _this.app.app_out.copy(into);
                 _this.app.app_out.frameStep();
             });
         }
