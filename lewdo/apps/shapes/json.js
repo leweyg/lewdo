@@ -37,6 +37,7 @@ var lewdo_shapes_json = {
         skipInputUpdates : false,
         catchExceptions : false,
         values : lewdo.apps.shapes.values(),
+        arraysAsRows : true,
 
         _walkRecursive : function(obj,leafCallback,beginCb,keyCallback,endCb,depth=0) {
             if ((!obj) || (typeof(obj) != "object")) {
@@ -46,7 +47,7 @@ var lewdo_shapes_json = {
             if (beginCb) beginCb(obj,depth);
             for (var key in obj) {
                 var val = obj[key];
-                if (!Array.isArray(obj)) {
+                if ((!this.arraysAsRows) || !Array.isArray(obj)) {
                     if (keyCallback) keyCallback(key,val,depth);
                 }
                 this._walkRecursive(val,leafCallback,beginCb,keyCallback,endCb,depth+1);
@@ -72,7 +73,7 @@ var lewdo_shapes_json = {
             return result;
         },
 
-        objectToString3 : function(obj,assumeValuesConfigured=false) {
+        objectToString3 : function(obj,assumeValuesConfigured=false,callDepth=0) {
             if (!this._isObject(obj)) {
                 var inner = lewdo.string3(obj ? obj.toString() : "");
                 var result = inner;
@@ -84,8 +85,9 @@ var lewdo_shapes_json = {
             }
             var gridApp = lewdo.apps.shapes.grid();
             var gridIn = gridApp.app.app_in;
+            var extraDepth = ((str,customZ)=>this._deepString(str,customZ || callDepth));
 
-            if (Array.isArray(obj)) {
+            if (this.arraysAsRows && Array.isArray(obj)) {
                 var ar = obj;
                 var w = ar.length;
                 if (w > 1) w *= 2;
@@ -95,14 +97,14 @@ var lewdo_shapes_json = {
                 //gridIn.setBySeperateXYZ("]",gridIn.width-1,0,0);
                 for (var i in obj) {
                     var val = obj[i];
-                    var str3 = this.objectToString3( val, assumeValuesConfigured );
+                    var str3 = this.objectToString3( val, assumeValuesConfigured, callDepth+1 );
                     gridIn.setBySeperateXYZ(str3,(2*i)+1,0,0);
-                    gridIn.setBySeperateXYZ((i==0)?"[":",",(2*i)+0,0,0);
+                    gridIn.setBySeperateXYZ(extraDepth((i==0)?"[":","),(2*i)+0,0,0);
                     if (i != obj.length-1) {
                         //gridIn.setBySeperateXYZ(",",(2*i)+1,0,0);
                     }
                 }
-                gridIn.setBySeperateXYZ("]",gridIn.width-1,0,0);
+                gridIn.setBySeperateXYZ(extraDepth("]"),gridIn.width-1,0,0);
                 gridIn.frameStep();
                 return gridApp.app.app_out;
             }
@@ -125,31 +127,45 @@ var lewdo_shapes_json = {
                 },()=>{curDepth--;});
             }
 
-            gridIn.resize(3,lines,1);
+            gridIn.resize(5,lines,1);
+            var isObjArray = Array.isArray(obj);
+
             var pos = lewdo.xyz();
             pos.y = -1;
             var isFirst = true;
+            var firstKeyDepth = callDepth;
 
             for (var key in obj) {
                 pos.y++;
 
-                pos.x=0;
+                pos.x=1;
                 pos.z=0;
                 var keyZ = this.values.find( key ).index;
                 var deepKey = this._deepString(key,keyZ);
-                gridIn.setByXYZ(deepKey,pos);
+                if (isObjArray)
+                    keyZ = callDepth;
+                else
+                    gridIn.setByXYZ(deepKey,pos);
+
 
                 if (true) {
-                    isFirst = false;
-                    pos.x = 1;
-                    gridIn.setByXYZ(":",pos);
+                    pos.x = 2;
+                    pos.z = 0;
+                    gridIn.setByXYZ(extraDepth(isObjArray? "#" : ":",isObjArray?callDepth:keyZ),pos);
                 }
 
-                pos.x=2;
+                if (isFirst) {
+                    isFirst = false;
+                    if (!isObjArray) {
+                        firstKeyDepth = keyZ;
+                    }
+                }
+
+                pos.x=3;
                 pos.z = 0;
                 var val = obj[key];
                 if (this._isObject(val)) {
-                    var str3 = this.objectToString3( val, true );
+                    var str3 = this.objectToString3( val, true, keyZ );
                     gridIn.setByXYZ(str3, pos);
                 } else {
                     var valZ = this.values.find( val ).index;
@@ -158,6 +174,12 @@ var lewdo_shapes_json = {
                     gridIn.setByXYZ(str3, pos);
                 }
             }
+
+            callDepth = firstKeyDepth;
+            gridIn.setBySeperateXYZ(extraDepth(isObjArray?"[" : "┌"),0,0,0);
+            gridIn.setBySeperateXYZ(extraDepth(isObjArray?"[" : "└"),0,gridIn.height-1,0);
+            gridIn.setBySeperateXYZ(extraDepth(isObjArray?"]" : "┐"),gridIn.width-1,0,0);
+            gridIn.setBySeperateXYZ(extraDepth(isObjArray?"]" : "┘"),gridIn.width-1,gridIn.height-1,0);
 
             gridIn.frameStep();
             return gridApp.app.app_out;
