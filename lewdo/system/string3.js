@@ -50,6 +50,11 @@ var string3_prototype = {
         }
         return this;
     },
+    clone : function(other) {
+        var ans = string3();
+        ans.copy(this);
+        return ans;
+    },
     copyShallow : function(other) {
         this.width = other.width;
         this.height = other.height;

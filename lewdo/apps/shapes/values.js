@@ -43,6 +43,12 @@ var lewdo_values = {
             compare:((a,b)=>((a==b)?0:((a<b)?-1:1))),
             stringify:((a)=>(""+a)),
         },
+        "boolean":{
+            order:2,
+            name:"boolean",
+            compare:((a,b)=>((a==b)?0:((a<b)?-1:1))),
+            stringify:((a)=>(""+a)),
+        },
         "string":{
             order:3,
             name:"string",
