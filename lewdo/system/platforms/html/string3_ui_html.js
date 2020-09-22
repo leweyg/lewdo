@@ -30,7 +30,7 @@ var string3_ui = {
         var pagesToMake = 16;
         for (var fz=pagesToMake; fz>=0; fz--) {
             var clr = 'black';//(fz == 0) ? 'black' : 'lightgray';
-            var minOpacity = 0.2;
+            var minOpacity = 0.1;
             var opacity = 1.0 - ((1.0-minOpacity)*(fz / (pagesToMake + 1)));
             opacity = Math.pow(opacity,1.61);
             var style = "position:absolute;transform-origin : 50% 50%;opacity:" + opacity + ";color:" + clr + ";";
