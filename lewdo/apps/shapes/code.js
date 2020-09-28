@@ -184,6 +184,9 @@ var lewdo_code = {
         "add":{name:"add",short:"+",isOffset:true,asNumbers:true},
         "equals":{name:"equals",short:"=",isOffset:true,asNumbers:true},
         "not_equals":{name:"not_equals",short:"!",isOffset:true,asNumbers:true},
+
+        "free":{name:"free",short:"~"},
+        "free.":{name:"free.",short:"~",isOffset:true},
     },
     _code_op_prototype : {
         action:null,
@@ -349,6 +352,14 @@ var lewdo_code = {
         
         addWrite : function (addr,val) {
             this._addOp("write",addr,val);
+        },
+
+        addFree : function (addr,val) {
+            this._addOp("free",addr,val);
+        },
+
+        addFreeOffset : function (addr,indx,val) {
+            this._addOp("free.",addr,val,true,indx);
         },
 
         addAddition : function (addr,indx,val) {

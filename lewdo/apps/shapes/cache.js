@@ -97,13 +97,16 @@ var lewdo_cache = {
         },
 
         EraseEntry : function(entry) {
+            console.log("Freeing...");
+            this.record.addTime();
+            this.record.addFreeOffset(this.entriesByKey,entry.Key,entry.Value);
             delete this.entriesByKey[entry.Key];
             console.assert( !(entry.Key in this.entriesByKey) );
         },
 
         EvictItems : function(countNeeded) {
             countNeeded = (countNeeded || 0);
-            var countToEvict = (this.maxItems - countNeeded);
+            var countToEvict = ((Object.keys(this.entriesByKey).length + countNeeded) - this.maxItems);
 
             for (var key in this.entriesByKey) {
                 var entry = this.entriesByKey[key];
@@ -118,6 +121,20 @@ var lewdo_cache = {
             }
 
             // TODO: remove items in LRU
+            var entriesByPriInLRU = [];
+            for (var key in this.entriesByKey) {
+                entriesByPriInLRU.push(this.entriesByKey[key]);
+            }
+            entriesByPriInLRU.sort((a,b)=>{
+                if (a.Priority != b.Priority)
+                    return ((a.Priority > b.Priority)?-1:1);
+                return (a.LatestAccess < b.LatestAccess)?1:-1;
+            });
+            while ((countToEvict > 0) && (entriesByPriInLRU.length > 0)) {
+                var top = entriesByPriInLRU.pop();
+                this.EraseEntry(top);
+                countToEvict--;
+            }
         },
 
         AddDemoContent : function() {
