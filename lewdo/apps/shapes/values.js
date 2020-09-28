@@ -93,16 +93,20 @@ var lewdo_values = {
             stringify:((a)=>{
                 return a.objectInfo.toString() + "." + a.indexInfo.toString();
             }),
-            compare:((a,b)=>{
+            compare:function(a,b){
                 var c = a.objectInfo.compareTo(b.objectInfo);
                 if (c != 0) return c;
                 return a.indexInfo.compareTo(b.indexInfo);
-            }),
-            compareInfo:((a,b)=>(
-                ((a.value===b.value)?0:(
-                    (a.index<b.index)?-1:1
-                ))
-            )),
+            },
+            compareInfo:function(a,b){
+                if (a.value === b.value) {
+                    return 0;
+                }
+                if (a.hasIndex && b.hasIndex) {
+                    return (a.index < b.index) ? -1 : 1;
+                }
+                return this.compare(a.value,b.value);
+            },
             PropertyPrototype : {
                 objectInfo:null,
                 indexInfo:null,

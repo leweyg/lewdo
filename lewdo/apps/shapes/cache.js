@@ -57,7 +57,7 @@ var lewdo_cache = {
         Set : function(key, value, priority, expiryInSecs) {
             this.EvictItems(1);
 
-            this.record.addWriteOffset(this, key, value);
+            this.record.addWriteOffset(this.entriesByKey, key, value);
 
             var entry = Object.create( lewdo_cache.CacheEntry_Prototype );
             entry.Key = key;
@@ -73,7 +73,8 @@ var lewdo_cache = {
         Get : function(key) {
             var entry = this.entriesByKey[key];
             entry.LatestAccess = (this.access_index++);
-            this.record.addWriteOffset(this, entry.Key, entry.Value);
+            this.record.addTime();
+            this.record.addReadOffset(this.entriesByKey, key, entry.Value);
             return entry;
         },
 
