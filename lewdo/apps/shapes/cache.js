@@ -12,6 +12,11 @@ var lewdo_cache = {
     demo : function(_app) {
         var context = lewdo_cache.app( _app );
         context.AddDemoContent();
+        context.record.redraw();
+
+        context.app.app_out.copy(context.record.app.app_out);
+        context.app.app_out.frameStep();
+
         return context;
     },
     g_Time : 0,
@@ -22,10 +27,20 @@ var lewdo_cache = {
         ExpirationTime : 0,
         PriorityEntryPrev : null,
         PriorityEntryNext : null,
+        LatestAccess : 0,
+
+        HasExpired : function() {
+            if (lewdo_cache.g_Time >= this.ExpirationTime) {
+                return true;
+            }
+            return false;
+        }
     },
     lewdo_cache_prototype : {
         app : lewdo.app(),
         maxItems : 5,
+        access_index : 1,
+        record : null,
 
         entriesByKey : {},
 
@@ -33,18 +48,23 @@ var lewdo_cache = {
         setup : function(_app) {
             this.app = _app;
 
+            this.record = lewdo.apps.shapes.code();
+
             this.app.app_out.copy(lewdo.string3("cache\ndemo"));
             this.app.app_out.frameStep();
         },
 
         Set : function(key, value, priority, expiryInSecs) {
-            this.EvictItems();
+            this.EvictItems(1);
+
+            this.record.addWriteOffset(this, key, value);
 
             var entry = Object.create( lewdo_cache.CacheEntry_Prototype );
             entry.Key = key;
             entry.Value = value;
             entry.Priority = priority;
             entry.ExpirationTime = expiryInSecs + lewdo_cache.g_Time;
+            entry.LatestAccess = (this.access_index++);
             
             this.entriesByKey[key] = entry;
             return entry;
@@ -52,14 +72,22 @@ var lewdo_cache = {
 
         Get : function(key) {
             var entry = this.entriesByKey[key];
+            entry.LatestAccess = (this.access_index++);
+            this.record.addWriteOffset(this, entry.Key, entry.Value);
             return entry;
         },
 
         DebugPrintKeys : function() {
+            var combined = "[ ";
+            var isFirst = true;
             for (var key in this.entriesByKey) {
                 var entry = this.entriesByKey[key];
-                console.log("Entry[" + key + "]=" + entry.Value);
+                if (!isFirst) combined += ", ";
+                combined += key;
+                isFirst = false;
             }
+            combined += " ]";
+            console.log( combined );
         },
 
         SetMaxItems : function(n) {
@@ -67,8 +95,28 @@ var lewdo_cache = {
             this.EvictItems();
         },
 
-        EvictItems : function() {
+        EraseEntry : function(entry) {
+            delete this.entriesByKey[entry.Key];
+            console.assert( !(entry.Key in this.entriesByKey) );
+        },
 
+        EvictItems : function(countNeeded) {
+            countNeeded = (countNeeded || 0);
+            var countToEvict = (this.maxItems - countNeeded);
+
+            for (var key in this.entriesByKey) {
+                var entry = this.entriesByKey[key];
+                if (entry.HasExpired()) {
+                    countToEvict--;
+                    this.EraseEntry(entry);
+                }
+            }
+
+            if (countToEvict <= 0) {
+                return;
+            }
+
+            // TODO: remove items in LRU
         },
 
         AddDemoContent : function() {
@@ -91,7 +139,7 @@ var lewdo_cache = {
             c.DebugPrintKeys();
             
             // Sleep for 5 secs
-            g_Time += 5;
+            lewdo_cache.g_Time += 5;
             
             // Current time = 5
             c.SetMaxItems(4);
@@ -127,5 +175,5 @@ var lewdo_cache = {
 };
 
 lewdo.apps.shapes.cache = lewdo_cache.app;
-//lewdo.apps.tools.cache = lewdo_cache.demo;
+lewdo.apps.tools.cache = lewdo_cache.demo;
 
