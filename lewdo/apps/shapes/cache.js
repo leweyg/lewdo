@@ -127,5 +127,5 @@ var lewdo_cache = {
 };
 
 lewdo.apps.shapes.cache = lewdo_cache.app;
-lewdo.apps.tools.cache = lewdo_cache.demo;
+//lewdo.apps.tools.cache = lewdo_cache.demo;
 
