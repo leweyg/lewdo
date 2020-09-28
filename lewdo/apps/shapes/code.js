@@ -551,6 +551,7 @@ var lewdo_code = {
                 );
             });
             grid.frameStep();
+            grid = this.grid.app.app_out;
 
             var stack = this.stack.app.app_in;
             if (this.legend) {
