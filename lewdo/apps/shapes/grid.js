@@ -107,4 +107,4 @@ var lewdo_grid = {
 };
 
 lewdo.apps.shapes.grid = lewdo_grid.app;
-lewdo.apps.tools.grid = lewdo_grid.demo;
+//lewdo.apps.tools.grid = lewdo_grid.demo;

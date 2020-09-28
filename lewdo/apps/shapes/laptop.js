@@ -40,4 +40,4 @@ var lewdo_laptop = {
 };
 
 lewdo.apps.shapes.laptop = lewdo_laptop.app;
-lewdo.apps.tools.laptop = lewdo_laptop.app;
+//lewdo.apps.tools.laptop = lewdo_laptop.app;
