@@ -49,6 +49,14 @@ var lewdo_cache = {
             this.app = _app;
 
             this.record = lewdo.apps.shapes.code();
+            this.record.formatContent = function(info,str3,pos) {
+                var str = str3.toString()
+                if ((str==".") && info.value) {
+                    str = str3.toString() + info.value;
+                    return lewdo.string3(str);
+                }
+                return str3;
+            };
 
             this.app.app_out.copy(lewdo.string3("cache\ndemo"));
             this.app.app_out.frameStep();
@@ -57,14 +65,14 @@ var lewdo_cache = {
         Set : function(key, value, priority, expiryInSecs) {
             this.EvictItems(1);
 
-            this.record.addWriteOffset(this.entriesByKey, key, value);
-
             var entry = Object.create( lewdo_cache.CacheEntry_Prototype );
             entry.Key = key;
             entry.Value = value;
             entry.Priority = priority;
             entry.ExpirationTime = expiryInSecs + lewdo_cache.g_Time;
             entry.LatestAccess = (this.access_index++);
+
+            this.record.addWriteOffset(this.entriesByKey, key, entry);
             
             this.entriesByKey[key] = entry;
             return entry;
@@ -74,7 +82,7 @@ var lewdo_cache = {
             var entry = this.entriesByKey[key];
             entry.LatestAccess = (this.access_index++);
             this.record.addTime();
-            this.record.addReadOffset(this.entriesByKey, key, entry.Value);
+            this.record.addReadOffset(this.entriesByKey, key, entry);
             return entry;
         },
 
@@ -99,7 +107,7 @@ var lewdo_cache = {
         EraseEntry : function(entry) {
             console.log("Freeing...");
             this.record.addTime();
-            this.record.addFreeOffset(this.entriesByKey,entry.Key,entry.Value);
+            this.record.addFreeOffset(this.entriesByKey,entry.Key,entry);
             delete this.entriesByKey[entry.Key];
             console.assert( !(entry.Key in this.entriesByKey) );
         },
@@ -183,10 +191,10 @@ var lewdo_cache = {
             c.DebugPrintKeys();
             
             // leweyg-note: Added this test which uses recycling to avoid memory delete+new:
-            c.Set("R", 5, 5,  150 );
+            //c.Set("R", 5, 5,  150 );
             // Keys in R = ["R"]
             // "C" is removed because R is more recently used. Note that the C's memory is recycled into R
-            c.DebugPrintKeys();
+            //c.DebugPrintKeys();
             
         }
     }
