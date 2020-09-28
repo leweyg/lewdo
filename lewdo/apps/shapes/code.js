@@ -485,6 +485,14 @@ var lewdo_code = {
                 viz.times.add( op.timeInfo );
             });
         },
+        formatContent : function(info,str3,pos) {
+            return lewdo.string3( str3 );
+        },
+        _setItemContent:function(info,str3,pos) {
+            var grid = this.grid.app.app_in;
+            var content = this.formatContent( info, str3, pos );
+            grid.setByXYZ( content, pos );
+        },
 
         redraw : function() {
             this._updateVizIndices();
@@ -496,6 +504,8 @@ var lewdo_code = {
                 viz.addresses.length,
                 viz.times.length,
             );
+
+            var _this = this;
             this.opsByIndex.forEach(op => {
                 var centerPos = lewdo.xyz();
                 centerPos.set(
@@ -507,7 +517,8 @@ var lewdo_code = {
                 if (op.addressInfo.category.isProperty) {
                     var val = op.addressInfo.value;
                     addrPos.x = viz.values.find( val.objectInfo ).index;
-                    grid.setByXYZ(
+                    _this._setItemContent(
+                        val.objectInfo,
                         lewdo.string3( op.action.asNumbers ? "#" : "@" ),
                         addrPos
                     );
@@ -519,7 +530,8 @@ var lewdo_code = {
                             letter = valInfo.toString();
                         }
                     }
-                    grid.setByXYZ(
+                    _this._setItemContent(
+                        val.indexInfo,
                         lewdo.string3( letter ),// + val.indexInfo.toString() ),
                         addrPos
                     );
@@ -527,11 +539,13 @@ var lewdo_code = {
                 addrPos.x = viz.values.find( op.addressInfo ).index;
                 var identity_string = "↕"; //"↔"; //"↕"; // "&"
                 var identity_letter = identity_string; //op.action.isExecute ? lewdo.letter.play : identity_string;
-                grid.setByXYZ(
+                _this._setItemContent(
+                    op.addressInfo,
                     lewdo.string3( identity_letter ),// + val.indexInfo.toString() ),
                     addrPos
                 );
-                grid.setByXYZ(
+                _this._setItemContent(
+                    op.action,
                     lewdo.string3( op.action.short ),
                     centerPos
                 );
