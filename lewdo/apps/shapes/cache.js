@@ -25,8 +25,8 @@ var lewdo_cache = {
         Value : 0,
         Priority : 0,
         ExpirationTime : 0,
-        PriorityEntryPrev : null,
-        PriorityEntryNext : null,
+        prev : null,
+        next : null,
         LatestAccess : 0,
 
         HasExpired : function() {
@@ -43,7 +43,8 @@ var lewdo_cache = {
         record : null,
 
         entriesByKey : {},
-
+        recentList : {first:null,last:null,},
+        null_ptr : null,
 
         setup : function(_app) {
             this.app = _app;
@@ -58,8 +59,26 @@ var lewdo_cache = {
                 return str3;
             };
 
+            this.record.addWriteOffset(this.recentList,"first",this.null_ptr);
+            this.record.addWriteOffset(this.recentList,"last",this.null_ptr);
+
             this.app.app_out.copy(lewdo.string3("cache\ndemo"));
             this.app.app_out.frameStep();
+        },
+
+        RecentListAdd : function(entry) {
+            entry.next = this.recentList.first;
+            this.record.addWriteOffset(entry,"next",this.recentList.first);
+            if (this.recentList.first) {
+                this.recentList.first.prev = entry;
+                this.record.addWriteOffset(this.recentList.first,"prev",entry);
+            }
+            this.recentList.first = entry;
+            this.record.addWriteOffset(this.recentList,"first",entry);
+            if (!this.recentList.last) {
+                this.recentList.last = entry;
+                this.record.addWriteOffset(this.recentList,"last",entry);
+            }
         },
 
         Set : function(key, value, priority, expiryInSecs) {
@@ -73,8 +92,10 @@ var lewdo_cache = {
             entry.LatestAccess = (this.access_index++);
 
             this.record.addWriteOffset(this.entriesByKey, key, entry);
-            
             this.entriesByKey[key] = entry;
+
+            this.RecentListAdd( entry );
+
             return entry;
         },
 
