@@ -177,6 +177,7 @@ var lewdo_code = {
         "write.":{name:"write.",isOffset:true,isWrite:true,short:lewdo.letter.touch},
         //"execute":{name:"execute",short:"x"},
         "execute_read":{name:"execute property",short:lewdo.letter.play,isExecute:true},
+        "execute_read.":{name:"execute property",short:lewdo.letter.play,isOffset:true,isExecute:true},
         "execute_write":{name:"execute property",short:lewdo.letter.play,isExecute:true,isWrite:true},
         "execute.out":{name:"execute property",isOffset:true,short:lewdo.letter.touch,isExecute:true,isWrite:true},
         
@@ -304,6 +305,7 @@ var lewdo_code = {
         currentTime : null,
         legend : false,
         legend_with_code : false,
+        legend_centered : false,
 
 
         _toString3FromObjectRecursive : function(context,obj) {
@@ -383,6 +385,10 @@ var lewdo_code = {
 
         addExecuteRead : function(addr,val) {
             this._addOp("execute_read",addr,val);
+        },
+
+        addExecuteOffsetRead : function(addr,indx,val) {
+            this._addOp("execute_read.",addr,val);
         },
 
         addExecuteWrite : function(addr,val) {
@@ -498,12 +504,12 @@ var lewdo_code = {
                 viz.times.add( op.timeInfo );
             });
         },
-        formatContent : function(info,str3,pos) {
+        formatContent : function(info,str3,pos,op) {
             return lewdo.string3( str3 );
         },
-        _setItemContent:function(info,str3,pos) {
+        _setItemContent:function(info,str3,pos,op) {
             var grid = this.grid.app.app_in;
-            var content = this.formatContent( info, str3, pos );
+            var content = this.formatContent( info, str3, pos, op );
             grid.setByXYZ( content, pos );
         },
 
@@ -533,7 +539,7 @@ var lewdo_code = {
                     _this._setItemContent(
                         val.objectInfo,
                         lewdo.string3( op.action.asNumbers ? "#" : "@" ),
-                        addrPos
+                        addrPos, op
                     );
                     addrPos.x = viz.values.find( val.indexInfo ).index;
                     var letter = op.action.asNumbers ? "#" : ".";
@@ -546,7 +552,7 @@ var lewdo_code = {
                     _this._setItemContent(
                         val.indexInfo,
                         lewdo.string3( letter ),// + val.indexInfo.toString() ),
-                        addrPos
+                        addrPos, op
                     );
                 }
                 addrPos.x = viz.values.find( op.addressInfo ).index;
@@ -555,12 +561,12 @@ var lewdo_code = {
                 _this._setItemContent(
                     op.addressInfo,
                     lewdo.string3( identity_letter ),// + val.indexInfo.toString() ),
-                    addrPos
+                    addrPos, op
                 );
                 _this._setItemContent(
                     op.action,
                     lewdo.string3( op.action.short ),
-                    centerPos
+                    centerPos, op
                 );
             });
             grid.frameStep();
@@ -588,7 +594,7 @@ var lewdo_code = {
                     */
                     );
                 
-                stack.centered = true;
+                this.stack.centered = this.legend_centered;
                 stack.resize(1,5,1);
                 stack.setBySeperateXYZ(grid,0,0,0);
                 stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);

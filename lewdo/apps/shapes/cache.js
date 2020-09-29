@@ -50,10 +50,14 @@ var lewdo_cache = {
             this.app = _app;
 
             this.record = lewdo.apps.shapes.code();
-            this.record.formatContent = function(info,str3,pos) {
+            this.record.formatContent = function(info,str3,pos,op) {
                 var str = str3.toString()
                 if ((str==".") && info.value) {
                     str = str3.toString() + info.value;
+                    return lewdo.string3(str);
+                }
+                if ((str==lewdo.letter.play)) {
+                    str = str3.toString() + op.valueInfo.value;
                     return lewdo.string3(str);
                 }
                 return str3;
@@ -66,6 +70,7 @@ var lewdo_cache = {
                 cb( "prev" );
             });
             this.record.legend = true;
+            this.record.legend_centered = true;
 
             this.record.addWriteOffset(this.recentList,"first",this.null_ptr);
             this.record.addWriteOffset(this.recentList,"last",this.null_ptr);
@@ -78,6 +83,7 @@ var lewdo_cache = {
             entry.next = this.recentList.first;
             this.record.addWriteOffset(entry,"next",this.recentList.first);
 
+            this.record.addReadOffset( this.recentList, "first", this.recentList.first );
             if (this.recentList.first) {
                 this.recentList.first.prev = entry;
                 this.record.addWriteOffset(this.recentList.first,"prev",entry);
@@ -86,6 +92,7 @@ var lewdo_cache = {
             this.recentList.first = entry;
             this.record.addWriteOffset(this.recentList,"first",entry);
 
+            this.record.addReadOffset( this.recentList, "last", this.recentList.last );
             if (!this.recentList.last) {
                 this.recentList.last = entry;
                 this.record.addWriteOffset(this.recentList,"last",entry);
@@ -93,6 +100,7 @@ var lewdo_cache = {
         },
 
         RecentListRemove : function(entry) {
+            this.record.addReadOffset( entry, "prev", entry.prev );
             if (entry.prev) {
                 entry.prev.next = entry.next;
                 this.record.addWriteOffset(entry.prev,"next",entry.next);
@@ -100,6 +108,7 @@ var lewdo_cache = {
                 this.recentList.first = entry.next;
                 this.record.addWriteOffset(this.recentList,"first",entry.next);
             }
+            this.record.addReadOffset( entry, "next", entry.next );
             if (entry.next) {
                 entry.next.prev = entry.prev;
                 this.record.addWriteOffset(entry.next,"prev",entry.prev);
@@ -110,7 +119,10 @@ var lewdo_cache = {
         },
 
         Set : function(key, value, priority, expiryInSecs) {
+            this.record.addExecuteRead(this.entriesByKey, "set");
             this.EvictItems(1);
+
+            
 
             var entry = Object.create( lewdo_cache.CacheEntry_Prototype );
             entry.Key = key;
@@ -129,6 +141,9 @@ var lewdo_cache = {
         },
 
         Get : function(key) {
+            this.record.addExecuteRead(this.entriesByKey, "get");
+
+            this.EvictItems(0);
             var entry = this.entriesByKey[key];
             entry.LatestAccess = (this.access_index++);
             this.record.addTime();
@@ -158,6 +173,7 @@ var lewdo_cache = {
 
         EraseEntry : function(entry) {
             console.log("Freeing...");
+            this.record.addExecuteRead(this.entriesByKey, "evict");
             this.record.addTime();
             this.RecentListRemove(entry);
             this.record.addFreeOffset(this.entriesByKey,entry.Key,entry);
