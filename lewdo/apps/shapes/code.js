@@ -12,6 +12,7 @@ var lewdo_code = {
     demo : function(_app) {
         var code = lewdo_code.app(_app);
         code.legend = true;
+        code.legend_with_code = true;
 
         var demoMode = "helloWorld"; // iterator // simple
         switch (demoMode) {
@@ -302,6 +303,7 @@ var lewdo_code = {
         times : lewdo.apps.shapes.values(),
         currentTime : null,
         legend : false,
+        legend_with_code : false,
 
 
         _toString3FromObjectRecursive : function(context,obj) {
@@ -464,12 +466,23 @@ var lewdo_code = {
             return maxLength;
         },
 
+        preloadViz : function(viz,value_callback) {
+            // used as callback
+        },
+
+        _preloadValueCallback : function(val) {
+            var info = this.values.find(val);
+            this.visualLayout.values.add( info );
+        },
+
         _updateVizIndices : function() {
             // First recalculate the usage indices:
             var viz = this.visualLayout;
             viz.values.clear();
             viz.addresses.clear();
             viz.times.clear();
+            var _this = this;
+            this.preloadViz( viz, (val) => _this._preloadValueCallback(val) );
             this.opsByIndex.forEach(op => {
                 if (op.addressInfo.category.isProperty) {
                     var prop = op.addressInfo.value;
@@ -559,7 +572,7 @@ var lewdo_code = {
                 //var code = string3("b=a[c];\nc++;\n ");
                 var code = string3("  a   \v\v    c\v   [ ]\vb=    ;\v\n  c+1\n\v\nc=   ;\v\n\n      b()\v\n\nvar f=   ;\n ");
 
-                var info = string3("3D\v  time    \v\n↕          ↔\v  \n variables  values\n ");
+                var info = string3("3D\v  time    \v\n↕          ↔\v  \n addresses  values\n ");
                 //var legend = string3("○read ●write .dot\n#number @bject\n+add");
                 var legend = string3( "\v\v" +
                     //"○read ●write .dot\n#number @bject\n+add"
@@ -579,7 +592,9 @@ var lewdo_code = {
                 stack.resize(1,5,1);
                 stack.setBySeperateXYZ(grid,0,0,0);
                 stack.setBySeperateXYZ(lewdo.string3(" "),0,1,0);
-                stack.setBySeperateXYZ(code,0,2,0);
+                if (this.legend_with_code) {
+                    stack.setBySeperateXYZ(code,0,2,0);
+                }
                 stack.setBySeperateXYZ(info,0,3,0);
                 stack.setBySeperateXYZ(legend,0,4,0);
             } else {
