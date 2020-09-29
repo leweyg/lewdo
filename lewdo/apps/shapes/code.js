@@ -582,8 +582,8 @@ var lewdo_code = {
                 //var legend = string3("○read ●write .dot\n#number @bject\n+add");
                 var legend = string3( "\v\v" +
                     //"○read ●write .dot\n#number @bject\n+add"
-                    "○     ●      .   \n#       @      \n+    ►\v" +
-                    " read  write  dot\n number  object\n add  call"
+                    "○     ●      .   \n#       @      \n+    ►     ~    \v" +
+                    " read  write  dot\n number  object\n add  call  free"
                     /*
                     "○             \v" +
                     " read             \v" +
