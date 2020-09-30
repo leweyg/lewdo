@@ -10,8 +10,8 @@
 #include <math.h>
 
 #include "../../include/string3.h"
-#include "../../include/string3_stdout.h"
-#include "../../include/lewdo_code.h"
+#include "../../include/platforms/std/string3_stdout.h"
+#include "../../include/shapes/lewdo_code.h"
 
 size3_t size(8,16,4);
 

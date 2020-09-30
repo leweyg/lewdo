@@ -8,7 +8,7 @@
 #ifndef string3_stdout_h
 #define string3_stdout_h
 
-#include "string3.h"
+#include "../../string3.h"
 
 void PrintString3(string3_ptr str) {
     auto n = str.count();

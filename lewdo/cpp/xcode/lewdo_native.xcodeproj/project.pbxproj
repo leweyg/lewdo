@@ -24,10 +24,9 @@
 
 /* Begin PBXFileReference section */
 		5C03BC9625254D1C007D36D0 /* string3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string3.h; path = ../../include/string3.h; sourceTree = "<group>"; };
-		5C03BC9725254D1C007D36D0 /* string3_stdout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = string3_stdout.h; path = ../../include/string3_stdout.h; sourceTree = "<group>"; };
 		5C03BC9825254D1C007D36D0 /* size3_t.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = size3_t.h; path = ../../include/size3_t.h; sourceTree = "<group>"; };
-		5C03BC9925254D1C007D36D0 /* lewdo_code.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lewdo_code.h; path = ../../include/lewdo_code.h; sourceTree = "<group>"; };
-		5C03BC9A25254D1C007D36D0 /* lewdo_value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lewdo_value.h; path = ../../include/lewdo_value.h; sourceTree = "<group>"; };
+		5C03BC9B25254E63007D36D0 /* platforms */ = {isa = PBXFileReference; lastKnownFileType = folder; name = platforms; path = ../../include/platforms; sourceTree = "<group>"; };
+		5C03BC9C25254E63007D36D0 /* shapes */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shapes; path = ../../include/shapes; sourceTree = "<group>"; };
 		5CDA922A25254B570026F6EC /* lewdo_native */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lewdo_native; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDA922D25254B570026F6EC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -62,10 +61,9 @@
 		5CDA922C25254B570026F6EC /* lewdo_native */ = {
 			isa = PBXGroup;
 			children = (
-				5C03BC9925254D1C007D36D0 /* lewdo_code.h */,
-				5C03BC9A25254D1C007D36D0 /* lewdo_value.h */,
+				5C03BC9B25254E63007D36D0 /* platforms */,
+				5C03BC9C25254E63007D36D0 /* shapes */,
 				5C03BC9825254D1C007D36D0 /* size3_t.h */,
-				5C03BC9725254D1C007D36D0 /* string3_stdout.h */,
 				5C03BC9625254D1C007D36D0 /* string3.h */,
 				5CDA922D25254B570026F6EC /* main.cpp */,
 			);
