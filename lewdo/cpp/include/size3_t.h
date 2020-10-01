@@ -51,6 +51,8 @@ namespace lewdo {
             return prod;
         }
         
+        size_t count() const { return product(); }
+        
         size3_t product(const size3_t& other) const {
             size3_t result;
             EXPAND3_i( result.v[i] = ( v[i] * other.v[i] ) );
@@ -106,6 +108,8 @@ namespace lewdo {
             return (compareTo(other)==0);
         }
         
+        size_t begin() { return 0; }
+        size_t end() { return count(); }
     };
 
     const size3_t size3_t::zero(0,0,0);

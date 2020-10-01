@@ -104,14 +104,24 @@ namespace lewdo {
             memcpy(array1d, other.array1d, sizeof(wchar_t)*size.product());
         }
         
-        void Resize(size3_t _size) {
+        void Resize(size3_t _size, bool keepContents=true) {
             if (size.compareTo(_size)==0) {
                 return;
             }
-            if (array1d) {
+            auto pInto = ((_size.count()!=0) ? NewArray(_size.count()) : nullptr);
+            auto pFrom = array1d;
+            if (keepContents && pFrom && pInto) {
+                for (auto i=size.begin(); i!=size.end(); i++) {
+                    auto pos = size.unpack(i);
+                    if (_size.isValidIndex(pos)) {
+                        pInto[ _size.pack(pos) ] = pFrom[ i ];
+                    }
+                }
+            }
+            if (pFrom) {
                 DeleteArray(array1d);
             }
-            array1d = NewArray(_size.product());
+            array1d = pInto;
             size = _size;
         }
         

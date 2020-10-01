@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     app.app_out.buffer.Copy( testString );
     PrintString3( app.app_out.buffer );
     
-    lewdo::lewdo_code code;
+    lewdo::shape::lewdo_code code;
     code.demo();
     string3_ptr codeShow = code.ToString3();
     PrintString3(codeShow);
