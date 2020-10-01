@@ -89,7 +89,6 @@ namespace lewdo {
     public:
 
         string3_ptr() : tensor3n_T_ptr(size3_t::zero,nullptr) { }
-        
         string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) { }
         
         static const string3_ptr empty;

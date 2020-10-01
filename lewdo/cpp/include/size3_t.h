@@ -10,9 +10,7 @@
 
 namespace lewdo {
 
-    template <typename T,size_t N>
-    class tensorN_T {
-        
+    template <typename T,size_t N> class tensorN_T {
     public:
         T v[N];
         
@@ -23,8 +21,7 @@ namespace lewdo {
 
     #define EXPAND3_i(foo) {const size_t i=0;foo;}{const size_t i=1;foo;}{const size_t i=2;foo;}
 
-    class size3_t : public tensorN_T<size_t,3>
-    {
+    class size3_t : public tensorN_T<size_t,3> {
     public:
         static const size_t N = 3;
         static const size3_t zero;
