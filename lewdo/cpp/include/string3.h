@@ -60,12 +60,18 @@ public:
         return pData;
     }
     
+    static void DeleteArray(T* _array) {
+        delete [] _array;
+    }
+    
     static tensor3n_T_ptr NewTensor(size3_t _size) {
         return tensor3n_T_ptr( _size, NewArray( _size.product() ) );
     }
     
     void Delete() {
-        delete [] array1d;
+        if (array1d) {
+            DeleteArray( array1d );
+        }
         Zero();
     }
     
@@ -80,13 +86,32 @@ public:
 class string3_ptr : public tensor3n_T_ptr<wchar_t> {
 public:
 
+    string3_ptr() {}
     string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) {
     }
+    
+    static const string3_ptr empty;
     
     static string3_ptr New( size3_t _size ) {
         auto core = NewTensor( _size );
         auto result = string3_ptr( _size, core.array1d );
         return result;
+    }
+    
+    void Copy(string3_ptr other) {
+        Resize( other.size );
+        memcpy(array1d, other.array1d, sizeof(wchar_t)*size.product());
+    }
+    
+    void Resize(size3_t _size) {
+        if (size.compareTo(_size)==0) {
+            return;
+        }
+        if (array1d) {
+            DeleteArray(array1d);
+        }
+        array1d = NewArray(_size.product());
+        size = _size;
     }
     
     static string3_ptr String(const wchar_t* pCString) {
@@ -149,6 +174,8 @@ public:
     }
     
 };
+
+const string3_ptr string3_ptr::empty = string3_ptr( size3_t::zero, nullptr );
 
 
 #endif /* string3_h */

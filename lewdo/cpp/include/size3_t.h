@@ -98,6 +98,15 @@ public:
         return result;
     };
     
+    int compareTo(const size3_t& other) const {
+        EXPAND3_i( if (v[i]!=other.v[i]) return (v[i]>other.v[i]?1:-1) );
+        return 0;
+    };
+    
+    bool operator==(const size3_t& other) const {
+        return (compareTo(other)==0);
+    }
+    
 };
 
 const size3_t size3_t::zero(0,0,0);
