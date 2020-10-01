@@ -86,9 +86,9 @@ public:
 class string3_ptr : public tensor3n_T_ptr<wchar_t> {
 public:
 
-    string3_ptr() {}
-    string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) {
-    }
+    string3_ptr() : tensor3n_T_ptr(size3_t::zero,nullptr) { }
+    
+    string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) { }
     
     static const string3_ptr empty;
     

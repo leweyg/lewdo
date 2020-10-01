@@ -20,16 +20,24 @@ namespace lewdo {
         
         string3_ptr buffer;
         std::list<callback_t> subscribers;
+        size_t frame;
         
         string3_observable() {
             buffer = string3_ptr( size3_t::zero, nullptr );
+            frame = 0;
         }
         
         void subscribe(callback_t _callback) {
             subscribers.push_back( _callback );
         }
         
+        void subscribeCurrent(callback_t _callback) {
+            subscribe( _callback );
+            _callback( this );
+        }
+        
         void frameStep() {
+            frame++;
             for (auto i=subscribers.begin(); i!=subscribers.end(); i++) {
                 (*i)( this );
             }
