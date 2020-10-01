@@ -27,7 +27,7 @@ public:
         array1d = _array1D;
     }
     
-    bool const isValidIndex(size3_t pos) {
+    bool const isValidIndex(size3_t pos) const {
         return size.isValidIndex(pos);
     }
     
@@ -37,7 +37,7 @@ public:
         array1d[ size.pack(pos) ] = letter;
     }
     
-    T const Get(size3_t pos) {
+    T const Get(size3_t pos) const {
         assert( isValidIndex(pos) );
         assert( size.pack(pos) < count() );
         return array1d[ size.pack(pos) ];
@@ -46,7 +46,7 @@ public:
     //unsigned long operator [](int i) const    {return registers[i];}
     //unsigned long & operator [](int i) {return registers[i];}
     
-    const size_t count() {
+    const size_t count() const {
         return size.product();
     }
     

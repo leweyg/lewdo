@@ -40,19 +40,19 @@ public:
         v[2] = _z;
     };
     
-    bool const isValidIndex(size3_t other) {
+    bool const isValidIndex(size3_t other) const {
         bool isValid = true;
         EXPAND3_i( isValid = isValid && (other.v[i] >= 0) && ( other.v[i] < v[i] ) );
         return isValid;
     }
     
-    size_t product() {
+    size_t product() const {
         size_t prod = 1;
         EXPAND3_i( prod *= v[i] );
         return prod;
     }
     
-    size3_t product(const size3_t& other) {
+    size3_t product(const size3_t& other) const {
         size3_t result;
         EXPAND3_i( result.v[i] = ( v[i] * other.v[i] ) );
         return result;
@@ -78,21 +78,21 @@ public:
         return result;
     };
     
-    size_t const pack(size3_t pos) {
+    size_t pack(size3_t pos) const {
         return packing().dot( pos );
     };
     
-    size3_t const unpack(size_t pos) {
+    size3_t const unpack(size_t pos) const {
         return packing().undot( pos );
     };
     
-    size3_t add(const size3_t& other) {
+    size3_t add(const size3_t& other) const {
         size3_t result;
         EXPAND3_i( result.v[i] = ( v[i] + other.v[i] ) );
         return result;
     };
     
-    size3_t max(const size3_t& other) {
+    size3_t max(const size3_t& other) const {
         size3_t result;
         EXPAND3_i( result.v[i] = ((v[i]>other.v[i])?v[i]:other.v[i]) );
         return result;
