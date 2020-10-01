@@ -9,23 +9,19 @@
 #define size3_t_h
 
 template <typename T,size_t N>
-class tensorN_t {
+class tensorN_T {
     
 public:
     T v[N];
     
     static const size_t dimensions = N;
     
-    tensorN_t() { }
+    tensorN_T() { }
 };
 
 #define EXPAND3_i(foo) {const size_t i=0;foo;}{const size_t i=1;foo;}{const size_t i=2;foo;}
 
-size_t add_size_t(size_t a, size_t b) {
-    return (a + b);
-}
-
-class size3_t : public tensorN_t<size_t,3>
+class size3_t : public tensorN_T<size_t,3>
 {
 public:
     static const size_t N = 3;

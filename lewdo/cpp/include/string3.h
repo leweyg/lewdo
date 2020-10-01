@@ -10,22 +10,21 @@
 
 #include "size3_t.h"
 
-template <typename T, typename FinalType>
-class tensorT_3n_ptr {
+template <typename T> class tensor3n_T_ptr {
 public:
     size3_t size;
-    T* Array1D;
+    T* array1d;
     
-    tensorT_3n_ptr() {}
+    tensor3n_T_ptr() {}
     
-    tensorT_3n_ptr(const tensorT_3n_ptr& other) {
+    tensor3n_T_ptr(const tensor3n_T_ptr& other) {
         size = other.size;
-        Array1D = other.Array1D;
+        array1d = other.array1d;
     }
     
-    tensorT_3n_ptr(size3_t _size, T* _array1D) {
+    tensor3n_T_ptr(size3_t _size, T* _array1D) {
         size = _size;
-        Array1D = _array1D;
+        array1d = _array1D;
     }
     
     bool const isValidIndex(size3_t pos) {
@@ -35,13 +34,13 @@ public:
     void Set(size3_t pos, T letter) {
         assert( isValidIndex(pos) );
         assert( size.pack(pos) < count() );
-        Array1D[ size.pack(pos) ] = letter;
+        array1d[ size.pack(pos) ] = letter;
     }
     
     T const Get(size3_t pos) {
         assert( isValidIndex(pos) );
         assert( size.pack(pos) < count() );
-        return Array1D[ size.pack(pos) ];
+        return array1d[ size.pack(pos) ];
     }
     
     //unsigned long operator [](int i) const    {return registers[i];}
@@ -53,33 +52,41 @@ public:
     
     void Zero() {
         size = size3_t::zero;
-        Array1D = nullptr;
+        array1d = nullptr;
     }
     
-    static FinalType New(size3_t _size) {
-        size_t length = _size.product();
-        wchar_t* pData = new T[ length ];
-        FinalType result( _size, pData );
-        return result;
+    static T* NewArray(size_t _size) {
+        auto pData = new T[ _size ];
+        return pData;
+    }
+    
+    static tensor3n_T_ptr NewTensor(size3_t _size) {
+        return tensor3n_T_ptr( _size, NewArray( _size.product() ) );
     }
     
     void Delete() {
-        delete [] Array1D;
+        delete [] array1d;
         Zero();
     }
     
     void Clear(T to) {
         auto n = count();
         for (auto i=0; i<n; i++) {
-            Array1D[i] = to;
+            array1d[i] = to;
         }
     }
 };
 
-class string3_ptr : public tensorT_3n_ptr<wchar_t,string3_ptr> {
+class string3_ptr : public tensor3n_T_ptr<wchar_t> {
 public:
 
-    string3_ptr(size3_t _size, wchar_t* _array1D) : tensorT_3n_ptr(_size,_array1D) {
+    string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) {
+    }
+    
+    static string3_ptr New( size3_t _size ) {
+        auto core = NewTensor( _size );
+        auto result = string3_ptr( _size, core.array1d );
+        return result;
     }
     
     static string3_ptr String(const wchar_t* pCString) {
