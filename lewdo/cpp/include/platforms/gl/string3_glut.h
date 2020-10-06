@@ -23,25 +23,20 @@ namespace lewdo {
     
     class lewdo_glut {
     public:
-        static int main(int argc, char** argv) {
-            lewdo_glut app;
-            return app.main_private(argc, argv);
-        }
-        
         static lewdo_glut* global_instance();
         
-    private:
+        static int main(int argc, char** argv) {
+            return global_instance()->main_private( argc, argv );
+        }
         
-        void init() {
+        
+    private:
+        int frameCount = 0;
+        
+        void gl_initialize() {
             glEnable(GL_DEPTH_TEST);
-            glClearColor(1.0, 1.0, 1.0, 1.0);
+            glShadeModel(GL_SMOOTH);
             glColor3f(0.0, 1.0, 0.0);
-            
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0, EDGE, 0, EDGE*SQR3/2, -EDGE, 0);
-            
-            glMatrixMode(GL_MODELVIEW);
         }
         
         int main_private(int argc, char** argv) {
@@ -53,6 +48,8 @@ namespace lewdo {
             glutInitWindowSize(500, 500*SQR3/2);
             glutInitWindowPosition(0, 0);
             glutCreateWindow("lewdo");
+            
+            gl_initialize();
             
             glutKeyboardFunc(myKeyboardCallback);
             glutSpecialFunc(mySpecialKeyFunction);
@@ -72,14 +69,67 @@ namespace lewdo {
             
         }
         
+        static void frame_pre() {
+            int w = glutGet(GLUT_WINDOW_WIDTH);
+            int h = glutGet(GLUT_WINDOW_HEIGHT);
+            
+            glViewport(0, 0, w, h);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            bool isOrtho = true;
+            if (isOrtho) {
+                glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
+            } else {
+                glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+            }
+            
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+        }
+        
+        
+        
         static void display() {
-                
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                
-                glBegin(GL_TRIANGLES);
-                //draw stuff
-                glEnd();
-                glFlush();
+            auto _this = global_instance();
+            _this->frameCount++;
+            
+            float g = ((_this->frameCount*5)%100) * (1.0f/100.0f);
+        
+            glClearColor( 0.5f, g, 0.5f, 0.5 );
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+            frame_pre();
+        
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+        
+            glutSolidSphere(0.5, 9, 5);
+            //glutWireCube(0.5);
+        
+            //glTranslatef(0,0,0.5f);
+        
+            //draw stuff
+            draw_triangle();
+        
+            glFlush();
+        }
+        
+        static void draw_triangle() {
+            glBegin(GL_TRIANGLES);
+            float v[3] = { 0.5, 0.5, 0.5 };
+            
+            //glColor3fv(v);
+            glColor3f(0.5f,0.5f,0.5f);
+            
+            glVertex3f(0.0f,0.0f,0.0f);
+            glVertex3f(0.0f,1.0f,0.0f);
+            glVertex3f(1.0f,0.0f,0.0f);
+            
+            glVertex3f(0.0f,0.0f,0.0f);
+            glVertex3f(0.0f,-1.0f,0.0f);
+            glVertex3f(1.0f,0.0f,0.0f);
+            
+            glEnd();
         }
         
         
@@ -138,7 +188,8 @@ namespace lewdo {
     
     
     lewdo_glut lewdo_glut_g;
-    static lewdo_glut* global_instance() { return &lewdo_glut_g; }
+    lewdo_glut* lewdo_glut::global_instance() { return &lewdo_glut_g; }
+    
     
 }
 
