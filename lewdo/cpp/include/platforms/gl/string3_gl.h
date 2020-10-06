@@ -11,6 +11,7 @@
 
 #include "../../string3.h"
 #include "../../math3_t.h"
+#include "../../shapes/font.h"
 
 #include <OpenGL/gl.h>
 
@@ -20,6 +21,12 @@ namespace lewdo {
     class string3_GLContext {
     private:
         int drawCallDepth = 0;
+        
+        float3_t LocalToWorld(size3_t offset) {
+            float3_t result;
+            EXPAND3_i(result.v[i] = (0.02f * offset.v[i]));
+            return result;
+        }
         
         void myBegin() {
             if (drawCallDepth!=0) {
@@ -81,6 +88,30 @@ namespace lewdo {
         void drawChar(wchar_t letter, size3_t pos) {
             if (isWhiteSpace(letter)) return;
             
+            float c = ((float)letter) / 255.0f;
+            glColor3f(0.5f,c,0.5f);
+    
+            drawCharBasicFont(letter,pos);
+            //drawQuad(pos);
+        }
+        
+        void drawCharBasicFont(wchar_t letter, size3_t pos) {
+            auto pFont = &lewdo_font_tensor;
+            auto fontSize2D = pFont->size;
+            fontSize2D.v[2] = 1;
+            auto fontStart = size3_t(0,0,letter);
+            for (auto i=fontSize2D.begin(); i!=fontSize2D.end(); i++) {
+                auto fontPos = fontSize2D.unpack(i);
+                
+                auto fontResult = pFont->Get(fontStart.add(fontPos));
+                if (fontResult != 0) {
+                    drawQuad( pos.multiply(fontSize2D).add(fontPos) );
+                }
+                
+            }
+        }
+        
+        void drawQuad(size3_t pos) {
             myBegin();
             
             float3_t v;
@@ -95,9 +126,6 @@ namespace lewdo {
                 size3_t(1.0f,0.0f,0.0f),
             };
             
-            float c = ((float)letter) / 255.0f;
-            glColor3f(0.5f,c,0.5f);
-            
             for (auto i=0; i<numVerts; i++) {
                 auto c = pos.add(offsets[i]);
                 auto p = LocalToWorld(c);
@@ -107,11 +135,6 @@ namespace lewdo {
             myEnd();
         }
         
-        float3_t LocalToWorld(size3_t offset) {
-            float3_t result;
-            EXPAND3_i(result.v[i] = (0.2f * offset.v[i]));
-            return result;
-        }
         
         
     private:

@@ -69,7 +69,7 @@ namespace lewdo {
         
         size_t count() const { return product(); }
         
-        size3_t mult(const size3_t& other) const {
+        size3_t multiply(const size3_t& other) const {
             size3_t result;
             EXPAND3_i( result.v[i] = ( v[i] * other.v[i] ) );
             return result;

@@ -80,7 +80,7 @@ namespace lewdo {
             glLoadIdentity();
             bool isOrtho = true;
             if (isOrtho) {
-                glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+                glOrtho(-1.0, 1.0, 1.0, -1.0, -1.0, 1.0);
             } else {
                 glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
             }
