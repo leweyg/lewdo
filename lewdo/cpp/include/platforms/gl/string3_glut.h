@@ -189,6 +189,8 @@ namespace lewdo {
             if ((ux < 0) || (ux > 1) || (uy < 0) || (uy > 1)) {
                 return; // out of bounds
             }
+            glutPostRedisplay();
+            
             //std::cout << "Mouse moved to " << ux << "," << uy << "\n";
         }
 
