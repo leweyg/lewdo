@@ -13,6 +13,8 @@
 #include "../../include/platforms/std/string3_stdout.h"
 #include "../../include/shapes/lewdo_code.h"
 
+#include "../../include/platforms/gl/string3_glut.h"
+
 using namespace lewdo;
 
 size3_t size(8,16,4);
