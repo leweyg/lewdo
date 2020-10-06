@@ -13,7 +13,6 @@
 namespace lewdo {
 
     void PrintString3(string3_ptr str) {
-        auto n = str.count();
         std::wcout.flush();
         wchar_t text[2] = { L' ', 0 };
         std::cout << "Printing...\n";

@@ -30,4 +30,7 @@ int main(int argc, char** argv)
     code.demo();
     string3_ptr codeShow = code.ToString3();
     PrintString3(codeShow);
+    
+    // Start the OpenGL project:
+    lewdo_glut::main(argc,argv);
 }

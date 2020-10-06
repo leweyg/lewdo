@@ -11,6 +11,8 @@
 
 #include "../../string3.h"
 
+#include <OpenGL/OpenGL.h>
+
 namespace lewdo {
     
     void string3_GL_DrawImmediate(string3_ptr str3) {

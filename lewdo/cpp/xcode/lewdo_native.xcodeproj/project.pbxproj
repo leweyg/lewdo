@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C03BCA3252BF4E4007D36D0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C03BCA2252BF4E4007D36D0 /* GLUT.framework */; };
+		5C03BCA5252BF4EE007D36D0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C03BCA4252BF4EE007D36D0 /* OpenGL.framework */; };
 		5CDA922E25254B570026F6EC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CDA922D25254B570026F6EC /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +33,8 @@
 		5C03BC9E25258190007D36D0 /* grid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = grid.h; path = ../../include/shapes/grid.h; sourceTree = "<group>"; };
 		5C03BC9F252BF357007D36D0 /* string3_gl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = string3_gl.h; path = ../../include/platforms/gl/string3_gl.h; sourceTree = "<group>"; };
 		5C03BCA0252BF3AB007D36D0 /* string3_glut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = string3_glut.h; path = ../../include/platforms/gl/string3_glut.h; sourceTree = "<group>"; };
+		5C03BCA2252BF4E4007D36D0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		5C03BCA4252BF4EE007D36D0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		5CDA922A25254B570026F6EC /* lewdo_native */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lewdo_native; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDA922D25254B570026F6EC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -40,17 +44,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C03BCA5252BF4EE007D36D0 /* OpenGL.framework in Frameworks */,
+				5C03BCA3252BF4E4007D36D0 /* GLUT.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C03BCA1252BF4E4007D36D0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5C03BCA4252BF4EE007D36D0 /* OpenGL.framework */,
+				5C03BCA2252BF4E4007D36D0 /* GLUT.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5CDA922125254B570026F6EC = {
 			isa = PBXGroup;
 			children = (
 				5CDA922C25254B570026F6EC /* lewdo_native */,
 				5CDA922B25254B570026F6EC /* Products */,
+				5C03BCA1252BF4E4007D36D0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
