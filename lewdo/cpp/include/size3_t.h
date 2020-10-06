@@ -10,6 +10,8 @@
 
 namespace lewdo {
 
+#define EXPAND3_i(foo) {const size_t i=0;foo;}{const size_t i=1;foo;}{const size_t i=2;foo;}
+    
     template <size_t N,typename T> class tensorN_T {
     public:
         T v[N];
@@ -17,9 +19,26 @@ namespace lewdo {
         static const size_t dimensions = N;
         
         tensorN_T() { }
+        
+        T product() const {
+            T prod = 1;
+            EXPAND3_i( prod *= v[i] );
+            return prod;
+        }
+        
+        int compareTo(const T& other) const {
+            EXPAND3_i( if (v[i]!=other.v[i]) return (v[i]>other.v[i]?1:-1) );
+            return 0;
+        };
+        
+        bool operator==(const T& other) const {
+            return (compareTo(other)==0);
+        }
+        
+        bool operator!=(const T& other) const {
+            return (compareTo(other)!=0);
+        }
     };
-
-    #define EXPAND3_i(foo) {const size_t i=0;foo;}{const size_t i=1;foo;}{const size_t i=2;foo;}
 
     class size3_t : public tensorN_T<3,size_t> {
     public:
@@ -45,15 +64,9 @@ namespace lewdo {
             return isValid;
         }
         
-        size_t product() const {
-            size_t prod = 1;
-            EXPAND3_i( prod *= v[i] );
-            return prod;
-        }
-        
         size_t count() const { return product(); }
         
-        size3_t product(const size3_t& other) const {
+        size3_t mult(const size3_t& other) const {
             size3_t result;
             EXPAND3_i( result.v[i] = ( v[i] * other.v[i] ) );
             return result;

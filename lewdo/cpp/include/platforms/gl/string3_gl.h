@@ -13,7 +13,11 @@
 
 #include <OpenGL/OpenGL.h>
 
+#include "../../math3_t.h"
+
 namespace lewdo {
+    
+    
     
     void string3_GL_DrawImmediate(string3_ptr str3) {
         // continue here

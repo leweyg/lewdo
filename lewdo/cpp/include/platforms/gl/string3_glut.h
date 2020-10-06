@@ -78,7 +78,7 @@ namespace lewdo {
             glLoadIdentity();
             bool isOrtho = true;
             if (isOrtho) {
-                glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
+                glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0);
             } else {
                 glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
             }
@@ -109,12 +109,14 @@ namespace lewdo {
             //glTranslatef(0,0,0.5f);
         
             //draw stuff
-            draw_triangle();
+            //draw_triangle();
+            draw_unit_quad();
         
             glFlush();
         }
         
-        static void draw_triangle() {
+        
+        static void draw_unit_quad() {
             glBegin(GL_TRIANGLES);
             float v[3] = { 0.5, 0.5, 0.5 };
             
@@ -125,8 +127,8 @@ namespace lewdo {
             glVertex3f(0.0f,1.0f,0.0f);
             glVertex3f(1.0f,0.0f,0.0f);
             
-            glVertex3f(0.0f,0.0f,0.0f);
-            glVertex3f(0.0f,-1.0f,0.0f);
+            glVertex3f(1.0f,1.0f,0.0f);
+            glVertex3f(0.0f,1.0f,0.0f);
             glVertex3f(1.0f,0.0f,0.0f);
             
             glEnd();
