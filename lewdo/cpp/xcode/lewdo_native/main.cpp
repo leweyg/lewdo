@@ -15,6 +15,8 @@
 
 #include "../../include/platforms/gl/string3_glut.h"
 
+#include "../../include/shapes/hyperspace.h"
+
 using namespace lewdo;
 
 size3_t size(8,16,4);
@@ -33,5 +35,8 @@ int main(int argc, char** argv)
     
     // Start the OpenGL project:
     lewdo_glut::main(&app, argc,argv);
+    
+    hyperspace::space_t space;
+    
     
 }

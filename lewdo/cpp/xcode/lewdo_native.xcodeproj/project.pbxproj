@@ -37,6 +37,7 @@
 		5C03BCA4252BF4EE007D36D0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		5C03BCA6252C0098007D36D0 /* math3_t.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = math3_t.h; path = ../../include/math3_t.h; sourceTree = "<group>"; };
 		5C03BCA7252C1061007D36D0 /* font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = font.h; path = ../../include/shapes/font.h; sourceTree = "<group>"; };
+		5C5A188B252D142A00B0E21C /* hyperspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hyperspace.h; path = ../../include/shapes/hyperspace.h; sourceTree = "<group>"; };
 		5CDA922A25254B570026F6EC /* lewdo_native */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lewdo_native; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDA922D25254B570026F6EC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -83,6 +84,7 @@
 		5CDA922C25254B570026F6EC /* lewdo_native */ = {
 			isa = PBXGroup;
 			children = (
+				5C5A188B252D142A00B0E21C /* hyperspace.h */,
 				5C03BC9B25254E63007D36D0 /* platforms */,
 				5C03BC9C25254E63007D36D0 /* shapes */,
 				5C03BC9825254D1C007D36D0 /* size3_t.h */,

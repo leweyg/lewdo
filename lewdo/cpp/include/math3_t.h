@@ -58,10 +58,6 @@ namespace lewdo {
     const float3_t float3_t::zero(0,0,0);
     const float3_t float3_t::one (1,1,1);
     
-    class float3n_float : public tensor3n_T_ptr<float> {
-        
-    };
-    
     static_assert( sizeof(float3_t) == (3*sizeof(float)), "check float3_t is exactly 3 float(s).");
 
     
