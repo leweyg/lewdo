@@ -81,13 +81,6 @@ namespace lewdo {
             return result;
         };
         
-        size3_t undot(size_t index) const {
-            size3_t result;
-            size_t div = 1;
-            EXPAND3_i( result.v[i] = ((index/div)%(v[i])); div *= v[i]; );
-            return result;
-        }
-        
         size3_t packing() const {
             size3_t result;
             size_t div = 1;
@@ -99,8 +92,11 @@ namespace lewdo {
             return packing().dot( pos );
         };
         
-        size3_t const unpack(size_t pos) const {
-            return packing().undot( pos );
+        size3_t const unpack(size_t index) const {
+            size3_t result;
+            auto mods = packing();
+            EXPAND3_i(result.v[i] = ( ( index / mods.v[i] ) % v[i] ) );
+            return result;
         };
         
         size3_t add(const size3_t& other) const {

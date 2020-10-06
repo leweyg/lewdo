@@ -80,7 +80,7 @@ namespace lewdo {
             glLoadIdentity();
             bool isOrtho = true;
             if (isOrtho) {
-                glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0);
+                glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
             } else {
                 glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
             }
@@ -115,7 +115,7 @@ namespace lewdo {
         
             //draw stuff
             //draw_triangle();
-            draw_unit_quad();
+            //draw_unit_quad();
             
             _this->drawApp();
         

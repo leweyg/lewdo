@@ -34,10 +34,15 @@ namespace lewdo {
         
         void myEnd() {
             drawCallDepth--;
-            assert( drawCallDepth >= 0 );
+            
+            if (drawCallDepth>0) {
+                return;
+            }
+            
             if (drawCallDepth==0) {
                 glEnd();
             }
+            assert( drawCallDepth >= 0 );
         }
         
     public:
@@ -49,6 +54,7 @@ namespace lewdo {
             myBegin();
             // continue here
             auto size = str3.size;
+            auto packing = size.packing();
             for (auto i=size.begin(); i!=size.end(); i++) {
                 auto letter = str3.Get1D(i);
                 auto pos = size.unpack(i);
@@ -58,8 +64,23 @@ namespace lewdo {
             myEnd();
         }
         
+        static bool isWhiteSpace(wchar_t letter) {
+            switch (letter) {
+                case 0:
+                case ' ':
+                case '\t':
+                case '\n':
+                case '\r':
+                    return true;
+                default:
+                    return false;
+            }
+        }
         
-        void drawChar(wchar_t letter, size3_t offset) {
+        
+        void drawChar(wchar_t letter, size3_t pos) {
+            if (isWhiteSpace(letter)) return;
+            
             myBegin();
             
             float3_t v;
@@ -74,10 +95,11 @@ namespace lewdo {
                 size3_t(1.0f,0.0f,0.0f),
             };
             
-            
+            float c = ((float)letter) / 255.0f;
+            glColor3f(0.5f,c,0.5f);
             
             for (auto i=0; i<numVerts; i++) {
-                auto c = offset.add(offsets[i]);
+                auto c = pos.add(offsets[i]);
                 auto p = LocalToWorld(c);
                 glVertex3fv(p.data());
             }
@@ -87,7 +109,7 @@ namespace lewdo {
         
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
-            EXPAND3_i(result.v[i] = (0.1f * offset.v[i]));
+            EXPAND3_i(result.v[i] = (0.2f * offset.v[i]));
             return result;
         }
         
