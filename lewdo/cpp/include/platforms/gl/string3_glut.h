@@ -25,13 +25,16 @@ namespace lewdo {
     public:
         static lewdo_glut* global_instance();
         
-        static int main(int argc, char** argv) {
+        static int main(lewdo_app* pRootApp, int argc, char** argv) {
+            global_instance()->pApp = pRootApp;
             return global_instance()->main_private( argc, argv );
         }
         
-        
     private:
         int frameCount = 0;
+        lewdo_app* pApp;
+        string3_GLContext context;
+        
         
         void gl_initialize() {
             glEnable(GL_DEPTH_TEST);
@@ -40,7 +43,6 @@ namespace lewdo {
         }
         
         int main_private(int argc, char** argv) {
-            
             glutInit(&argc, argv);
             
             glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH);
@@ -87,6 +89,9 @@ namespace lewdo {
             glLoadIdentity();
         }
         
+        void drawApp() {
+            context.drawString( pApp->app_out.buffer );
+        }
         
         
         static void display() {
@@ -103,7 +108,7 @@ namespace lewdo {
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
         
-            glutSolidSphere(0.5, 9, 5);
+            //glutSolidSphere(0.5, 9, 5);
             //glutWireCube(0.5);
         
             //glTranslatef(0,0,0.5f);
@@ -111,6 +116,8 @@ namespace lewdo {
             //draw stuff
             //draw_triangle();
             draw_unit_quad();
+            
+            _this->drawApp();
         
             glFlush();
         }

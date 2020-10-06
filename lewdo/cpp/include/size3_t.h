@@ -20,6 +20,9 @@ namespace lewdo {
         
         tensorN_T() { }
         
+        T* data() { return v; }
+        const T* data_const() const { return v; }
+        
         T product() const {
             T prod = 1;
             EXPAND3_i( prod *= v[i] );

@@ -33,6 +33,11 @@ namespace lewdo {
             return size.isValidIndex(pos);
         }
         
+        const size_t count() const {
+            return size.product();
+        }
+        
+        
         void Set(size3_t pos, T letter) {
             assert( isValidIndex(pos) );
             assert( size.pack(pos) < count() );
@@ -45,12 +50,13 @@ namespace lewdo {
             return array1d[ size.pack(pos) ];
         }
         
+        T const Get1D(size_t i) const {
+            assert( (i >= 0) && (i < count()) );
+            return array1d[ i ];
+       };
+        
         //unsigned long operator [](int i) const    {return registers[i];}
         //unsigned long & operator [](int i) {return registers[i];}
-        
-        const size_t count() const {
-            return size.product();
-        }
         
         void Zero() {
             size = size3_t::zero;
@@ -83,23 +89,8 @@ namespace lewdo {
                 array1d[i] = to;
             }
         }
-    };
-
-    class string3_ptr : public tensor3n_T_ptr<wchar_t> {
-    public:
-
-        string3_ptr() : tensor3n_T_ptr(size3_t::zero,nullptr) { }
-        string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) { }
         
-        static const string3_ptr empty;
-        
-        static string3_ptr New( size3_t _size ) {
-            auto core = NewTensor( _size );
-            auto result = string3_ptr( _size, core.array1d );
-            return result;
-        }
-        
-        void Copy(string3_ptr other) {
+        void Copy(tensor3n_T_ptr other) {
             Resize( other.size );
             memcpy(array1d, other.array1d, sizeof(wchar_t)*size.product());
         }
@@ -118,11 +109,25 @@ namespace lewdo {
                     }
                 }
             }
-            if (pFrom) {
-                DeleteArray(array1d);
-            }
+            Delete();
             array1d = pInto;
             size = _size;
+        }
+        
+    };
+
+    class string3_ptr : public tensor3n_T_ptr<wchar_t> {
+    public:
+
+        string3_ptr() : tensor3n_T_ptr(size3_t::zero,nullptr) { }
+        string3_ptr(size3_t _size, wchar_t* _array1D) : tensor3n_T_ptr(_size,_array1D) { }
+        
+        static const string3_ptr empty;
+        
+        static string3_ptr New( size3_t _size ) {
+            auto core = NewTensor( _size );
+            auto result = string3_ptr( _size, core.array1d );
+            return result;
         }
         
         static string3_ptr String(const wchar_t* pCString) {

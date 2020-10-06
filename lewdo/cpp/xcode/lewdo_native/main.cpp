@@ -32,5 +32,6 @@ int main(int argc, char** argv)
     PrintString3(codeShow);
     
     // Start the OpenGL project:
-    lewdo_glut::main(argc,argv);
+    lewdo_glut::main(&app, argc,argv);
+    
 }
