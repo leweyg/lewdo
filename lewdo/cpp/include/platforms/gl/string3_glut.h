@@ -178,8 +178,10 @@ namespace lewdo {
             
             const float rotationScale = 80.0f;
             auto _this = global_instance();
-            _this->rotation.v[0] = uy * rotationScale;
-            _this->rotation.v[1] = ux * rotationScale;
+            auto goal = _this->rotation;
+            goal.v[0] = uy * rotationScale;
+            goal.v[1] = ux * rotationScale;
+            _this->rotation = _this->rotation.lerp( goal, 0.1f );
             
             glutPostRedisplay();
             

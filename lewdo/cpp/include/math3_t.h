@@ -41,6 +41,12 @@ namespace lewdo {
             return result;
         };
         
+        float3_t lerp(const float3_t& other, float t ) const {
+            float3_t result;
+            EXPAND3_i( result.v[i] = ( ((1.0f-t)*v[i]) + (t*other.v[i]) ) );
+            return result;
+        };
+        
         float3_t max(const float3_t& other) const {
             float3_t result;
             EXPAND3_i( result.v[i] = ((v[i]>other.v[i])?v[i]:other.v[i]) );
