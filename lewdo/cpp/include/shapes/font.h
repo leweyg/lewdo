@@ -11,7 +11,7 @@
 namespace lewdo {
     
     
-    int lewdo_font_8x16x256[ 8 * 16 * 256 ] = {
+    uint8_t lewdo_font_8x16x256[ 8 * 16 * 256 ] = {
         
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,
@@ -4367,7 +4367,10 @@ namespace lewdo {
     };
     
     
-    tensor3n_T_ptr<int> lewdo_font_tensor( size3_t(8,16,256), lewdo_font_8x16x256 );
+    size3_t lewdo_font_size = size3_t(8,16,256);
+    size3_t lewdo_font_size2D = size3_t(8,16,1);
+    tensor3n_T_ptr<uint8_t> lewdo_font_tensor( lewdo_font_size, lewdo_font_8x16x256 );
+    
     
 }
 

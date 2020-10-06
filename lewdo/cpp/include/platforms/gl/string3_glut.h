@@ -34,6 +34,7 @@ namespace lewdo {
         int frameCount = 0;
         lewdo_app* pApp;
         string3_GLContext context;
+        float3_t rotation;
         
         
         void gl_initialize() {
@@ -82,7 +83,8 @@ namespace lewdo {
             if (isOrtho) {
                 glOrtho(-1.0, 1.0, 1.0, -1.0, -1.0, 1.0);
             } else {
-                glFrustum(-1.0, 1.0, -1.0, 1.0, 1.5, 20.0);
+                //gluPerspective (60, (GLfloat) w / (GLfloat) h, 1.0, 100.0);
+                //glFrustum(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
             }
             
             glMatrixMode(GL_MODELVIEW);
@@ -90,9 +92,16 @@ namespace lewdo {
         }
         
         void drawApp() {
-            context.drawString( pApp->app_out.buffer );
+            context.drawString3( pApp->app_out.buffer );
         }
         
+        void setupWorldMatrix() {
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            
+            glRotatef( rotation.v[0], 1.0f, 0.0f, 0.0f );
+            glRotatef( rotation.v[1], 0.0f, 1.0f, 0.0f );
+        }
         
         static void display() {
             auto _this = global_instance();
@@ -101,44 +110,19 @@ namespace lewdo {
             float g = ((_this->frameCount*5)%100) * (1.0f/100.0f);
         
             glClearColor( 0.5f, g, 0.5f, 0.5 );
+            glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
             frame_pre();
-        
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
+            
+            _this->setupWorldMatrix();
         
             //glutSolidSphere(0.5, 9, 5);
             //glutWireCube(0.5);
-        
-            //glTranslatef(0,0,0.5f);
-        
-            //draw stuff
-            //draw_triangle();
-            //draw_unit_quad();
             
             _this->drawApp();
         
             glFlush();
-        }
-        
-        
-        static void draw_unit_quad() {
-            glBegin(GL_TRIANGLES);
-            float v[3] = { 0.5, 0.5, 0.5 };
-            
-            //glColor3fv(v);
-            glColor3f(0.5f,0.5f,0.5f);
-            
-            glVertex3f(0.0f,0.0f,0.0f);
-            glVertex3f(0.0f,1.0f,0.0f);
-            glVertex3f(1.0f,0.0f,0.0f);
-            
-            glVertex3f(1.0f,1.0f,0.0f);
-            glVertex3f(0.0f,1.0f,0.0f);
-            glVertex3f(1.0f,0.0f,0.0f);
-            
-            glEnd();
         }
         
         
@@ -183,12 +167,20 @@ namespace lewdo {
         static void myMouseMove(int x, int y) {
             int w = glutGet(GLUT_WINDOW_WIDTH);
             int h = glutGet(GLUT_WINDOW_HEIGHT);
-            int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
+            //int timeSinceStart = glutGet(GLUT_ELAPSED_TIME);
             float ux = ((float)x) / ((float)w);
             float uy = ((float)y) / ((float)h);
             if ((ux < 0) || (ux > 1) || (uy < 0) || (uy > 1)) {
                 return; // out of bounds
             }
+            ux = ((ux - 0.5f) * 2.0f);
+            uy = ((uy - 0.5f) * 2.0f);
+            
+            const float rotationScale = 80.0f;
+            auto _this = global_instance();
+            _this->rotation.v[0] = uy * rotationScale;
+            _this->rotation.v[1] = ux * rotationScale;
+            
             glutPostRedisplay();
             
             //std::cout << "Mouse moved to " << ux << "," << uy << "\n";

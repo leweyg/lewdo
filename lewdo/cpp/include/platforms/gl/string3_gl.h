@@ -25,6 +25,7 @@ namespace lewdo {
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
             EXPAND3_i(result.v[i] = (0.02f * offset.v[i]));
+            result.v[2] *= -4.0f;
             return result;
         }
         
@@ -57,7 +58,7 @@ namespace lewdo {
         
 
         
-        void drawString(string3_ptr str3) {
+        void drawString3(string3_ptr str3) {
             myBegin();
             // continue here
             auto size = str3.size;
@@ -65,7 +66,6 @@ namespace lewdo {
             for (auto i=size.begin(); i!=size.end(); i++) {
                 auto letter = str3.Get1D(i);
                 auto pos = size.unpack(i);
-                
                 drawChar( letter, pos );
             }
             myEnd();
@@ -88,8 +88,8 @@ namespace lewdo {
         void drawChar(wchar_t letter, size3_t pos) {
             if (isWhiteSpace(letter)) return;
             
-            float c = ((float)letter) / 255.0f;
-            glColor3f(0.5f,c,0.5f);
+            float c = ((float)pos.v[2]) / 3.0f;
+            glColor3f(c,c,c);
     
             drawCharBasicFont(letter,pos);
             //drawQuad(pos);
