@@ -62,7 +62,6 @@ namespace lewdo {
             myBegin();
             // continue here
             auto size = str3.size;
-            auto packing = size.packing();
             for (auto i=size.begin(); i!=size.end(); i++) {
                 auto letter = str3.Get1D(i);
                 auto pos = size.unpack(i);

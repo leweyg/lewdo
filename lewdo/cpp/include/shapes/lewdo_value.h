@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace lewdo::shape {
+namespace lewdo_shapes_values {
     
     class value_ptr {
     public:

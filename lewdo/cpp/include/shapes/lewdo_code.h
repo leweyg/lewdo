@@ -12,7 +12,11 @@
 
 #include <list>
 
-namespace lewdo::shape {
+
+namespace lewdo_shapes_code {
+    
+    using namespace lewdo;
+    using namespace lewdo_shapes_values;
     
     class lewdo_code_op {
     public:

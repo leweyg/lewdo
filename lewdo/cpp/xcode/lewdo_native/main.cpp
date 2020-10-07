@@ -28,15 +28,16 @@ int main(int argc, char** argv)
     app.app_out.buffer.Copy( testString );
     PrintString3( app.app_out.buffer );
     
-    lewdo::shape::lewdo_code code;
+    lewdo_shapes_code::lewdo_code code;
     code.demo();
     string3_ptr codeShow = code.ToString3();
     PrintString3(codeShow);
     
-    // Start the OpenGL project:
-    lewdo_glut::main(&app, argc,argv);
+    auto hyperShape = lewdo_shapes_hyperspace::string3_hypershape_ptr::allocate( app.app_out.buffer );
+    //hyperShape.free();
     
-    hyperspace::space_t space;
+    // Start the OpenGL project:
+    lewdo_glut::main(&app, argc, argv);
     
     
 }
