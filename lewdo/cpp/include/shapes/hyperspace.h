@@ -213,6 +213,8 @@ namespace lewdo_shapes_hyperspace {
         range_by_data_index_reader range_by_data_index_read;
         range_by_data_index_writer range_by_data_index_write;
         
+        bool is_valid() const { return (data!=nullptr); }
+        
         
         void vector_by_index_read(hypershaped_vector_ptr* vector, int vector_index) {
             assert( vector->shape == shape );
@@ -375,10 +377,10 @@ namespace lewdo_shapes_hyperspace {
             memory_zero( pMemory, totalSize );
             void* pEnd = offset_by( pMemory, totalSize );
             
-            hypershape_t* shape = new hypershape_t;
+            hypershape_t* shape = (hypershape_t*)pMemory;
             pMemory = offset_by(pMemory, sizes[0] );
             
-            shape->facets = new hyperfacet_t*[count_facets];
+            shape->facets = (hyperfacet_t**)pMemory;
             shape->facet_count = count_facets;
             pMemory = offset_by(pMemory, sizes[1] );
             
