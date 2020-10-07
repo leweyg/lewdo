@@ -182,7 +182,7 @@ namespace lewdo_shapes_hyperspace {
         }
     };
     
-    struct hypershaped_vector_t {
+    struct hypershaped_vector_ptr {
         hypershape_t*    shape;
         range_t*    ranges;
         size_t      range_count;
@@ -196,7 +196,7 @@ namespace lewdo_shapes_hyperspace {
         }
     };
     
-    struct hypershaped_data_t {
+    struct hypershaped_data_ptr {
         typedef range_t (*range_by_data_index_reader)(void* ptr, size_t data_index);
         typedef void (*range_by_data_index_writer)(void* ptr, size_t data_index, range_t val);
         
@@ -208,7 +208,7 @@ namespace lewdo_shapes_hyperspace {
         range_by_data_index_writer range_by_data_index_write;
         
         
-        void vector_by_index_read(hypershaped_vector_t* vector, int vector_index) {
+        void vector_by_index_read(hypershaped_vector_ptr* vector, int vector_index) {
             assert( vector->shape == shape );
             
             for (auto fi=0; fi<shape->facet_count; fi++) {
@@ -228,7 +228,7 @@ namespace lewdo_shapes_hyperspace {
             }
         }
         
-        rangef_t evaluate_expression(expression_tree_t* expression, hypershaped_vector_t* vector) const {
+        rangef_t evaluate_expression(expression_tree_t* expression, hypershaped_vector_ptr* vector) const {
             switch ( expression->operation ) {
                 case expression_tree_t::operation_immediate:
                     return expression->range; // immediate value
@@ -269,7 +269,7 @@ namespace lewdo_shapes_hyperspace {
             }
         }
         
-        void vector_by_index_write(hypershaped_vector_t* vector, int vector_index) {
+        void vector_by_index_write(hypershaped_vector_ptr* vector, int vector_index) {
             for (auto fi=0; fi<shape->facet_count; fi++) {
                 auto facet = shape->facets[fi];
                 if (facet->appends) {
@@ -286,8 +286,8 @@ namespace lewdo_shapes_hyperspace {
         template <typename T> class array_of_typed_int_methods {
         public:
             
-            static hypershaped_data_t shaped_array(hypershape_t* pShape, T* pData, size_t count) {
-                hypershaped_data_t buffer;
+            static hypershaped_data_ptr shaped_array(hypershape_t* pShape, T* pData, size_t count) {
+                hypershaped_data_ptr buffer;
                 buffer.shape = pShape;
                 buffer.data = (void*)pData;
                 buffer.debug_data_count = count;
@@ -310,8 +310,8 @@ namespace lewdo_shapes_hyperspace {
         template <typename T> class array_of_typed_float_methods {
         public:
             
-            static hypershaped_data_t shaped_array(hypershape_t* pShape, T* pData, size_t count) {
-                hypershaped_data_t buffer;
+            static hypershaped_data_ptr shaped_array(hypershape_t* pShape, T* pData, size_t count) {
+                hypershaped_data_ptr buffer;
                 buffer.shape = pShape;
                 buffer.data = (void*)pData;
                 buffer.debug_data_count = count;
@@ -333,15 +333,15 @@ namespace lewdo_shapes_hyperspace {
         
     public:
         
-        static hypershaped_data_t shaped_float_array(hypershape_t* pShape, float* pData, size_t count) {
+        static hypershaped_data_ptr shaped_float_array(hypershape_t* pShape, float* pData, size_t count) {
             return array_of_typed_float_methods<float>::shaped_array( pShape, pData, count );
         }
         
-        static hypershaped_data_t shaped_int_array(hypershape_t* pShape, int* pData, size_t count) {
+        static hypershaped_data_ptr shaped_int_array(hypershape_t* pShape, int* pData, size_t count) {
             return array_of_typed_int_methods<int>::shaped_array( pShape, pData, count );
         }
     
-        static hypershaped_data_t shaped_wchar_array(hypershape_t* pShape, wchar_t* pData, size_t count) {
+        static hypershaped_data_ptr shaped_wchar_array(hypershape_t* pShape, wchar_t* pData, size_t count) {
             return array_of_typed_int_methods<wchar_t>::shaped_array( pShape, pData, count );
         }
         
@@ -389,10 +389,10 @@ namespace lewdo_shapes_hyperspace {
             memory_free( shape->facets );
         }
         
-        hypershaped_vector_t allocate_shaped_vector(hypershape_t* shape) {
+        hypershaped_vector_ptr allocate_shaped_vector(hypershape_t* shape) {
             const size_t count_ranges = shape->facet_count;
             
-            hypershaped_vector_t vector;
+            hypershaped_vector_ptr vector;
             vector.shape = shape;
             vector.ranges = (range_t*)memory_allocate( sizeof(range_t) * count_ranges );
             vector.range_count = count_ranges;
@@ -400,7 +400,7 @@ namespace lewdo_shapes_hyperspace {
             return vector;
         }
         
-        void free_vector(hypershaped_vector_t& vector) {
+        void free_vector(hypershaped_vector_ptr& vector) {
             memory_free( vector.ranges );
         }
         
@@ -421,12 +421,11 @@ namespace lewdo_shapes_hyperspace {
         }
         
         static void* standard_allocate(size_t size) {
-            uint8_t* pData = (new uint8_t[size]);
-            return pData;
+            return malloc( size );
         }
         
         static void standard_free(void* ptr) {
-            return delete [] ((uint8_t*)ptr );
+            free( ptr );
         }
         
         static void standard_memclear(void* ptr, size_t size) {
@@ -442,8 +441,8 @@ namespace lewdo_shapes_hyperspace {
     struct string3_hypershape_ptr {
         lewdo::string3_ptr      str3;
         hypershape_t*           shape;
-        hypershaped_vector_t    bounds;
-        hypershaped_data_t      data;
+        hypershaped_vector_ptr    bounds;
+        hypershaped_data_ptr      data;
         
         static string3_hypershape_ptr allocate(lewdo::string3_ptr _str3) {
             string3_hypershape_ptr ans;
@@ -473,7 +472,7 @@ namespace lewdo_shapes_hyperspace {
             ans.bounds = memory_system.allocate_shaped_vector( ans.shape );
             ans.bounds.bounds();
             
-            ans.data = hypershaped_data_t::shaped_wchar_array( ans.shape,
+            ans.data = hypershaped_data_ptr::shaped_wchar_array( ans.shape,
                                                               _str3.array1d,
                                                               _str3.size.count() );
             
