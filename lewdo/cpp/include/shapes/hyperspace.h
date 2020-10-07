@@ -34,6 +34,7 @@ namespace lewdo::hyperspace {
         
         double toDouble() const { return ((from+to)/2.0); }
         float toFloat() const { return (float)toDouble(); }
+        int toInt() const { return (int)toDouble(); }
         
         range_t add(const range_t& other) {
             return range_t( from+other.from, to+other.to );
@@ -55,7 +56,11 @@ namespace lewdo::hyperspace {
         
         static range_t zero() { return range_t(0,0); }
         
+        static range_t index_within_count(int index, int count) {
+            return range_t( ((double)index) / ((double)count), ((double)(index+1)) / ((double)count) );
+        }
         
+        static range_t index(int index) { return range_t((double)index,(double)(index+1)); }
     };
     
     typedef range_t rangef_t;
@@ -281,6 +286,19 @@ namespace lewdo::hyperspace {
             buffer.range_by_data_index_write = range_from_float_array_write;
             return buffer;
         }
+    
+        static shaped_data_t shaped_wchar_array(shape_t* pShape, wchar_t* pData, size_t count) {
+            shaped_data_t buffer;
+            buffer.shape = pShape;
+            buffer.data = pData;
+            buffer.debug_data_count = count;
+            buffer.debug_data_size = sizeof(wchar_t) * count;
+            buffer.range_by_data_index_read = range_from_wchar_array_read;
+            buffer.range_by_data_index_write = range_from_wchar_array_write;
+            return buffer;
+        }
+        
+    private:
         
         static range_t range_from_float_array_read(void* ptr, size_t index) {
             float val = ((float*)ptr)[ index ];
@@ -289,6 +307,15 @@ namespace lewdo::hyperspace {
         
         static void range_from_float_array_write(void* ptr, size_t index, range_t val) {
             ((float*)ptr)[ index ] = val.toFloat();
+        }
+        
+        static range_t range_from_wchar_array_read(void* ptr, size_t index) {
+            wchar_t val = ((wchar_t*)ptr)[ index ];
+            return range_t::index( val );
+        }
+        
+        static void range_from_wchar_array_write(void* ptr, size_t index, range_t val) {
+            ((wchar_t*)ptr)[ index ] = (wchar_t)( val.toInt() );
         }
     };
     
