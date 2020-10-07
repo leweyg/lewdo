@@ -11,68 +11,67 @@
 
 namespace lewdo_shapes_hyperspace {
     
-    struct range_t {
+    // TODO: replace with boost::interval<double>
+    struct ranged_t {
         double from;
         double to;
         
-        range_t indexed_by_count(size_t index, size_t count) const {
+        ranged_t indexed_by_count(size_t index, size_t count) const {
             double step = (to - from) / ((double)count);
-            range_t ans((from + (step * ((double)(index+0) ))) ,
+            ranged_t ans((from + (step * ((double)(index+0) ))) ,
                         (from + (step * ((double)(index+1)))));
              return ans;
         }
         
-        range_t() {}
-        range_t(double _from, double _to) {
+        ranged_t() {}
+        ranged_t(double _from, double _to) {
             from = _from; to = _to;
         }
         
-        range_t unsorted(double a, double b) {
-            if (a < b) return range_t(a,b);
-            else return range_t(b,a);
+        ranged_t unsorted(double a, double b) {
+            if (a < b) return ranged_t(a,b);
+            else return ranged_t(b,a);
         }
         
         double toDouble() const { return ((from+to)/2.0); }
         float toFloat() const { return (float)toDouble(); }
         int toInt() const { return (int)toDouble(); }
         
-        range_t add(const range_t& other) {
-            return range_t( from+other.from, to+other.to );
+        ranged_t add(const ranged_t& other) {
+            return ranged_t( from+other.from, to+other.to );
         }
         
-        range_t multiply(const range_t& other) {
+        ranged_t multiply(const ranged_t& other) {
             return unsorted( from*other.from, to*other.to );
         }
         
-        range_t sine() {
+        ranged_t sine() {
             // TODO: this is not correct, fix it:
             return unsorted( sin(from), sin(to) );
         }
         
-        range_t cosine() {
+        ranged_t cosine() {
             // TODO: this is not correct, fix it:
             return unsorted( cos(from), cos(to) );
         }
         
-        static range_t zero() { return range_t(0,0); }
+        static ranged_t zero() { return ranged_t(0,0); }
         
-        static range_t index_within_count(int index, int count) {
-            return range_t( ((double)index) / ((double)count), ((double)(index+1)) / ((double)count) );
+        static ranged_t index_within_count(int index, int count) {
+            return ranged_t( ((double)index) / ((double)count), ((double)(index+1)) / ((double)count) );
         }
         
-        static range_t index(int index) { return range_t((double)index,(double)(index+1)); }
+        static ranged_t index(int index) { return ranged_t((double)index,(double)(index+1)); }
         
-        static range_t infinity() { return range_t( -INFINITY, INFINITY ); }
+        static ranged_t infinity() { return ranged_t( -INFINITY, INFINITY ); }
     };
     
-    typedef range_t rangef_t;
-    
-    struct expression_tree_t {
-        wchar_t* name;
+    struct hyperfacet_expression_tree_t {
         wchar_t operation;
-        rangef_t range;
+        ranged_t range;
         size_t index;
-        expression_tree_t** expressions;
+        wchar_t* name;
+        hyperfacet_expression_tree_t** expressions;
         size_t expression_count;
         size_t tree_size;
         
@@ -104,7 +103,7 @@ namespace lewdo_shapes_hyperspace {
     
     struct hyperfacet_t {
         // value range:
-        range_t range;
+        ranged_t range;
         
         // array packing:
         size_t appends;
@@ -113,7 +112,7 @@ namespace lewdo_shapes_hyperspace {
         
         // expression evaulation:
         const wchar_t* name;
-        expression_tree_t* expression;
+        hyperfacet_expression_tree_t* expression;
     };
     
     struct hypershape_t {
@@ -121,6 +120,8 @@ namespace lewdo_shapes_hyperspace {
         size_t facet_count;
         size_t vector_count_cached;
         size_t data_count_cached;
+        
+        static hypershape_t* allocate_standard(size_t count_facets);
         
         void update_cached() {
             vector_count_update();
@@ -190,8 +191,10 @@ namespace lewdo_shapes_hyperspace {
     
     struct hypershaped_vector_ptr {
         hypershape_t*    shape;
-        range_t*    ranges;
+        ranged_t*    ranges;
         size_t      range_count;
+        
+        static hypershaped_vector_ptr allocate_standard(hypershape_t* shape);
         
         void bounds() {
             assert( range_count == shape->facet_count );
@@ -203,8 +206,8 @@ namespace lewdo_shapes_hyperspace {
     };
     
     struct hypershaped_data_ptr {
-        typedef range_t (*range_by_data_index_reader)(void* ptr, size_t data_index);
-        typedef void (*range_by_data_index_writer)(void* ptr, size_t data_index, range_t val);
+        typedef ranged_t (*range_by_data_index_reader)(void* ptr, size_t data_index);
+        typedef void (*range_by_data_index_writer)(void* ptr, size_t data_index, ranged_t val);
         
         hypershape_t*    shape;
         void*       data;
@@ -236,22 +239,22 @@ namespace lewdo_shapes_hyperspace {
             }
         }
         
-        rangef_t evaluate_expression(expression_tree_t* expression, hypershaped_vector_ptr* vector) const {
+        ranged_t evaluate_expression(hyperfacet_expression_tree_t* expression, hypershaped_vector_ptr* vector) const {
             switch ( expression->operation ) {
-                case expression_tree_t::operation_immediate:
+                case hyperfacet_expression_tree_t::operation_immediate:
                     return expression->range; // immediate value
-                case expression_tree_t::operation_read:
+                case hyperfacet_expression_tree_t::operation_read:
                     return vector->ranges[ expression->index ]; // read value
-                case expression_tree_t::operation_add: {
-                    rangef_t result = rangef_t::zero();
+                case hyperfacet_expression_tree_t::operation_add: {
+                    ranged_t result = ranged_t::zero();
                     for (auto ei=0; ei<expression->expression_count; ei++) {
                         auto val = evaluate_expression( expression->expressions[ei], vector );
                         result = result.add( val );
                     }
                     return result;
                 }
-                case expression_tree_t::operation_multiply: {
-                    rangef_t result = rangef_t::zero();
+                case hyperfacet_expression_tree_t::operation_multiply: {
+                    ranged_t result = ranged_t::zero();
                     for (auto ei=0; ei<expression->expression_count; ei++) {
                         auto val = evaluate_expression( expression->expressions[ei], vector );
                         if (ei==0) {
@@ -262,12 +265,12 @@ namespace lewdo_shapes_hyperspace {
                     }
                     return result;
                 }
-                case expression_tree_t::operation_sine : {
+                case hyperfacet_expression_tree_t::operation_sine : {
                         auto val = evaluate_expression( expression->expressions[0], vector );
                         val = val.sine();
                         return val;
                     }
-                case expression_tree_t::operation_cosine : {
+                case hyperfacet_expression_tree_t::operation_cosine : {
                     auto val = evaluate_expression( expression->expressions[0], vector );
                     val = val.cosine();
                     return val;
@@ -305,12 +308,12 @@ namespace lewdo_shapes_hyperspace {
                 return buffer;
             }
             
-            static range_t range_from_typed_array_read(void* ptr, size_t index) {
+            static ranged_t range_from_typed_array_read(void* ptr, size_t index) {
                 T val = ((T*)ptr)[ index ];
-                return range_t::index( val );
+                return ranged_t::index( val );
             }
             
-            static void range_from_typed_array_write(void* ptr, size_t index, range_t val) {
+            static void range_from_typed_array_write(void* ptr, size_t index, ranged_t val) {
                 ((T*)ptr)[ index ] = (T)( val.toInt() );
             }
         };
@@ -329,12 +332,12 @@ namespace lewdo_shapes_hyperspace {
                 return buffer;
             }
             
-            static range_t range_from_typed_array_read(void* ptr, size_t index) {
+            static ranged_t range_from_typed_array_read(void* ptr, size_t index) {
                 wchar_t val = ((T*)ptr)[ index ];
-                return range_t( val, val );
+                return ranged_t( val, val );
             }
             
-            static void range_from_typed_array_write(void* ptr, size_t index, range_t val) {
+            static void range_from_typed_array_write(void* ptr, size_t index, ranged_t val) {
                 ((T*)ptr)[ index ] = val.toFloat();
             }
         };
@@ -402,7 +405,7 @@ namespace lewdo_shapes_hyperspace {
             
             hypershaped_vector_ptr vector;
             vector.shape = shape;
-            vector.ranges = (range_t*)memory_allocate( sizeof(range_t) * count_ranges );
+            vector.ranges = (ranged_t*)memory_allocate( sizeof(ranged_t) * count_ranges );
             vector.range_count = count_ranges;
             
             return vector;
@@ -444,6 +447,14 @@ namespace lewdo_shapes_hyperspace {
         }
     };
     
+    hypershape_t* hypershape_t::allocate_standard(size_t count_facets) {
+        return hypermemory_t::standard().allocate_shape(count_facets);
+    }
+    
+    hypershaped_vector_ptr hypershaped_vector_ptr::allocate_standard(hypershape_t* shape) {
+        return hypermemory_t::standard().allocate_shaped_vector(shape);
+    }
+    
 #ifdef string3_h
     
     struct string3_hypershape_ptr {
@@ -464,7 +475,7 @@ namespace lewdo_shapes_hyperspace {
             ans.shape = memory_system.allocate_shape(n);
             ans.shape->facets[0]->name = L"letter";
             ans.shape->facets[0]->appends = 1;
-            ans.shape->facets[0]->range = rangef_t( 0, 256 );
+            ans.shape->facets[0]->range = ranged_t( 0, 256 );
             ans.shape->facets[1]->name = L"x";
             ans.shape->facets[1]->repeats = _str3.size.v[0];
             ans.shape->facets[2]->name = L"y";
@@ -473,7 +484,7 @@ namespace lewdo_shapes_hyperspace {
             ans.shape->facets[3]->repeats = _str3.size.v[2];
             for (auto i=1; i<n; i++) { // starting at 1 instead of 0
                 auto facet = ans.shape->facets[i];
-                facet->range = range_t( 0, facet->repeats );
+                facet->range = ranged_t( 0, facet->repeats );
             }
             ans.shape->update_cached();
             

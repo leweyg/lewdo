@@ -34,7 +34,7 @@ int main(int argc, char** argv)
     PrintString3(codeShow);
     
     auto hyperString3 = lewdo_shapes_hyperspace::string3_hypershape_ptr::allocate( app.app_out.buffer );
-    auto vec = lewdo_shapes_hyperspace::hypermemory_t::standard().allocate_shaped_vector(hyperString3.shape);
+    auto vec = lewdo_shapes_hyperspace::hypershaped_vector_ptr::allocate_standard(hyperString3.shape);
     for (auto i=0; i<hyperString3.shape->vector_count_cached; i++) {
         hyperString3.data.vector_by_index_read( &vec, i);
     }
