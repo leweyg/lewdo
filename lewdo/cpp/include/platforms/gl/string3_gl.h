@@ -113,8 +113,6 @@ namespace lewdo {
         void drawQuad(size3_t pos) {
             myBegin();
             
-            float3_t v;
-            
             static const int numVerts = 6;
             static const size3_t offsets[numVerts] = {
                 size3_t(0.0f,0.0f,0.0f),

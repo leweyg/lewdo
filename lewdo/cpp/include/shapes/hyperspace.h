@@ -160,6 +160,7 @@ namespace lewdo_shapes_hyperspace {
             pack.pack_div = 1;
             pack.pack_mod = 1;
             pack.pack_offset = 0;
+            bool isFirstDiv = true;
             for (auto fi=0; fi<facet_count; fi++) {
                 auto facet = facets[fi];
                 
@@ -167,7 +168,12 @@ namespace lewdo_shapes_hyperspace {
                     pack.pack_mod = facet->appends;
                     facet->packing_cached = pack;
                     pack.pack_offset += facet->appends;
-                    pack.pack_div *= facet->appends;
+                    if (isFirstDiv) {
+                        pack.pack_div = facet->appends;
+                    } else {
+                        pack.pack_div += facet->appends;
+                    }
+                    isFirstDiv = false;
                     
                 } else if (facet->repeats) {
                     pack.pack_mod = facet->repeats;
