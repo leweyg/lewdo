@@ -27,16 +27,54 @@ namespace lewdo::hyperspace {
             from = _from; to = _to;
         }
         
+        range_t unsorted(double a, double b) {
+            if (a < b) return range_t(a,b);
+            else return range_t(b,a);
+        }
+        
         double toDouble() const { return ((from+to)/2.0); }
         float toFloat() const { return (float)toDouble(); }
         
+        range_t add(const range_t& other) {
+            return range_t( from+other.from, to+other.to );
+        }
+        
+        range_t multiply(const range_t& other) {
+            return unsorted( from*other.from, to*other.to );
+        }
+        
+        range_t sine() {
+            // TODO: this is not correct, fix it:
+            return unsorted( sin(from), sin(to) );
+        }
+        
+        range_t cosine() {
+            // TODO: this is not correct, fix it:
+            return unsorted( cos(from), cos(to) );
+        }
+        
+        static range_t zero() { return range_t(0,0); }
+        
+        
     };
+    
+    typedef range_t rangef_t;
     
     struct expression_tree_t {
         wchar_t* name;
-        double scalar;
-        expression_tree_t** args;
+        wchar_t operation;
+        rangef_t range;
+        size_t index;
+        expression_tree_t** expressions;
+        size_t expression_count;
         size_t tree_size;
+        
+        static const wchar_t operation_immediate = 'i';
+        static const wchar_t operation_read = 'r';
+        static const wchar_t operation_add = '+';
+        static const wchar_t operation_multiply = '*';
+        static const wchar_t operation_sine = 's';
+        static const wchar_t operation_cosine = 'c';
     };
     
     struct facet_packing_t {
@@ -159,6 +197,7 @@ namespace lewdo::hyperspace {
         range_by_data_index_reader range_by_data_index_read;
         range_by_data_index_writer range_by_data_index_write;
         
+        
         void vector_by_index_read(shaped_vector_t* vector, int vector_index) {
             assert( vector->shape == shape );
             
@@ -170,10 +209,53 @@ namespace lewdo::hyperspace {
                     r = range_by_data_index_read( data, data_index );
                 } else if (facet->repeats) {
                     r = facet->range.indexed_by_count( vector_index, shape->vector_count_cached );
+                } else if (facet->expression) {
+                    r = evaluate_expression( facet->expression, vector );
                 } else {
                     r = facet->range;
                 }
                 vector->ranges[fi] = r;
+            }
+        }
+        
+        rangef_t evaluate_expression(expression_tree_t* expression, shaped_vector_t* vector) const {
+            switch ( expression->operation ) {
+                case expression_tree_t::operation_immediate:
+                    return expression->range; // immediate value
+                case expression_tree_t::operation_read:
+                    return vector->ranges[ expression->index ]; // read value
+                case expression_tree_t::operation_add: {
+                    rangef_t result = rangef_t::zero();
+                    for (auto ei=0; ei<expression->expression_count; ei++) {
+                        auto val = evaluate_expression( expression->expressions[ei], vector );
+                        result = result.add( val );
+                    }
+                    return result;
+                }
+                case expression_tree_t::operation_multiply: {
+                    rangef_t result = rangef_t::zero();
+                    for (auto ei=0; ei<expression->expression_count; ei++) {
+                        auto val = evaluate_expression( expression->expressions[ei], vector );
+                        if (ei==0) {
+                            result = val;
+                        } else {
+                            result = result.multiply( val );
+                        }
+                    }
+                    return result;
+                }
+                case expression_tree_t::operation_sine : {
+                        auto val = evaluate_expression( expression->expressions[0], vector );
+                        val = val.sine();
+                        return val;
+                    }
+                case expression_tree_t::operation_cosine : {
+                    auto val = evaluate_expression( expression->expressions[0], vector );
+                    val = val.cosine();
+                    return val;
+                }
+                default:
+                    throw "Unknown operation";
             }
         }
         
