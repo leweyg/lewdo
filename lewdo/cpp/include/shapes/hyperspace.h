@@ -15,7 +15,7 @@ namespace lewdo::hyperspace {
         double from;
         double to;
         
-        range_t indexed_by_count(int index, int count) {
+        range_t indexed_by_count(int index, int count) const {
             double step = (to - from) / ((double)count);
             range_t ans((from + (step * ((double)(index+0) ))) ,
                         (from + (step * ((double)(index+1)))));
@@ -26,6 +26,10 @@ namespace lewdo::hyperspace {
         range_t(double _from, double _to) {
             from = _from; to = _to;
         }
+        
+        double toDouble() const { return ((from+to)/2.0); }
+        float toFloat() const { return (float)toDouble(); }
+        
     };
     
     struct expression_tree_t {
@@ -144,16 +148,18 @@ namespace lewdo::hyperspace {
         }
     };
     
-    typedef range_t (*read_range_by_data_index)(void* ptr, size_t data_index);
+    typedef range_t (*range_by_data_index_reader)(void* ptr, size_t data_index);
+    typedef void (*range_by_data_index_writer)(void* ptr, size_t data_index, range_t val);
     
     struct shaped_data_t {
         shape_t*    shape;
         void*       data;
-        size_t      count;
-        size_t      size;
-        read_range_by_data_index range_by_data_index;
+        size_t      debug_data_count;
+        size_t      debug_data_size;
+        range_by_data_index_reader range_by_data_index_read;
+        range_by_data_index_writer range_by_data_index_write;
         
-        void vector_by_index(shaped_vector_t* vector, int vector_index) {
+        void vector_by_index_read(shaped_vector_t* vector, int vector_index) {
             assert( vector->shape == shape );
             
             for (auto fi=0; fi<shape->facet_count; fi++) {
@@ -161,7 +167,7 @@ namespace lewdo::hyperspace {
                 auto r = facet->range;
                 if (facet->appends) {
                     auto data_index = facet->packing_cached.data_from_vector_index( vector_index );
-                    r = range_by_data_index( data, data_index );
+                    r = range_by_data_index_read( data, data_index );
                 } else if (facet->repeats) {
                     r = facet->range.indexed_by_count( vector_index, shape->vector_count_cached );
                 } else {
@@ -171,19 +177,36 @@ namespace lewdo::hyperspace {
             }
         }
         
+        void vector_by_index_write(shaped_vector_t* vector, int vector_index) {
+            for (auto fi=0; fi<shape->facet_count; fi++) {
+                auto facet = shape->facets[fi];
+                if (facet->appends) {
+                    auto data_index = facet->packing_cached.data_from_vector_index( vector_index );
+                    
+                    auto r = vector->ranges[fi];
+                    range_by_data_index_write( data, data_index, r );
+                }
+            }
+        }
+        
         static shaped_data_t shaped_float_array(shape_t* pShape, float* pData, size_t count) {
             shaped_data_t buffer;
             buffer.shape = pShape;
             buffer.data = pData;
-            buffer.count = count;
-            buffer.size = sizeof(float) * count;
-            buffer.range_by_data_index = range_from_float_array;
+            buffer.debug_data_count = count;
+            buffer.debug_data_size = sizeof(float) * count;
+            buffer.range_by_data_index_read = range_from_float_array_read;
+            buffer.range_by_data_index_write = range_from_float_array_write;
             return buffer;
         }
         
-        static range_t range_from_float_array(void* ptr, size_t index) {
+        static range_t range_from_float_array_read(void* ptr, size_t index) {
             float val = ((float*)ptr)[ index ];
             return range_t( val, val );
+        }
+        
+        static void range_from_float_array_write(void* ptr, size_t index, range_t val) {
+            ((float*)ptr)[ index ] = val.toFloat();
         }
     };
     
