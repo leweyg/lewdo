@@ -15,7 +15,7 @@ namespace lewdo_shapes_hyperspace {
         double from;
         double to;
         
-        range_t indexed_by_count(int index, int count) const {
+        range_t indexed_by_count(size_t index, size_t count) const {
             double step = (to - from) / ((double)count);
             range_t ans((from + (step * ((double)(index+0) ))) ,
                         (from + (step * ((double)(index+1)))));
@@ -118,9 +118,9 @@ namespace lewdo_shapes_hyperspace {
     
     struct hypershape_t {
         hyperfacet_t** facets;
-        int facet_count;
-        int vector_count_cached;
-        int data_count_cached;
+        size_t facet_count;
+        size_t vector_count_cached;
+        size_t data_count_cached;
         
         void update_cached() {
             vector_count_update();
@@ -128,8 +128,8 @@ namespace lewdo_shapes_hyperspace {
             packing_update();
         }
         
-        int data_count_update() {
-            int result = 0;
+        size_t data_count_update() {
+            size_t result = 0;
             for (auto fi=0; fi<facet_count; fi++) {
                 auto facet = facets[fi];
                 if (facet->appends) {
@@ -143,8 +143,8 @@ namespace lewdo_shapes_hyperspace {
             return result;
         }
         
-        int vector_count_update() {
-            int result = 1;
+        size_t vector_count_update() {
+            size_t result = 1;
             for (auto fi=0; fi<facet_count; fi++) {
                 auto facet = facets[fi];
                 if (facet->repeats != 0) {
@@ -185,7 +185,7 @@ namespace lewdo_shapes_hyperspace {
     struct hypershaped_vector_t {
         hypershape_t*    shape;
         range_t*    ranges;
-        int         range_count;
+        size_t      range_count;
         
         void bounds() {
             assert( range_count == shape->facet_count );
@@ -389,7 +389,7 @@ namespace lewdo_shapes_hyperspace {
         }
         
         hypershaped_vector_t* allocate_shaped_vector(hypershape_t* shape) {
-            const auto count_ranges = shape->facet_count;
+            const size_t count_ranges = shape->facet_count;
             const size_t sizes[2] = {
                 sizeof( hypershaped_vector_t ),
                 ( sizeof(range_t*) * count_ranges ),
@@ -433,11 +433,12 @@ namespace lewdo_shapes_hyperspace {
         }
         
         static void* standard_allocate(size_t size) {
-            return malloc( size );
+            uint8_t* pData = (new uint8_t[size]);
+            return pData;
         }
         
         static void standard_free(void* ptr) {
-            return free( ptr );
+            return delete [] ((uint8_t*)ptr );
         }
         
         static void standard_memclear(void* ptr, size_t size) {
@@ -458,8 +459,11 @@ namespace lewdo_shapes_hyperspace {
         
         static string3_hypershape_ptr allocate(lewdo::string3_ptr _str3) {
             string3_hypershape_ptr ans;
-            ans.str3 = _str3;
+            
             auto memory_system = hypermemory_t::standard();
+            
+            memory_system.memory_zero( &ans, sizeof(ans) );
+            ans.str3 = _str3;
             
             const int n = 4;
             ans.shape = memory_system.allocate_shape(n);
@@ -472,7 +476,7 @@ namespace lewdo_shapes_hyperspace {
             ans.shape->facets[2]->repeats = _str3.size.v[1];
             ans.shape->facets[3]->name = L"z";
             ans.shape->facets[3]->repeats = _str3.size.v[2];
-            for (auto i=1; i<n; i++) {
+            for (auto i=1; i<n; i++) { // starting at 1 instead of 0
                 auto facet = ans.shape->facets[i];
                 facet->range = range_t( 0, facet->repeats );
             }
@@ -486,10 +490,10 @@ namespace lewdo_shapes_hyperspace {
             return ans;
         }
         
-        void free() {
+        void free_bounds_and_shape() {
             auto memory_system = hypermemory_t::standard();
-            memory_system.free_vector(bounds);
-            memory_system.free_shape(shape);
+            memory_system.free_vector(bounds); bounds = nullptr;
+            memory_system.free_shape(shape); shape = nullptr;
         }
     };
     
