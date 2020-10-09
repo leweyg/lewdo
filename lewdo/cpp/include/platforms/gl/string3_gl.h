@@ -57,18 +57,24 @@ namespace lewdo {
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             errCode = glGetError();
             
-            uint8_t* pSourceData = (uint8_t*)malloc( sizeof(uint8_t) * pSource.size.count() );
+            uint8_t* pSourceData = (uint8_t*)malloc( sizeof(uint8_t) * 4 * pSource.size.count() );
             for (auto i=0; i<pSource.size.count(); i++) {
-                pSourceData[i] = (pSource.array1d[i] ? 255 : 0);
+                auto alpha = (pSource.array1d[i] ? 255 : 0);
+                auto color =(pSource.array1d[i] ? 0 : 255);
+                pSourceData[(i*4)+0] = color;
+                pSourceData[(i*4)+1] = color;
+                pSourceData[(i*4)+2] = color;
+                pSourceData[(i*4)+3] = alpha;
             }
             
-            glTexImage3D(GL_TEXTURE_3D, 0, GL_R8,
+            glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8,
                         (GLsizei)pSource.size.v[0], (GLsizei)pSource.size.v[1], (GLsizei)pSource.size.v[2],
-                         0, GL_RED, GL_UNSIGNED_BYTE, pSourceData );
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, pSourceData );
             free( pSourceData );
             
             errCode = glGetError();
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             
             return texture_id;
         }
