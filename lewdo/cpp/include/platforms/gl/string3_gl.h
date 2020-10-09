@@ -90,7 +90,7 @@ namespace lewdo {
             drawCallDepth = 1;
             glBegin(GL_TRIANGLES);
             if (useTexturing) {
-                glColor3f(1.0f,1.0f,1.f);
+                glColor3f(1.0f,1.0f,1.0f);
             }
         }
         
@@ -154,12 +154,13 @@ namespace lewdo {
         void drawChar(wchar_t letter, size3_t pos) {
             if (isWhiteSpace(letter)) return;
             
-            float c = ((float)pos.v[2]) / 3.0f;
-            glColor3f(c,c,c);
+            
     
             if (useTexturing) {
                 drawCharTextured(letter,pos);
             } else {
+                float c = ((float)pos.v[2]) / 3.0f;
+                glColor3f(c,c,c);
                 drawCharBasicFont(letter,pos);
             }
             
