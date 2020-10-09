@@ -23,7 +23,8 @@ namespace lewdo {
         int drawCallDepth = 0;
         float generalScale = 1.0f;
         size3_t displaySize;
-        
+        GLuint texture_font=~0;
+        bool useTexturing = true;
         
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
@@ -39,15 +40,58 @@ namespace lewdo {
             return result;
         }
         
+        GLuint ensure_font_texture() {
+            if (texture_font != ~0) {
+                return texture_font;
+            }
+            GLuint texture_id;
+            auto pSource = lewdo_font_tensor;
+            auto width = pSource.size.v[0];
+            auto height = pSource.size.v[1];
+            auto errCode = glGetError();
+            //texture map
+            glGenTextures(1,&texture_id);
+            texture_font = texture_id;
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_3D,texture_id);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            errCode = glGetError();
+            
+            uint8_t* pSourceData = pSource.array1d;
+            if (true) {
+                pSourceData = (uint8_t*)malloc( sizeof(uint8_t) * pSource.size.count() );
+                for (auto i=0; i<pSource.size.count(); i++) {
+                    pSourceData[i] = (pSource.array1d[i] ? 255 : 0);
+                    //pSourceData[i] = uint8_t(i % 256);
+                }
+            }
+            
+            glTexImage3D(GL_TEXTURE_3D, 0, GL_R8,
+                        (GLsizei)pSource.size.v[0], (GLsizei)pSource.size.v[1], (GLsizei)pSource.size.v[2],
+                         0, GL_RED, GL_UNSIGNED_BYTE, pSourceData );
+            errCode = glGetError();
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            
+            return texture_id;
+        }
+        
         void myBegin() {
             if (drawCallDepth!=0) {
                 drawCallDepth++;
                 return;
             }
             
+            if (useTexturing) {
+                glEnable(GL_TEXTURE_3D);
+                glBindTexture(GL_TEXTURE_3D, ensure_font_texture() );
+                glActiveTexture(GL_TEXTURE0);
+            }
+            
             drawCallDepth = 1;
             glBegin(GL_TRIANGLES);
-            glColor3f(0.5f,0.5f,0.5f);
+            if (useTexturing) {
+                glColor3f(1.0f,1.0f,1.f);
+            }
         }
         
         void myEnd() {
@@ -61,13 +105,21 @@ namespace lewdo {
                 glEnd();
             }
             assert( drawCallDepth >= 0 );
+            
+            if (useTexturing) {
+                glDisable(GL_TEXTURE_3D);
+            }
         }
         
     public:
         string3_GLContext() {}
         
         void configureScale(size3_t size) {
-            displaySize = size.multiply( font_size_2D() );
+            if (useTexturing) {
+                displaySize = size;
+            } else {
+                displaySize = size.multiply( font_size_2D() );
+            }
             size = displaySize;
             auto mx = (size.v[0] > size.v[1]) ? size.v[0] : size.v[1];
             generalScale = 1.0f / ((float)mx);
@@ -105,14 +157,23 @@ namespace lewdo {
             float c = ((float)pos.v[2]) / 3.0f;
             glColor3f(c,c,c);
     
-            drawCharBasicFont(letter,pos);
-            //drawQuad(pos);
+            if (useTexturing) {
+                drawCharTextured(letter,pos);
+            } else {
+                drawCharBasicFont(letter,pos);
+            }
+            
         }
         
         size3_t font_size_2D() {
             auto fontSize2D = lewdo_font_tensor.size;
             fontSize2D.v[2] = 1;
             return fontSize2D;
+        }
+        
+        void drawCharTextured(wchar_t letter, size3_t pos) {
+            //glColor3f(1.0f,1.0f,1.f);
+            drawQuad( pos, ((float)letter)/255.0f );
         }
         
         void drawCharBasicFont(wchar_t letter, size3_t pos) {
@@ -124,13 +185,12 @@ namespace lewdo {
                 
                 auto fontResult = pFont->Get(fontStart.add(fontPos));
                 if (fontResult != 0) {
-                    drawQuad( pos.multiply(fontSize2D).add(fontPos) );
+                    drawQuad( pos.multiply(fontSize2D).add(fontPos), ((float)letter)/255.0f );
                 }
-                
             }
         }
         
-        void drawQuad(size3_t pos) {
+        void drawQuad(size3_t pos, float textureZ) {
             myBegin();
             
             static const int numVerts = 6;
@@ -146,6 +206,7 @@ namespace lewdo {
             for (auto i=0; i<numVerts; i++) {
                 auto c = pos.add(offsets[i]);
                 auto p = LocalToWorld(c);
+                glTexCoord3f(offsets[i].v[0], offsets[i].v[1], textureZ);
                 glVertex3fv(p.data());
             }
             
