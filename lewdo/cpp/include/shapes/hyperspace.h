@@ -298,6 +298,16 @@ namespace lewdo_shapes_hyperspace {
         
         bool is_valid() const { return (data!=nullptr); }
         
+        void vector_by_index_write(hypershaped_vector_ptr* vector, int vector_index) {
+            for (auto fi=0; fi<shape->facet_count; fi++) {
+                auto facet = shape->facets[fi];
+                if (facet->appends) {
+                    auto data_index = facet->packing_cached.data_from_vector_index( vector_index );
+                    auto r = vector->ranges[fi];
+                    range_by_data_index_write( data, data_index, r );
+                }
+            }
+        }
         
         void vector_by_index_read(hypershaped_vector_ptr* vector, int vector_index) {
             assert( vector->shape == shape );
@@ -360,17 +370,6 @@ namespace lewdo_shapes_hyperspace {
             }
         }
         
-        void vector_by_index_write(hypershaped_vector_ptr* vector, int vector_index) {
-            for (auto fi=0; fi<shape->facet_count; fi++) {
-                auto facet = shape->facets[fi];
-                if (facet->appends) {
-                    auto data_index = facet->packing_cached.data_from_vector_index( vector_index );
-                    
-                    auto r = vector->ranges[fi];
-                    range_by_data_index_write( data, data_index, r );
-                }
-            }
-        }
         
     private:
         
