@@ -66,14 +66,22 @@ namespace lewdo_shapes_hyperspace {
         static ranged_t index(int index) { return ranged_t((double)index,(double)(index+1)); }
         
         static ranged_t infinity() { return ranged_t( -INFINITY, INFINITY ); }
+        
+        bool operator ==(const ranged_t& other) const {
+            return ((from==other.from)&&(to==other.to));
+        }
+        
+        bool operator !=(const ranged_t& other) const {
+            return !((*this) == other);
+        }
     };
     
     struct hyperfacet_expression_tree_t {
         wchar_t operation;
         ranged_t range;
         size_t index;
-        wchar_t* name;
-        hyperfacet_expression_tree_t** expressions;
+        const wchar_t* name;
+        hyperfacet_expression_tree_t* expressions;
         size_t expression_count;
         size_t tree_size;
         
@@ -193,6 +201,25 @@ namespace lewdo_shapes_hyperspace {
                 }
             }
         }
+        
+        static int compare_names(const wchar_t* pA, const wchar_t* pB) {
+            return wcscmp(pA, pB);
+        }
+        
+        struct compare_names_type {
+            bool operator()(const wchar_t* pA, const wchar_t* pB) const {
+                return (compare_names(pA, pB) == 0);
+            }
+        };
+        
+        int findIndexByName(const wchar_t* pName) const {
+            for (auto i=0; i<facet_count; i++) {
+                if ( compare_names( pName, facets[i]->name ) == 0 ) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     };
     
     struct hypershaped_vector_ptr {
@@ -216,19 +243,13 @@ namespace lewdo_shapes_hyperspace {
         hypershape_t*    from;
         hypershape_t*    to;
         
-        static hypertransform_ptr fromShapeToShape(hypershape_t* pFrom, hypershape_t* pTo) {
+        static hypertransform_ptr allocate_shape_to_from(hypershape_t* pTo, hypershape_t* pFrom) {
             hypertransform_ptr ans;
-            ans.configure(pFrom,pTo);
+            ans.configure(pTo,pFrom);
             return ans;
         }
         
-        struct compareWCharStrings {
-            bool operator()(const wchar_t* pA, const wchar_t* pB) const {
-                return (wcscmp(pA, pB) == 0);
-            }
-        };
-        
-        void configure(hypershape_t* pFrom, hypershape_t* pTo) {
+        void configure(hypershape_t* pTo, hypershape_t* pFrom) {
             from = pFrom;
             to = pTo;
             
@@ -241,7 +262,7 @@ namespace lewdo_shapes_hyperspace {
                 facet_from_to(const hyperfacet_t* _from, const hyperfacet_t* _to) {from=_from; to=_to;}
             };
             
-            std::map<const wchar_t*,facet_from_to,compareWCharStrings> nameToIndex;
+            std::map<const wchar_t*,facet_from_to,hypershape_t::compare_names_type> nameToIndex;
             std::string str;
             for (size_t i=0; i<pTo->facet_count; i++) {
                 auto facet = pTo->facets[i];
@@ -266,7 +287,7 @@ namespace lewdo_shapes_hyperspace {
             for (auto facetMapIter=nameToIndex.begin(); facetMapIter!=nameToIndex.end(); facetMapIter++, result_index++ ) {
                 auto facetFromTo = facetMapIter->second;
                 auto into = plan->facets[ result_index ];
-                if (facetFromTo.from == nullptr) {
+                if (facetFromTo.to && !facetFromTo.from) {
                     assert( facetFromTo.to );
                     into->name = facetFromTo.to->name;
                     into->range = facetFromTo.to->range;
@@ -274,11 +295,41 @@ namespace lewdo_shapes_hyperspace {
                     into->expression->operation = into->expression->operation_read;
                     into->expression->index = facetFromTo.to->facet_index_cached;
                     into->expression->range = facetFromTo.to->range;
-                } else if (facetFromTo.to == nullptr) {
+                } else if (facetFromTo.from && !facetFromTo.to) {
                     *into = *facetFromTo.from;
                 } else {
                     // both from and to facets are defined...
-                    // TODO continue here...
+                    // TODO continue here... build an expression to do the copying:
+                    into->name = facetFromTo.to->name;
+                    into->range = facetFromTo.to->range;
+                    
+                    if (facetFromTo.from->range != facetFromTo.to->range) {
+                        if (facetFromTo.from->expression) {
+                            auto tree_size = facetFromTo.from->expression->tree_size;
+                            into->expression = hyperfacet_expression_tree_t::allocate_standard(tree_size);
+                            memcpy( into->expression, facetFromTo.from->expression, tree_size * sizeof(*into->expression) );
+                            for (auto ei=0; ei<into->expression->tree_size; ei++) {
+                                auto step = &( into->expression[ ei ] );
+                                if (step->operation == step->operation_read) {
+                                    auto facetName = step->name; assert( facetName );
+                                    auto facetIndexInSource = pFrom->findIndexByName(facetName);
+                                    assert( facetIndexInSource >= 0 );
+                                    step->index = facetIndexInSource;
+                                }
+                            }
+                            continue;
+                        } else {
+                            // TODO: put range transform into expression...
+                            assert( false );
+                        }
+                        
+                    } else {
+                        into->expression = hyperfacet_expression_tree_t::allocate_standard(1);
+                        into->expression->operation = into->expression->operation_read;
+                        into->expression->name = facetFromTo.to->name;
+                        into->expression->index = facetFromTo.to->facet_index_cached;
+                        into->expression->range = facetFromTo.to->range;
+                    }
                 }
             }
             plan->update_cached();
@@ -338,7 +389,7 @@ namespace lewdo_shapes_hyperspace {
                 case hyperfacet_expression_tree_t::operation_add: {
                     ranged_t result = ranged_t::zero();
                     for (auto ei=0; ei<expression->expression_count; ei++) {
-                        auto val = evaluate_expression( expression->expressions[ei], vector );
+                        auto val = evaluate_expression( &(expression->expressions[ei]), vector );
                         result = result.add( val );
                     }
                     return result;
@@ -346,7 +397,7 @@ namespace lewdo_shapes_hyperspace {
                 case hyperfacet_expression_tree_t::operation_multiply: {
                     ranged_t result = ranged_t::zero();
                     for (auto ei=0; ei<expression->expression_count; ei++) {
-                        auto val = evaluate_expression( expression->expressions[ei], vector );
+                        auto val = evaluate_expression( &(expression->expressions[ei]), vector );
                         if (ei==0) {
                             result = val;
                         } else {
@@ -356,12 +407,12 @@ namespace lewdo_shapes_hyperspace {
                     return result;
                 }
                 case hyperfacet_expression_tree_t::operation_sine : {
-                        auto val = evaluate_expression( expression->expressions[0], vector );
+                        auto val = evaluate_expression( &(expression->expressions[0]), vector );
                         val = val.sine();
                         return val;
                     }
                 case hyperfacet_expression_tree_t::operation_cosine : {
-                    auto val = evaluate_expression( expression->expressions[0], vector );
+                    auto val = evaluate_expression( &(expression->expressions[0]), vector );
                     val = val.cosine();
                     return val;
                 }

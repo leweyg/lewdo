@@ -92,7 +92,9 @@ namespace lewdo {
         }
         
         void drawApp() {
-            context.drawString3( pApp->app_out.buffer );
+            auto buffer = pApp->app_out.buffer;
+            context.configureScale(buffer.size);
+            context.drawString3(buffer);
         }
         
         void setupWorldMatrix() {
@@ -180,7 +182,7 @@ namespace lewdo {
             auto _this = global_instance();
             auto goal = _this->rotation;
             goal.v[0] = uy * rotationScale;
-            goal.v[1] = ux * rotationScale;
+            goal.v[1] = ux * -rotationScale;
             _this->rotation = _this->rotation.lerp( goal, 0.1f );
             
             glutPostRedisplay();

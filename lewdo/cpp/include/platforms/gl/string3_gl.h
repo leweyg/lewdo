@@ -21,11 +21,21 @@ namespace lewdo {
     class string3_GLContext {
     private:
         int drawCallDepth = 0;
+        float generalScale = 1.0f;
+        size3_t displaySize;
+        
         
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
-            EXPAND3_i(result.v[i] = (0.02f * offset.v[i]));
-            result.v[2] *= -4.0f;
+            const float scale = generalScale;
+            const float zscale = -4.0f;
+            const float origin[3] = {
+                -((float)displaySize.v[0])/2.0f,
+                -((float)displaySize.v[1])/2.0f,
+                0.0f,
+            };
+            EXPAND3_i(result.v[i] = (scale * (origin[i] + offset.v[i])));
+            result.v[2] *= -zscale;
             return result;
         }
         
@@ -56,7 +66,12 @@ namespace lewdo {
     public:
         string3_GLContext() {}
         
-
+        void configureScale(size3_t size) {
+            displaySize = size.multiply( font_size_2D() );
+            size = displaySize;
+            auto mx = (size.v[0] > size.v[1]) ? size.v[0] : size.v[1];
+            generalScale = 1.0f / ((float)mx);
+        }
         
         void drawString3(string3_ptr str3) {
             myBegin();
@@ -94,10 +109,15 @@ namespace lewdo {
             //drawQuad(pos);
         }
         
+        size3_t font_size_2D() {
+            auto fontSize2D = lewdo_font_tensor.size;
+            fontSize2D.v[2] = 1;
+            return fontSize2D;
+        }
+        
         void drawCharBasicFont(wchar_t letter, size3_t pos) {
             auto pFont = &lewdo_font_tensor;
-            auto fontSize2D = pFont->size;
-            fontSize2D.v[2] = 1;
+            auto fontSize2D = font_size_2D();
             auto fontStart = size3_t(0,0,letter);
             for (auto i=fontSize2D.begin(); i!=fontSize2D.end(); i++) {
                 auto fontPos = fontSize2D.unpack(i);
