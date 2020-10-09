@@ -83,6 +83,8 @@ namespace lewdo_shapes_hyperspace {
         static const wchar_t operation_multiply = '*';
         static const wchar_t operation_sine = 's';
         static const wchar_t operation_cosine = 'c';
+        
+        static hyperfacet_expression_tree_t* allocate_standard(size_t tree_size);
     };
     
     struct hyperfacet_packing_t {
@@ -115,6 +117,7 @@ namespace lewdo_shapes_hyperspace {
         // expression evaulation:
         const wchar_t* name;
         hyperfacet_expression_tree_t* expression;
+        size_t facet_index_cached;
     };
     
     struct hypershape_t {
@@ -166,6 +169,7 @@ namespace lewdo_shapes_hyperspace {
             bool isFirstDiv = true;
             for (auto fi=0; fi<facet_count; fi++) {
                 auto facet = facets[fi];
+                facet->facet_index_cached = fi;
                 
                 if (facet->appends) {
                     pack.pack_mod = facet->appends;
@@ -224,35 +228,60 @@ namespace lewdo_shapes_hyperspace {
             }
         };
         
-        static size_t countFacets(hypershape_t* pFrom, hypershape_t* pTo) {
-            std::map<const wchar_t*,size_t,compareWCharStrings> nameToIndex;
+        void configure(hypershape_t* pFrom, hypershape_t* pTo) {
+            from = pFrom;
+            to = pTo;
+            
+            struct facet_from_to{
+                const hyperfacet_t* from;
+                const hyperfacet_t* to;
+                
+                facet_from_to() {}
+                facet_from_to(const hyperfacet_t* _from) {from=_from; to=_from;}
+                facet_from_to(const hyperfacet_t* _from, const hyperfacet_t* _to) {from=_from; to=_to;}
+            };
+            
+            std::map<const wchar_t*,facet_from_to,compareWCharStrings> nameToIndex;
             std::string str;
             for (size_t i=0; i<pTo->facet_count; i++) {
                 auto facet = pTo->facets[i];
                 auto stringName = facet->name;
-                nameToIndex.insert( { stringName, i } );
+                nameToIndex.insert( { stringName, facet_from_to(facet) } );
             }
             for (size_t i=0; i<pFrom->facet_count; i++) {
                 auto facet = pFrom->facets[i];
                 auto stringName = facet->name;
                 auto already = nameToIndex.find( stringName );
                 if (already != nameToIndex.end()) {
+                    nameToIndex.at( stringName ) = facet_from_to( already->second.from, facet );
                     // already in there, will need transform
                 } else {
-                    nameToIndex.insert( { stringName, nameToIndex.size() } );
+                    nameToIndex.insert( { stringName, facet_from_to( nullptr, facet ) } );
                 }
             }
             
-            return nameToIndex.size();
-        }
-        
-        void configure(hypershape_t* pFrom, hypershape_t* pTo) {
-            from = pFrom;
-            to = pTo;
-            
-            size_t count_facets = countFacets(pFrom, pTo);
+            size_t count_facets = nameToIndex.size();
             plan = hypershape_t::allocate_standard(count_facets);
-            // TODO: continue here...
+            size_t result_index = 0;
+            for (auto facetMapIter=nameToIndex.begin(); facetMapIter!=nameToIndex.end(); facetMapIter++, result_index++ ) {
+                auto facetFromTo = facetMapIter->second;
+                auto into = plan->facets[ result_index ];
+                if (facetFromTo.from == nullptr) {
+                    assert( facetFromTo.to );
+                    into->name = facetFromTo.to->name;
+                    into->range = facetFromTo.to->range;
+                    into->expression = hyperfacet_expression_tree_t::allocate_standard(1);
+                    into->expression->operation = into->expression->operation_read;
+                    into->expression->index = facetFromTo.to->facet_index_cached;
+                    into->expression->range = facetFromTo.to->range;
+                } else if (facetFromTo.to == nullptr) {
+                    *into = *facetFromTo.from;
+                } else {
+                    // both from and to facets are defined...
+                    // TODO continue here...
+                }
+            }
+            plan->update_cached();
         }
     };
     
@@ -504,6 +533,15 @@ namespace lewdo_shapes_hyperspace {
     
     hypershaped_vector_ptr hypershaped_vector_ptr::allocate_standard(hypershape_t* shape) {
         return hypermemory_t::standard().allocate_shaped_vector(shape);
+    }
+    
+    hyperfacet_expression_tree_t* hyperfacet_expression_tree_t::allocate_standard(size_t tree_size) {
+        size_t full_size = tree_size * sizeof(hyperfacet_expression_tree_t);
+        void* ptr = hypermemory_t::standard().memory_allocate( full_size );
+        hypermemory_t::standard().memory_zero( ptr, full_size );
+        auto pTree = (hyperfacet_expression_tree_t*)ptr;
+        pTree->tree_size = tree_size;
+        return pTree;
     }
     
 #ifdef string3_h
