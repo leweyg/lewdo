@@ -9,6 +9,8 @@
 #ifndef hyperspace_h
 #define hyperspace_h
 
+#include <map>
+
 namespace lewdo_shapes_hyperspace {
     
     // TODO: replace with boost::interval<double>
@@ -202,6 +204,55 @@ namespace lewdo_shapes_hyperspace {
                 auto facet = shape->facets[fi];
                 ranges[ fi ] = facet->range;
             }
+        }
+    };
+    
+    struct hypertransform_ptr {
+        hypershape_t*    plan;
+        hypershape_t*    from;
+        hypershape_t*    to;
+        
+        static hypertransform_ptr fromShapeToShape(hypershape_t* pFrom, hypershape_t* pTo) {
+            hypertransform_ptr ans;
+            ans.configure(pFrom,pTo);
+            return ans;
+        }
+        
+        struct compareWCharStrings {
+            bool operator()(const wchar_t* pA, const wchar_t* pB) const {
+                return (wcscmp(pA, pB) == 0);
+            }
+        };
+        
+        static size_t countFacets(hypershape_t* pFrom, hypershape_t* pTo) {
+            std::map<const wchar_t*,size_t,compareWCharStrings> nameToIndex;
+            std::string str;
+            for (size_t i=0; i<pFrom->facet_count; i++) {
+                auto facet = pFrom->facets[i];
+                auto stringName = facet->name;
+                nameToIndex.insert( { stringName, i } );
+            }
+            for (size_t i=0; i<pTo->facet_count; i++) {
+                auto facet = pTo->facets[i];
+                auto stringName = facet->name;
+                auto already = nameToIndex.find( stringName );
+                if (already != nameToIndex.end()) {
+                    // already in there, will need transform
+                } else {
+                    nameToIndex.insert( { stringName, nameToIndex.size() } );
+                }
+            }
+            
+            return nameToIndex.size();
+        }
+        
+        void configure(hypershape_t* pFrom, hypershape_t* pTo) {
+            from = pFrom;
+            to = pTo;
+            
+            size_t count_facets = countFacets(pFrom, pTo);
+            plan = hypershape_t::allocate_standard(count_facets);
+            // TODO: continue here...
         }
     };
     
