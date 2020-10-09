@@ -227,13 +227,13 @@ namespace lewdo_shapes_hyperspace {
         static size_t countFacets(hypershape_t* pFrom, hypershape_t* pTo) {
             std::map<const wchar_t*,size_t,compareWCharStrings> nameToIndex;
             std::string str;
-            for (size_t i=0; i<pFrom->facet_count; i++) {
-                auto facet = pFrom->facets[i];
+            for (size_t i=0; i<pTo->facet_count; i++) {
+                auto facet = pTo->facets[i];
                 auto stringName = facet->name;
                 nameToIndex.insert( { stringName, i } );
             }
-            for (size_t i=0; i<pTo->facet_count; i++) {
-                auto facet = pTo->facets[i];
+            for (size_t i=0; i<pFrom->facet_count; i++) {
+                auto facet = pFrom->facets[i];
                 auto stringName = facet->name;
                 auto already = nameToIndex.find( stringName );
                 if (already != nameToIndex.end()) {
