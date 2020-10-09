@@ -29,14 +29,14 @@ namespace lewdo {
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
             const float scale = generalScale;
-            const float zscale = -4.0f;
+            const float zscale = generalScale * -4.0f;
             const float origin[3] = {
                 -((float)displaySize.v[0])/2.0f,
                 -((float)displaySize.v[1])/2.0f,
                 0.0f,
             };
             EXPAND3_i(result.v[i] = (scale * (origin[i] + offset.v[i])));
-            result.v[2] *= -zscale;
+            result.v[2] *= zscale;
             return result;
         }
         
@@ -57,20 +57,18 @@ namespace lewdo {
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             errCode = glGetError();
             
-            uint8_t* pSourceData = pSource.array1d;
-            if (true) {
-                pSourceData = (uint8_t*)malloc( sizeof(uint8_t) * pSource.size.count() );
-                for (auto i=0; i<pSource.size.count(); i++) {
-                    pSourceData[i] = (pSource.array1d[i] ? 255 : 0);
-                    //pSourceData[i] = uint8_t(i % 256);
-                }
+            uint8_t* pSourceData = (uint8_t*)malloc( sizeof(uint8_t) * pSource.size.count() );
+            for (auto i=0; i<pSource.size.count(); i++) {
+                pSourceData[i] = (pSource.array1d[i] ? 255 : 0);
             }
             
             glTexImage3D(GL_TEXTURE_3D, 0, GL_R8,
                         (GLsizei)pSource.size.v[0], (GLsizei)pSource.size.v[1], (GLsizei)pSource.size.v[2],
                          0, GL_RED, GL_UNSIGNED_BYTE, pSourceData );
+            free( pSourceData );
+            
             errCode = glGetError();
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
             
             return texture_id;
         }
