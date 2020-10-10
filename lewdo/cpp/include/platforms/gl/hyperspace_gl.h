@@ -77,7 +77,7 @@ namespace lewdo_gl_hyperspace {
             goal->facets[2]->config_read( L"z", model.shape->findFacetByName( L"z" ) );
             goal->facets[3]->config_range( L"u", ranged_t(0.0,1.0) );
             goal->facets[4]->config_range( L"v", ranged_t(0.0,1.0) );
-            auto letterScalerd = 1.0 / 255.0f;
+            auto letterScalerd = 1.0 / 256.0;
             auto letterScaler = ranged_t( letterScalerd, letterScalerd );
             goal->facets[5]->config_read_scaled( L"w", model.shape->findFacetByName( L"letter" ), letterScaler );
             goal->update_cached();

@@ -175,8 +175,8 @@ namespace lewdo_shapes_hyperspace {
         static hypershape_t* allocate_standard(size_t count_facets);
         
         void update_cached() {
-            vector_count_update();
             data_count_update();
+            vector_count_update();
             packing_update();
         }
         
@@ -218,7 +218,7 @@ namespace lewdo_shapes_hyperspace {
                 facet->facet_index_cached = fi;
                 
                 if (facet->appends) {
-                    pack.pack_mod = facet->appends;
+                    pack.pack_mod = data_count_cached;
                     facet->packing_cached = pack;
                     pack.pack_offset += facet->appends;
                     if (isFirstDiv) {
