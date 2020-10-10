@@ -46,8 +46,6 @@ namespace lewdo {
             }
             GLuint texture_id;
             auto pSource = lewdo_font_tensor;
-            auto width = pSource.size.v[0];
-            auto height = pSource.size.v[1];
             auto errCode = glGetError();
             //texture map
             glGenTextures(1,&texture_id);

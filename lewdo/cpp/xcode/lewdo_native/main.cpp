@@ -17,6 +17,8 @@
 
 #include "../../include/shapes/hyperspace.h"
 
+#include "../../include/platforms/gl/hyperspace_gl.h"
+
 using namespace lewdo;
 
 size3_t size(8,16,4);

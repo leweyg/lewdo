@@ -38,6 +38,7 @@
 		5C03BCA6252C0098007D36D0 /* math3_t.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = math3_t.h; path = ../../include/math3_t.h; sourceTree = "<group>"; };
 		5C03BCA7252C1061007D36D0 /* font.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = font.h; path = ../../include/shapes/font.h; sourceTree = "<group>"; };
 		5C5A188B252D142A00B0E21C /* hyperspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hyperspace.h; path = ../../include/shapes/hyperspace.h; sourceTree = "<group>"; };
+		5CA9465F253152490078E746 /* hyperspace_gl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = hyperspace_gl.h; path = ../../include/platforms/gl/hyperspace_gl.h; sourceTree = "<group>"; };
 		5CDA922A25254B570026F6EC /* lewdo_native */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lewdo_native; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CDA922D25254B570026F6EC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,6 +97,7 @@
 				5C03BCA0252BF3AB007D36D0 /* string3_glut.h */,
 				5C03BCA6252C0098007D36D0 /* math3_t.h */,
 				5C03BCA7252C1061007D36D0 /* font.h */,
+				5CA9465F253152490078E746 /* hyperspace_gl.h */,
 			);
 			path = lewdo_native;
 			sourceTree = "<group>";
