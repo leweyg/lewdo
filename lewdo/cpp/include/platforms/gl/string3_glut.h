@@ -13,6 +13,8 @@
 #include "string3_gl.h"
 #include <GLUT/glut.h>
 
+#include "hyperspace_gl.h"
+
 const GLfloat EDGE = 50.0;
 const GLfloat SQR3 = sqrt(3);
 const GLfloat SQR6 = sqrt(6);
@@ -95,6 +97,8 @@ namespace lewdo {
             auto buffer = pApp->app_out.buffer;
             context.configureScale(buffer.size);
             context.drawString3(buffer);
+            
+            lewdo_gl_hyperspace::hypergl_context_g.drawString3( buffer );
         }
         
         void setupWorldMatrix() {

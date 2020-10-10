@@ -25,6 +25,10 @@ namespace lewdo_shapes_hyperspace {
              return ans;
         }
         
+        double seek(size_t i) {
+            return ((i==0)?from:to);
+        }
+        
         ranged_t() {}
         ranged_t(double _from, double _to) {
             from = _from; to = _to;
@@ -126,6 +130,21 @@ namespace lewdo_shapes_hyperspace {
         const wchar_t* name;
         hyperfacet_expression_tree_t* expression;
         size_t facet_index_cached;
+        
+        void config_read(const wchar_t* into, hyperfacet_t* from) {
+            name = into;
+            range = from->range;
+            expression = expression->allocate_standard(1);
+            expression->operation = expression->operation_read;
+            expression->name = from->name;
+            expression->index = from->facet_index_cached;
+            expression->range = from->range;
+        }
+        
+        void config_range(const wchar_t* into, ranged_t _range) {
+            name = into;
+            range = _range;
+        }
     };
     
     struct hypershape_t {
@@ -219,6 +238,14 @@ namespace lewdo_shapes_hyperspace {
                 }
             }
             return -1;
+        }
+        
+        hyperfacet_t* findFacetByName(const wchar_t* pName) const {
+            auto index = findIndexByName(pName);
+            if (index >= 0) {
+                return facets[index];
+            }
+            return nullptr;
         }
     };
     
@@ -360,8 +387,12 @@ namespace lewdo_shapes_hyperspace {
             }
         }
         
-        void vector_by_index_read(hypershaped_vector_ptr* vector, int vector_index) {
+        void vector_by_index_read(hypershaped_vector_ptr* vector, int vector_index, hypershaped_vector_ptr* src_vector) {
+            assert( vector );
             assert( vector->shape == shape );
+            if (!src_vector) {
+                src_vector = vector;
+            }
             
             for (auto fi=0; fi<shape->facet_count; fi++) {
                 auto facet = shape->facets[fi];
@@ -372,7 +403,7 @@ namespace lewdo_shapes_hyperspace {
                 } else if (facet->repeats) {
                     r = facet->range.indexed_by_count( vector_index, shape->vector_count_cached );
                 } else if (facet->expression) {
-                    r = evaluate_expression( facet->expression, vector );
+                    r = evaluate_expression( facet->expression, src_vector );
                 } else {
                     r = facet->range;
                 }

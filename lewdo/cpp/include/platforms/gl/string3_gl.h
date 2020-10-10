@@ -133,6 +133,7 @@ namespace lewdo {
         }
         
         void drawString3(string3_ptr str3) {
+            
             myBegin();
             // continue here
             auto size = str3.size;
