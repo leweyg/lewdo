@@ -75,10 +75,9 @@ namespace lewdo_gl_hyperspace {
             goal->facets[0]->config_read( L"x", model.shape->findFacetByName( L"x" ) );
             goal->facets[1]->config_read( L"y", model.shape->findFacetByName( L"y" ) );
             goal->facets[2]->config_read( L"z", model.shape->findFacetByName( L"z" ) );
-            goal->facets[3]->config_range( L"u", ranged_t(0.0,1.0) );
-            goal->facets[4]->config_range( L"v", ranged_t(0.0,1.0) );
-            auto letterScalerd = 1.0 / 256.0;
-            auto letterScaler = ranged_t( letterScalerd, letterScalerd );
+            goal->facets[3]->config_range( L"u", ranged_t(0.0,0.999) );
+            goal->facets[4]->config_range( L"v", ranged_t(0.0,0.999) );
+            auto letterScaler = ranged_t( 1.0 / 256.0, 1.0 / 257.0 );
             goal->facets[5]->config_read_scaled( L"w", model.shape->findFacetByName( L"letter" ), letterScaler );
             goal->update_cached();
             auto goalData = hypershaped_data_ptr::shaped_float_array( goal, nullptr, 0 );
@@ -97,14 +96,14 @@ namespace lewdo_gl_hyperspace {
             
             for (auto i=0; i!=vector_count; i++) {
                 model.data.vector_by_index_read( &vector, i, nullptr );
-                auto letterRange = vector.ranges[0];
-                auto letterX = vector.ranges[1];
+                auto letterRange = vector.ranges[0]; // debug only
+                auto letterX = vector.ranges[1]; // debug only
                 
                 goalData.vector_by_index_read( &goalVector, i, &vector );
                 
                 auto ranges = goalVector.ranges;
-                auto xRange = ranges[0];
-                auto zRange = ranges[5];
+                auto xRange = ranges[0]; // debug only
+                auto zRange = ranges[5]; // debug only
                 
                 for (auto ti=0; ti<cube_triangle_index_count; ti++) {
                     auto si = cube_triangle_indices[ ti ];

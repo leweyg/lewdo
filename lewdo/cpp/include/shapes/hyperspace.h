@@ -34,7 +34,7 @@ namespace lewdo_shapes_hyperspace {
             from = _from; to = _to;
         }
         
-        ranged_t unsorted(double a, double b) {
+        static ranged_t unsorted(double a, double b) {
             if (a < b) return ranged_t(a,b);
             else return ranged_t(b,a);
         }
@@ -80,26 +80,6 @@ namespace lewdo_shapes_hyperspace {
         }
     };
     
-    struct hyperfacet_expression_tree_t {
-        wchar_t operation;
-        ranged_t range;
-        double scalar;
-        size_t index;
-        const wchar_t* name;
-        hyperfacet_expression_tree_t* expressions;
-        size_t expression_count;
-        size_t tree_size;
-        
-        static const wchar_t operation_immediate = 'i';
-        static const wchar_t operation_read = 'r';
-        static const wchar_t operation_add = '+';
-        static const wchar_t operation_multiply = '*';
-        static const wchar_t operation_sine = 's';
-        static const wchar_t operation_cosine = 'c';
-        
-        static hyperfacet_expression_tree_t* allocate_standard(size_t tree_size);
-    };
-    
     struct hyperfacet_packing_t {
         size_t pack_div;
         size_t pack_mod;
@@ -116,6 +96,27 @@ namespace lewdo_shapes_hyperspace {
             ans.pack_offset = 0;
             return ans;
         }
+    };
+    
+    struct hyperfacet_expression_tree_t {
+        
+        wchar_t operation;
+        ranged_t range;
+        size_t index; // consider moving this into range
+        const wchar_t* name;
+        
+        hyperfacet_expression_tree_t* expressions;
+        size_t expression_count;
+        size_t tree_size;
+        
+        static const wchar_t operation_immediate = 'i';
+        static const wchar_t operation_read = 'r';
+        static const wchar_t operation_add = '+';
+        static const wchar_t operation_multiply = '*';
+        static const wchar_t operation_sine = 's';
+        static const wchar_t operation_cosine = 'c';
+        
+        static hyperfacet_expression_tree_t* allocate_standard(size_t tree_size);
     };
     
     struct hyperfacet_t {
@@ -158,6 +159,7 @@ namespace lewdo_shapes_hyperspace {
             expression[2].operation = expression->operation_read;
             expression[2].name = from->name;
             expression[2].index = from->facet_index_cached;
+            expression[2].range = from->range;
         }
         
         void config_range(const wchar_t* into, ranged_t _range) {
