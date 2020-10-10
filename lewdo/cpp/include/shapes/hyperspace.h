@@ -83,6 +83,7 @@ namespace lewdo_shapes_hyperspace {
     struct hyperfacet_expression_tree_t {
         wchar_t operation;
         ranged_t range;
+        double scalar;
         size_t index;
         const wchar_t* name;
         hyperfacet_expression_tree_t* expressions;
@@ -139,6 +140,24 @@ namespace lewdo_shapes_hyperspace {
             expression->name = from->name;
             expression->index = from->facet_index_cached;
             expression->range = from->range;
+        }
+        
+        void config_read_scaled(const wchar_t* into, hyperfacet_t* from, ranged_t scaler) {
+            name = into;
+            range = from->range;
+            expression = expression->allocate_standard(3);
+            
+            expression[0].operation = expression->operation_multiply;
+            expression[0].expressions = &( expression[1] );
+            expression[0].expression_count = 2;
+            expression[0].range = from->range.multiply(scaler);
+            
+            expression[1].operation = expression->operation_immediate;
+            expression[1].range = scaler;
+            
+            expression[2].operation = expression->operation_read;
+            expression[2].name = from->name;
+            expression[2].index = from->facet_index_cached;
         }
         
         void config_range(const wchar_t* into, ranged_t _range) {
@@ -401,7 +420,8 @@ namespace lewdo_shapes_hyperspace {
                     auto data_index = facet->packing_cached.data_from_vector_index( vector_index );
                     r = range_by_data_index_read( data, data_index );
                 } else if (facet->repeats) {
-                    r = facet->range.indexed_by_count( vector_index, shape->vector_count_cached );
+                    auto local_index = facet->packing_cached.data_from_vector_index( vector_index );
+                    r = facet->range.indexed_by_count( local_index, facet->repeats );
                 } else if (facet->expression) {
                     r = evaluate_expression( facet->expression, src_vector );
                 } else {
