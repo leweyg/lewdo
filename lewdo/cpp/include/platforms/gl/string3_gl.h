@@ -91,11 +91,16 @@ namespace lewdo {
                 glActiveTexture(GL_TEXTURE0);
             }
             
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            
             drawCallDepth = 1;
             glBegin(GL_TRIANGLES);
             if (useTexturing) {
                 glColor3f(1.0f,1.0f,1.0f);
             }
+            
+            
         }
         
         void myEnd() {
@@ -133,11 +138,25 @@ namespace lewdo {
             myBegin();
             // continue here
             auto size = str3.size;
+            int sizeZ = (int)size.v[2];
+            auto size2D = size;
+            size2D.v[2] = 1;
+            
+            for (auto z=sizeZ-1; z>=0; z--) {
+                for (auto i=size2D.begin(); i!=size2D.end(); i++) {
+                    auto pos = size2D.unpack(i);
+                    pos.v[2] = z;
+                    auto letter = str3.Get( pos );
+                    drawChar( letter, pos );
+                }
+            }
+            /*
             for (auto i=size.begin(); i!=size.end(); i++) {
                 auto letter = str3.Get1D(i);
                 auto pos = size.unpack(i);
                 drawChar( letter, pos );
             }
+            */
             myEnd();
         }
         
@@ -178,6 +197,8 @@ namespace lewdo {
         
         void drawCharTextured(wchar_t letter, size3_t pos) {
             //glColor3f(1.0f,1.0f,1.f);
+            float c = ((float)pos.v[2]) / ((float)displaySize.v[2]);
+            glColor4f(1.0f,1.0f,1.0f,1.0f - c);
             drawQuad( pos, ((float)letter)/255.0f );
         }
         
