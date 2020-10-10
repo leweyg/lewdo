@@ -65,6 +65,8 @@ namespace lewdo_gl_hyperspace {
     public:
         
         void drawString3(string3_ptr str3) {
+            return; // TODO
+            
             ensure_initialize();
             
             auto model = string3_hypershape_ptr::allocate( str3 );
@@ -82,9 +84,14 @@ namespace lewdo_gl_hyperspace {
             auto goalData = hypershaped_data_ptr::shaped_float_array( goal, nullptr, 0 );
             auto goalVector = hypermemory_t::standard().allocate_shaped_vector( goal );
             
+            glEnable(GL_TEXTURE_3D);
+            
             glBegin(GL_TRIANGLES);
             
             glColor4f(1.0f,1.0f,1.0f,1.0f);
+            
+            double texcoords[4];
+            double positions[4];
             
             for (auto i=0; i!=vector_count; i++) {
                 model.data.vector_by_index_read( &vector, i, nullptr );
@@ -96,13 +103,15 @@ namespace lewdo_gl_hyperspace {
                     auto si = cube_triangle_indices[ ti ];
                     auto corner = cube_corners[ si ];
                     
-                    glTexCoord3d(ranges[3].seek(corner.v[0]),
-                                 ranges[4].seek(corner.v[1]),
-                                 ranges[5].seek(corner.v[2]));
+                    positions[0] = ranges[0].seek(corner.v[0]);
+                    positions[1] = ranges[1].seek(corner.v[1]);
+                    positions[2] = ranges[2].seek(corner.v[2]);
+                    texcoords[0] = ranges[3].seek(corner.v[0]);
+                    texcoords[1] = ranges[4].seek(corner.v[1]);
+                    texcoords[2] = ranges[5].seek(corner.v[2]);
                     
-                    glVertex3f(ranges[0].seek(corner.v[0]),
-                               ranges[1].seek(corner.v[1]),
-                               ranges[2].seek(corner.v[2]));
+                    glTexCoord3dv(texcoords);
+                    glVertex3dv(positions);
                 }
                 
             }

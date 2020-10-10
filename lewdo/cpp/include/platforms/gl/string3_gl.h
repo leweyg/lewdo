@@ -114,7 +114,7 @@ namespace lewdo {
             assert( drawCallDepth >= 0 );
             
             if (useTexturing) {
-                glDisable(GL_TEXTURE_3D);
+                //glDisable(GL_TEXTURE_3D);
             }
         }
         
