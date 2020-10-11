@@ -19,6 +19,8 @@
 
 #include "../../include/platforms/gl/hyperspace_gl.h"
 
+#include "../../include/platforms/std/string3_pipe.h"
+
 using namespace lewdo;
 
 size3_t size(8,16,4);
@@ -40,6 +42,9 @@ int main(int argc, char** argv)
     for (auto i=0; i<hyperString3.shape->vector_count_cached; i++) {
         hyperString3.data.vector_by_index_read( &vec, i, nullptr );
     }
+    
+    std::string folder = __FILE__;
+    string3_pipe_t hosted( folder );
     
     // Start the OpenGL project:
     lewdo_glut::main(&app, argc, argv);
