@@ -29,11 +29,11 @@ namespace lewdo {
         float3_t LocalToWorld(size3_t offset) {
             float3_t result;
             const float scale = generalScale;
-            const float zscale = generalScale * -4.0f;
+            const float zscale = -1.0f; //generalScale;// * -4.0f;
             const float origin[3] = {
                 -((float)displaySize.v[0])/2.0f,
                 -((float)displaySize.v[1])/2.0f,
-                0.0f,
+                -((float)displaySize.v[2])/2.0f,
             };
             EXPAND3_i(result.v[i] = (scale * (origin[i] + offset.v[i])));
             result.v[2] *= zscale;
@@ -129,7 +129,7 @@ namespace lewdo {
             }
             size = displaySize;
             auto mx = (size.v[0] > size.v[1]) ? size.v[0] : size.v[1];
-            generalScale = 1.0f / ((float)mx);
+            generalScale = 2.0f / ((float)mx);
         }
         
         void drawString3(string3_ptr str3) {
