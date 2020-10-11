@@ -16,6 +16,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <unistd.h>
 
 namespace lewdo {
     
@@ -44,8 +45,10 @@ namespace lewdo {
     private:
         
         void open_lewdo_node(std::string folder) {
-            folder += "pwd";
-            pFile = popen( folder.c_str(),"r");
+            chdir( folder.c_str() );
+            std::string cmd = "/usr/local/bin/node app.js";
+            pFile = popen( cmd.c_str(),"r");
+            assert( pFile );
         }
         
         bool read_blocking() {
@@ -53,7 +56,7 @@ namespace lewdo {
             char buffer[ bufferSize ] = { 0 };
             size_t byte_count = fread(buffer, 1, bufferSize, pFile);
             if (byte_count == 0) {
-                std::cout << "No result";
+                //std::cout << "No result or done.\n";
                 return false;
             }
             buffer[ byte_count ] = 0;

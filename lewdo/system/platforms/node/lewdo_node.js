@@ -18,7 +18,7 @@ var lewdo_node = {
     
     makeTerminal : function() {
         var mainAppInst = lewdo_terminal().app.pipedInto( lewdo_flat.app() );
-        console.log( mainAppInst.app_out.toString() );
+        process.stdout.write( mainAppInst.app_out.toString() );
 
         if (false) {
             var srcFile = "lewdo/system/script/examples/helloworld.js";// './lewdo/system/lewdo.js';
