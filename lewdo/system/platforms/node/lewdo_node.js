@@ -17,7 +17,17 @@ var lewdo_node = {
     string3 : lewdo.string3,
     
     makeTerminal : function() {
-        var mainAppInst = lewdo_terminal().app.pipedInto( lewdo_flat.app() );
+
+        var mainAppInst = lewdo_terminal().app;
+        var needsFlatten = true;
+        for (var k in process.argv) {
+            if (process.argv[k] == "-3d") {
+                needsFlatten = false;
+            }
+        }
+        if (needsFlatten) {
+            mainAppInst = mainAppInst.pipedInto( lewdo_flat.app() );
+        }
         process.stdout.write( mainAppInst.app_out.toString() );
 
         if (false) {

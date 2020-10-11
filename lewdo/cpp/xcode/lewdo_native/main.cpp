@@ -45,6 +45,10 @@ int main(int argc, char** argv)
     
     std::string folder = __FILE__;
     string3_pipe_t hosted( folder );
+    if (hosted.state.buffer.size.count() != 0) {
+        app.app_out.buffer = hosted.state.buffer;
+        app.app_out.frameStep();
+    }
     
     // Start the OpenGL project:
     lewdo_glut::main(&app, argc, argv);
