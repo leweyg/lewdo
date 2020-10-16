@@ -78,7 +78,7 @@ var string3_ui = {
         fontSize = Math.max( fontSize, 12 );
         fontSize = Math.min( fontSize, 50 );
         fontSize = Math.floor(fontSize) + "px";
-        console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
+        //console.log("PixelSize=" + pixelSize + " fontSize=" + fontSize);
         return fontSize;
     },
     _previousPageSize : string3_utils.xyz(),
@@ -412,7 +412,7 @@ var string3_ui = {
         var maxAngle = 120.0;
         var scl = maxAngle;
         if (fx == 0.5) {
-            console.log("Zero???");
+            //console.log("Zero???");
         }
         var angleX = (fy - 0.5) * scl;
         var angleY = (fx - 0.5) * -scl;
