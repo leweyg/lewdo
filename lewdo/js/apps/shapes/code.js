@@ -13,6 +13,20 @@ var lewdo_code = {
         var code = lewdo_code.app(_app);
         code.legend = true;
         code.legend_with_code = true;
+        code.formatContent = function(info,str3,pos,op) {
+            var str = str3.toString()
+            if (str=="↕") {
+                var proxyItself = info.value.__proxy_itself;
+                var name = proxyItself ? proxyItself.name : undefined;
+                if (name) {
+                    str = str3.toString() + name;
+                    return lewdo.string3(str);
+                } else {
+                    return lewdo.string3(" ");
+                }
+            }
+            return str3;
+        };
 
         var demoMode = "helloWorld"; // iterator // simple
         switch (demoMode) {
@@ -35,9 +49,9 @@ var lewdo_code = {
 
                 //var kernelState = code.addProxyObject();
                 var kernelState_stackPtr = code.addProxyObject();
-                var kernelState_cmdData = code.addProxyObject();
-                var kernelState_cmdIndex = code.addProxyObject();
-                var kernelState_cmdOp = code.addProxyObject();
+                var kernelState_cmdData = code.addProxyObject("a"); // a
+                var kernelState_cmdIndex = code.addProxyObject("c"); // c
+                var kernelState_cmdOp = code.addProxyObject("b"); // b
 
                 //var fiberState = code.addProxyValue();
                 
@@ -68,7 +82,7 @@ var lewdo_code = {
 
                 code.addTime();
                 var methodResultVal = code.addProxyValue();
-                var methodResultVar = code.addProxyObject();
+                var methodResultVar = code.addProxyObject("f");
                 
                 //methodResultVar.getWhole( code.addProxyValue() );
                 
@@ -229,6 +243,9 @@ var lewdo_code = {
             if (prop == "indexedBy") {
                 return ((ndx)=>target.indexedBy(ndx));
             }
+            if (prop == "__proxy_itself") {
+                return target;
+            }
             if (prop == "setWhole") {
                 return ((val)=>{
                     target.code_owner.addWrite(target.proxy,val);
@@ -330,9 +347,12 @@ var lewdo_code = {
             return into;
         },
 
-        addProxyObject : function() {
+        addProxyObject : function(name) {
             var target = Object.create( lewdo_code._codeProxyObject_prototype );
             target._uniqueIndex = lewdo_code._uniqueIndex++;
+            if (name) {
+                target.name = name;
+            }
             return target.setupProxy(this);
         },
 
