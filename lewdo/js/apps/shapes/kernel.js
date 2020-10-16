@@ -600,7 +600,7 @@ return lewcidKernel_EnsureCompiled();
     },
 };
 
-lewdo.apps.shapes.kernel = lewdo_kernel.app;
-lewdo.apps.tools.kernel = lewdo_kernel.demo;
+//lewdo.apps.shapes.kernel = lewdo_kernel.app;
+//lewdo.apps.tools.kernel = lewdo_kernel.demo;
 
 lewdo_kernel.compiled_kernel();
