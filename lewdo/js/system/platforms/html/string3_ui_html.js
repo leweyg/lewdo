@@ -467,7 +467,7 @@ var string3_ui = {
                 
                 storedSeq = sequence;
             }
-            sequence += " translateZ(" + Math.floor( ( -depthScaling * index ) + offset ) + "px)";
+            sequence += " translateZ(" + ( ( -depthScaling * index ) + offset ) + "px)";
 
             //sequence += " translate(" + (w/2) + "px, " + (h/2) + "px) ";
 
