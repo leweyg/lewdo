@@ -6,11 +6,11 @@ var string3_system = require('../../string3');
 var string3 = string3_system.string3;
 var string3_utils = string3_system.string3_utils;
 
-eval( fs.readFileSync('./lewdo/system/lewdo.js', 'utf8') );
+eval( fs.readFileSync('./lewdo/js/system/lewdo.js', 'utf8') );
 
-eval( fs.readFileSync('./lewdo/apps/shapes/flat.js', 'utf8') );
-eval( fs.readFileSync('./lewdo/apps/shapes/text.js', 'utf8') );
-eval( fs.readFileSync('./lewdo/apps/shapes/terminal.js', 'utf8') );
+eval( fs.readFileSync('./lewdo/js/apps/shapes/flat.js', 'utf8') );
+eval( fs.readFileSync('./lewdo/js/apps/shapes/text.js', 'utf8') );
+eval( fs.readFileSync('./lewdo/js/apps/shapes/terminal.js', 'utf8') );
 
 var lewdo_node = {
     lewdo : lewdo,
