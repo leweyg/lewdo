@@ -23,7 +23,17 @@ var string3_ui = {
 
         var events = " ";// " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
         document.onmousemove = ((event) => { string3_ui.onMouseMoveTop(event,document.getElementById(myname)); });
-
+        document.onmousedown = ((event) => {
+            if (event.buttons==2) {
+                this._rotationDisabled = !this._rotationDisabled;
+                return false;
+            }
+        });
+        document.onmouseup = ((event) => {
+            if (event.buttons==2) {
+                return false;
+            }
+        });
 
         ans += "<div id='" + myname + "' class='page_top'  style='position: relative;' " + events + " >";
         x=-1; y=-1; z=-1;
@@ -236,6 +246,7 @@ var string3_ui = {
         posXYZ : string3_utils.xyz(),
         topElement : null,
     },
+    _rotationDisabled : false,
     _processTopElementMouseEvent : function(element,moveEvent,isButtonChange) {
         var _this = this;
         var topElement = this._processTopElementCache.topElement;
@@ -249,6 +260,14 @@ var string3_ui = {
         tp.x = Math.max(0, tp.x);
         tp.y = Math.max(0, tp.y);
         var isDown = !(!(moveEvent.buttons));
+        if (isDown) {
+            var btns = moveEvent.buttons;
+            if (btns == 2) {
+                // actual click
+                isDown = false;
+                //this._rotationDisabled = !this._rotationDisabled;
+            }
+        }
         this.doAppSingleTouchInput(isDown,tp);
     },
     _valuesByName : {},
@@ -398,8 +417,10 @@ var string3_ui = {
         var angleX = (fy - 0.5) * scl;
         var angleY = (fx - 0.5) * -scl;
         var lt = 0.2;
-        this.recentAngle.x = this.lerp(this.recentAngle.x, angleX, lt);
-        this.recentAngle.y = this.lerp(this.recentAngle.y, angleY, lt);
+        if (!this._rotationDisabled) {
+            this.recentAngle.x = this.lerp(this.recentAngle.x, angleX, lt);
+            this.recentAngle.y = this.lerp(this.recentAngle.y, angleY, lt);
+        }
         
         this._updatePageTransforms(element);
     },
