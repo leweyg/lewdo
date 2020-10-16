@@ -16,7 +16,7 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
 
 ## Example App
 
-![Hello World App](lewdo/system/script/examples/lewdo_helloworld.png)
+![Hello World App](lewdo/js/system/script/examples/lewdo_helloworld.png)
 
     function helloWorld(app) {
         app.app_out.copy(string3("Hello\v\nWorld"));
@@ -24,19 +24,24 @@ Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Ges
     }
     lewdo.apps.tools.helloWorld = helloWorld;
 
-This application outputs a 3D "Hello World" to the display, with "Hello" at the closest depth, and "World" below that. `string3` treats the `\n` as `New Line`, but the `\v` is interpreted as `New Page`. The call to `frameStep()` informs any subscribers that the frame is now ready to be recieved (common in graphics architectures). Also the line at the bottom add this method to the standard list of apps. See [helloWorld.js](lewdo/system/script/examples/helloWorld.js)
+This application outputs a 3D "Hello World" to the display, with "Hello" at the closest depth, and "World" below that. `string3` treats the `\n` as `New Line`, but the `\v` is interpreted as `New Page`. The call to `frameStep()` informs any subscribers that the frame is now ready to be recieved (common in graphics architectures). Also the line at the bottom add this method to the standard list of apps. See [helloWorld.js](lewdo/js/system/script/examples/helloWorld.js)
 
 ## Example App with Input
 
-![Repeat Me App](lewdo/system/script/examples/lewdo_repeatMe.png)
+![Repeat Me App](lewdo/js/system/script/examples/lewdo_repeatMe.png)
 
-For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/system/script/examples/repeatMe.js)
+For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/js/system/script/examples/repeatMe.js)
 
-# Scripting Reference
 
-## lewdo_app
+# C++ Reference
 
-`lewdo_app()` creates a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
+See [lewdo.h](lewdo/cpp/include/lewdo.h) which includes [string3.h](lewdo/cpp/include/string3.h) and [size3_t.h](lewdo/cpp/include/size3_t.h)
+
+# JavaScript Reference
+
+## lewdo.app
+
+`lewdo.app()` creates a new app instance with the following default properties. Most "applications" are actually methods that take an app instance as input, and interact via subscriptions to it's input and output buffers.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
@@ -45,7 +50,7 @@ For an example app which reads it's input and repeats it back volumetrically, se
 
 ## string3
 
-`string3()` creates a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
+`lewdo.string3()` creates a 3d buffer of characters, arranged by width, height and then depth into a 1D array of strings, along with an event subscription system.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
@@ -74,9 +79,9 @@ For an example app which reads it's input and repeats it back volumetrically, se
 | indexFromXYZ | (xyz) | returns the 1D index of the given xyz tuple |
 
 
-## string3_util.xyz
+## lewdo.xyz
 
-`string3_util.xyz()` is a simple wrapper for an object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
+`lewdo.xyz()` is a simple wrapper for a 3D vector object with the properties x, y and z. If not given arguements it defaults to `{x:0,y:0,z:0}`. It is used to represent a 3D location in the string3 API.
 
 | Property | Type | Description |
 | ----- | ----- | ------ |
@@ -92,3 +97,4 @@ And associated methods:
 | copy | (xyz) | copies another xyz |
 | set | (x,y,z) | changes the x, y and z values |
 | clone | () | returns a new object with the same xyz values |
+
