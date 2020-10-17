@@ -28,6 +28,23 @@ var lewdo_kernel = {
         visualize_kernel : function() {
             var lk = lewdo_kernel.compiled_kernel();
             var code = lewdo.apps.shapes.code();
+            code.formatContent = function(info,str3,pos,op) {
+                var str = str3.toString()
+                if (info.category && info.category.name == "string" && info.value) {
+                    //return lewdo.string3( str + info.value );
+                }
+                if (str=="↕") {
+                    var proxyItself = info.value.__proxy_itself;
+                    var name = proxyItself ? proxyItself.name : undefined;
+                    if (name) {
+                        str = str3.toString() + name;
+                        //return lewdo.string3(str);
+                    } else {
+                        //return lewdo.string3(" ");
+                    }
+                }
+                return str3;
+            };
 
             for (var sourceLineIndex in lk.MicroSource) {
                 var sourceLine = lk.MicroSource[ sourceLineIndex ];
@@ -36,9 +53,57 @@ var lewdo_kernel = {
                     case "@":
                         {
                             var name = parts[1];
-                            var cmdObject = code.addProxyObject(name);
                             var cmdData = code.addProxyValue();
-                            cmdObject.getWhole( cmdData );
+                            code.addRead(name,cmdData);
+                        }
+                        break;
+                    case "thread_ptr_read":
+                        {
+                            var threadPtr = code.addProxyObject("thread_ptr");
+                            var threadPtrValue = code.addProxyValue();
+                            threadPtr.getWhole( threadPtrValue);
+                            code.addWrite(parts[1],threadPtrValue);
+                        }
+                        break;
+                    case "read":
+                        {
+                            var val = code.addProxyValue();
+                            code.addReadOffset(parts[2],parts[3],val);
+                            code.addWrite(parts[1],val);
+                        }
+                        break;
+                    case "write":
+                        {
+                            var val = code.addRead(parts[1]);
+                            code.addWriteOffset(parts[2],parts[3],val);
+                        }
+                        break;
+                    case "add":
+                        {
+                            var val = code.addPlus(parts[2],parts[3]);
+                            code.addWrite(parts[1],val);
+                        }
+                        break;
+                    case "adde":
+                        {
+                            var val = code.addPlus(parts[2],parts[3]);
+                            code.addWrite(parts[1],val);
+                        }
+                        break;
+                    case "jump":
+                        {
+                            code.addWrite("ins_ptr",parts[1]);
+                        }
+                        break;
+                    case "jump_op":
+                        {
+                            code.addWrite("ins_ptr",parts[1]);
+                        }
+                        break;
+                    case "kernel_flush":
+                    case "thread_exit":
+                        {
+                            code.addWrite("ins_ptr",parts[0]);
                         }
                         break;
                     default:
@@ -629,6 +694,6 @@ return lewcidKernel_EnsureCompiled();
 };
 
 //lewdo.apps.shapes.kernel = lewdo_kernel.app;
-lewdo.apps.tools.kernel = lewdo_kernel.demo;
+//lewdo.apps.tools.kernel = lewdo_kernel.demo;
 
 lewdo_kernel.compiled_kernel();
