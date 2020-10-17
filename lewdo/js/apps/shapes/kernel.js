@@ -11,7 +11,10 @@ var lewdo_kernel = {
     },
     demo : function(_app) {
         var context = lewdo_kernel.create(_app);
-        context.app.app_out.copy(lewdo.string3("lewdo_kernel"));
+        context.app.app_out.copy(lewdo.string3("loading\nkernel..."));
+        context.app.app_out.frameStep();
+        context.app.app_out.copy(context.visualize_kernel());
+        context.app.app_out.frameStep();
         return context;
     },
 
@@ -20,7 +23,32 @@ var lewdo_kernel = {
 
         setup : function(_app) {
             this.app = _app;
+        },
 
+        visualize_kernel : function() {
+            var lk = lewdo_kernel.compiled_kernel();
+            var code = lewdo.apps.shapes.code();
+
+            for (var sourceLineIndex in lk.MicroSource) {
+                var sourceLine = lk.MicroSource[ sourceLineIndex ];
+                var parts = sourceLine.split(" ");
+                switch (parts[0]) {
+                    case "@":
+                        {
+                            var name = parts[1];
+                            var cmdObject = code.addProxyObject(name);
+                            var cmdData = code.addProxyValue();
+                            cmdObject.getWhole( cmdData );
+                        }
+                        break;
+                    default:
+                        console.log("Ignoring " + parts[0] + " from " + sourceLine );
+                        break;
+                }
+            }
+
+            code.redraw();
+            return code.app.app_out;
         },
     },
 
@@ -601,6 +629,6 @@ return lewcidKernel_EnsureCompiled();
 };
 
 //lewdo.apps.shapes.kernel = lewdo_kernel.app;
-//lewdo.apps.tools.kernel = lewdo_kernel.demo;
+lewdo.apps.tools.kernel = lewdo_kernel.demo;
 
 lewdo_kernel.compiled_kernel();
