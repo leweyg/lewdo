@@ -12,6 +12,7 @@
 #include "../../include/lewdo.h"
 #include "../../include/platforms/std/string3_stdout.h"
 #include "../../include/shapes/lewdo_code.h"
+#include "../../include/shapes/tree.h"
 
 #include "../../include/platforms/gl/string3_glut.h"
 
@@ -27,6 +28,9 @@ size3_t size(8,16,4);
 
 int main(int argc, char** argv)
 {
+    lewdo::shape::tree::Test_Tree();
+    return 0;
+    
     lewdo::lewdo_app app;
     auto testString = lewdo::string3_ptr::String(L"lewdo\v\nworld");
     app.app_out.buffer.Copy( testString );
