@@ -136,7 +136,40 @@ namespace lewdo { namespace shape { namespace tree {
             PrintNode( Root, 0 );
         }
         
+        V HighestSumTriple() {
+            if (!Root) return 0;
+            V ignored;
+            return HighestSumTripleRecursive( Root, &ignored );
+        }
+        
     private:
+        V Max(V a, V b) {
+            return ((a > b) ? a : b);
+        }
+        
+        V HighestSumTripleRecursive(TreeNode<K,V>* node, V* highestPairSum) {
+            static V negative_infinity = -100000;
+            *highestPairSum = negative_infinity;
+            V highest = negative_infinity;
+            
+            if (node->Lower && node->Higher) {
+                highest = Max( highest, node->Value + node->Lower->Value + node->Higher->Value );
+            }
+            if (node->Lower) {
+                *highestPairSum = Max( *highestPairSum, node->Value + node->Lower->Value );
+                V highestPairBelow;
+                highest = Max( highest, HighestSumTripleRecursive(node->Lower, &highestPairBelow ) );
+                highest = Max( highest, node->Value + highestPairBelow );
+            }
+            if (node->Higher) {
+                *highestPairSum = Max( *highestPairSum, node->Value + node->Higher->Value );
+                V highestPairBelow;
+                highest = Max( highest, HighestSumTripleRecursive(node->Higher, &highestPairBelow ) );
+                highest = Max( highest, node->Value + highestPairBelow );
+            }
+            return highest;
+        }
+        
         void PrintNode(TreeNode<K,V>* node, int depth) {
             if (!node) {
                 return;
@@ -166,6 +199,8 @@ namespace lewdo { namespace shape { namespace tree {
         letters.Add( 'F', 1 );
         letters.Add( 'G', 1 );
         letters.PrintTree();
+        
+        auto highest = letters.HighestSumTriple();
         
         letters.RotateLowerKey('C');
         letters.PrintTree();
