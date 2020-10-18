@@ -74,13 +74,12 @@ namespace lewdo { namespace shape { namespace tree {
             auto node = new TreeNode<K,V>();
             node->Key = key;
             node->Value = val;
+            node->Lower = nullptr;
+            node->Higher = nullptr;
             Insert(node);
         };
         
         void Insert(TreeNode<K,V>* node) {
-            node->Lower = nullptr;
-            node->Higher = nullptr;
-            
             TreeNode<K,V>** link = nullptr;
             auto already = this->FindNearest( node->Key, &link );
             if (already) {
@@ -93,8 +92,47 @@ namespace lewdo { namespace shape { namespace tree {
             Root = node;
         }
         
+        void DeleteNode(TreeNode<K,V>* node, TreeNode<K,V>** parentLink = nullptr) {
+            if (!node) {
+                return;
+            }
+            if (!parentLink) {
+                FindNearest(node->Key, &parentLink);
+            }
+            *parentLink = nullptr;
+            if (node->Lower) {
+                this->Insert(node->Lower);
+                node->Lower = nullptr;
+            }
+            if (node->Higher) {
+                this->Insert(node->Higher);
+                node->Higher = nullptr;
+            }
+            delete node;
+        }
+        
+        void DeleteAll() {
+            DeleteNodeRecursive( &Root );
+        }
+        
+        ~Tree() {
+            DeleteAll();
+        }
+        
+        void DeleteNodeRecursive( TreeNode<K,V>** parentLink = nullptr) {
+            auto node = *parentLink;
+            if (!node) {
+                return;
+            }
+            DeleteNodeRecursive( &(node->Lower) );
+            DeleteNodeRecursive( &(node->Higher) );
+            DeleteNode( node, parentLink );
+            assert( *parentLink == nullptr );
+        }
+        
         
         void PrintTree() {
+            std::cout << "Tree:\n";
             PrintNode( Root, 0 );
         }
         
@@ -130,6 +168,9 @@ namespace lewdo { namespace shape { namespace tree {
         letters.PrintTree();
         
         letters.RotateLowerKey('C');
+        letters.PrintTree();
+        
+        letters.DeleteAll();
         letters.PrintTree();
     }
     
