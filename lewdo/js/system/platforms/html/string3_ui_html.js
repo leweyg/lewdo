@@ -454,7 +454,9 @@ var string3_ui = {
 
             var sequence = storedSeq;
             if (sequence == "") {
-                if (info.source3.width < 22) {
+                var sw = window.innerWidth;
+                if (info.source3.width < 22 || (sw > 500)) 
+                {
                     sequence += " translate(120px,0px) ";
                 }
                 //sequence += " translate3d(" + Math.floor(-w/2) + "px, " + Math.floor(-h/2) + "px, 0px ) ";

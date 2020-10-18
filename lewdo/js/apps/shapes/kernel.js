@@ -28,6 +28,7 @@ var lewdo_kernel = {
         visualize_kernel : function() {
             var lk = lewdo_kernel.compiled_kernel();
             var code = lewdo.apps.shapes.code();
+            code.legend = true;
             code.formatContent = function(info,str3,pos,op) {
                 var str = str3.toString()
                 if (info.category && info.category.name == "string" && info.value) {
@@ -46,15 +47,27 @@ var lewdo_kernel = {
                 return str3;
             };
 
+            var possible_jumps = [];
             for (var sourceLineIndex in lk.MicroSource) {
                 var sourceLine = lk.MicroSource[ sourceLineIndex ];
+                var parts = sourceLine.split(" ");
+                if (parts[0] == "@") {
+                    possible_jumps.push( parts[1] );
+                }
+            }
+
+            for (var sourceLineIndex in lk.MicroSource) {
+                var sourceLine = lk.MicroSource[ sourceLineIndex ];
+
                 var parts = sourceLine.split(" ");
                 switch (parts[0]) {
                     case "@":
                         {
                             var name = parts[1];
                             var cmdData = code.addProxyValue();
-                            code.addRead(name,cmdData);
+                            //code.addRead(name,cmdData);
+                            //code.addRead("ins_ptr",parts[1]);
+                            code.addExecuteRead(name,name);
                         }
                         break;
                     case "thread_ptr_read":
@@ -97,7 +110,10 @@ var lewdo_kernel = {
                         break;
                     case "jump_op":
                         {
-                            code.addWrite("ins_ptr",parts[1]);
+                            for (var i in possible_jumps) {
+                                code.addExecuteRead( parts[1], possible_jumps[i] );
+                            }
+                            //code.addWrite("ins_ptr",parts[1]);
                         }
                         break;
                     case "kernel_flush":
