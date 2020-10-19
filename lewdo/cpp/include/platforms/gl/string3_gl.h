@@ -37,6 +37,7 @@ namespace lewdo {
             };
             EXPAND3_i(result.v[i] = (scale * (origin[i] + offset.v[i])));
             result.v[2] *= zscale;
+            result.v[1] *= 2.0f;
             return result;
         }
         
