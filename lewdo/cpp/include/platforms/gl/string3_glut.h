@@ -98,7 +98,7 @@ namespace lewdo {
             context.configureScale(buffer.size);
             context.drawString3(buffer);
             
-            lewdo_gl_hyperspace::hypergl_context_g.drawString3( buffer );
+            //lewdo_gl_hyperspace::hypergl_context_g.drawString3( buffer );
         }
         
         void setupWorldMatrix() {

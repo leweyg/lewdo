@@ -24,6 +24,11 @@ var lewdo_node = {
             if (process.argv[k] == "-3d") {
                 needsFlatten = false;
             }
+            if (process.argv[k] == "-app") {
+                var toRun = process.argv[(1*k)+1];
+                var appStarter = lewdo.apps.tools[toRun];
+                mainAppInst = appStarter().app;
+            }
         }
         if (needsFlatten) {
             mainAppInst = mainAppInst.pipedInto( lewdo_flat.app() );

@@ -28,8 +28,8 @@ size3_t size(8,16,4);
 
 int main(int argc, char** argv)
 {
-    lewdo::shape::tree::Test_Tree();
-    return 0;
+    //lewdo::shape::tree::Test_Tree();
+    //return 0;
     
     lewdo::lewdo_app app;
     auto testString = lewdo::string3_ptr::String(L"lewdo\v\nworld");

@@ -45,7 +45,7 @@ namespace lewdo {
         
         void open_lewdo_node(std::string folder) {
             chdir( folder.c_str() );
-            std::string cmd = "/usr/local/bin/node app.js -3d";
+            std::string cmd = "/usr/local/bin/node app.js -3d -app text ";
             pFile = popen( cmd.c_str(),"r");
             assert( pFile );
         }
