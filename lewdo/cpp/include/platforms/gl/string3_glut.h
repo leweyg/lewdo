@@ -96,8 +96,9 @@ namespace lewdo {
         void drawApp() {
             auto buffer = pApp->app_out.buffer;
             context.configureScale(buffer.size);
-            context.drawString3(buffer);
             
+            context.drawString3(buffer);
+            // TODO: get this working, and disable above:
             //lewdo_gl_hyperspace::hypergl_context_g.drawString3( buffer );
         }
         

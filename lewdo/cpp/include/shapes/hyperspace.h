@@ -102,7 +102,7 @@ namespace lewdo_shapes_hyperspace {
         
         wchar_t operation;
         ranged_t range;
-        size_t index; // consider moving this into range
+        size_t source_index; // consider moving this into range
         const wchar_t* name;
         
         hyperfacet_expression_tree_t* expressions;
@@ -139,7 +139,7 @@ namespace lewdo_shapes_hyperspace {
             expression = expression->allocate_standard(1);
             expression->operation = expression->operation_read;
             expression->name = from->name;
-            expression->index = from->facet_index_cached;
+            expression->source_index = from->facet_index_cached;
             expression->range = from->range;
         }
         
@@ -158,7 +158,7 @@ namespace lewdo_shapes_hyperspace {
             
             expression[2].operation = expression->operation_read;
             expression[2].name = from->name;
-            expression[2].index = from->facet_index_cached;
+            expression[2].source_index = from->facet_index_cached;
             expression[2].range = from->range;
         }
         
@@ -341,7 +341,7 @@ namespace lewdo_shapes_hyperspace {
                     into->range = facetFromTo.to->range;
                     into->expression = hyperfacet_expression_tree_t::allocate_standard(1);
                     into->expression->operation = into->expression->operation_read;
-                    into->expression->index = facetFromTo.to->facet_index_cached;
+                    into->expression->source_index = facetFromTo.to->facet_index_cached;
                     into->expression->range = facetFromTo.to->range;
                 } else if (facetFromTo.from && !facetFromTo.to) {
                     *into = *facetFromTo.from;
@@ -362,7 +362,7 @@ namespace lewdo_shapes_hyperspace {
                                     auto facetName = step->name; assert( facetName );
                                     auto facetIndexInSource = pFrom->findIndexByName(facetName);
                                     assert( facetIndexInSource >= 0 );
-                                    step->index = facetIndexInSource;
+                                    step->source_index = facetIndexInSource;
                                 }
                             }
                             continue;
@@ -375,7 +375,7 @@ namespace lewdo_shapes_hyperspace {
                         into->expression = hyperfacet_expression_tree_t::allocate_standard(1);
                         into->expression->operation = into->expression->operation_read;
                         into->expression->name = facetFromTo.to->name;
-                        into->expression->index = facetFromTo.to->facet_index_cached;
+                        into->expression->source_index = facetFromTo.to->facet_index_cached;
                         into->expression->range = facetFromTo.to->range;
                     }
                 }
@@ -438,7 +438,7 @@ namespace lewdo_shapes_hyperspace {
                 case hyperfacet_expression_tree_t::operation_immediate:
                     return expression->range; // immediate value
                 case hyperfacet_expression_tree_t::operation_read:
-                    return vector->ranges[ expression->index ]; // read value
+                    return vector->ranges[ expression->source_index ]; // read value
                 case hyperfacet_expression_tree_t::operation_add: {
                     ranged_t result = ranged_t::zero();
                     for (auto ei=0; ei<expression->expression_count; ei++) {

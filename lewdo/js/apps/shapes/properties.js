@@ -1,16 +1,16 @@
 
-var lewdo_shapes_json = {
+var lewdo_shapes_properties = {
     create : function(app) {
-        var context = Object.create( lewdo_shapes_json.lewdo_shapes_json_prototype );
+        var context = Object.create( lewdo_shapes_properties.lewdo_shapes_properties_prototype );
         context.setup(app || lewdo.app());
         return context;
     },
     app : function(_app) {
-        var context = lewdo_shapes_json.create(_app);
+        var context = lewdo_shapes_properties.create(_app);
         return context;
     },
     demo : function(_app) {
-        var context = lewdo_shapes_json.app(_app);
+        var context = lewdo_shapes_properties.app(_app);
 
         var demo_json = null;
         var demo_object = {
@@ -32,7 +32,7 @@ var lewdo_shapes_json = {
         
         return context;
     },
-    lewdo_shapes_json_prototype : {
+    lewdo_shapes_properties_prototype : {
         app : lewdo.app(),
         skipInputUpdates : false,
         catchExceptions : false,
@@ -216,5 +216,5 @@ var lewdo_shapes_json = {
     }
 };
 
-lewdo.apps.shapes.json = lewdo_shapes_json.app;
-lewdo.apps.tools.json = lewdo_shapes_json.demo;
+lewdo.apps.shapes.properties = lewdo_shapes_properties.app;
+lewdo.apps.tools.properties = lewdo_shapes_properties.demo;

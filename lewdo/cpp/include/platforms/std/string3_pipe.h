@@ -36,7 +36,7 @@ namespace lewdo {
             for (int i=0; i<2; i++) {
                 std::cout << "Step " << i << "\n";
                 read_blocking();
-                std::this_thread::sleep_for( std::chrono::seconds(1) );
+                //std::this_thread::sleep_for( std::chrono::seconds(1) );
             }
             close();
         }
