@@ -5,6 +5,8 @@ https://leweyg.github.io/lewdo/index.html
 
 <a href="https://leweyg.github.io/lewdo/index.html">![lewdo](lewdo/lewdo.png)</a>
 
+SDK/source-code consists of a [shape library](lewdo/js/apps/shapes) over a [minimal 3d process system](lewdo/js/system) over [platform extentions](lewdo/js/platforms).
+
 # Introduction
 'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](#string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](#lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
 
@@ -13,6 +15,31 @@ https://leweyg.github.io/lewdo/index.html
 Designing a 3D interface is a complex problem; 'lewdo' attempts to tackle a subset of these design problems within the somewhat artificial context of a purely 'text-based 3d interface'. It contains numerous apps, and data models to explore interaction within that environment.
 
 Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Geselowitz</a> ), is aware that non-text-based 3D interfaces exist and provide additional levels of control than ASCII allows (he generally works on AR/MR/VR and even <a href="http://www.4dprocess.com/4d/index.html">4D interfaces</a>). This effort is mostly just a test of the idea of an XR system-terminal interface within which both the input and output are similarly typed 3d 'scenes' (as AR/XR get more complex, the description of the input scene and output scene formats are tending towards unification; see his work on <a href="https://unity.com/products/unity-mars">Unity MARS</a>, a useful tool for simulating complex environments as application inputs); plus it reminds him of the old-days when every letter mattered; while also providing space to really explore 3D interaction in a pure context.
+
+## Shape Library
+
+The source code [shape library](lewdo/js/apps/shapes) includes key shapes useful in transforming data and forming user interfaces:
+
+| Shape | Description |
+| ----- | ----------- |
+| cube | wraps a cube around it's input |
+| stack | combines multiple apps into a stack in x/y/z |
+| flat | flatten a volumetric string3 to it's top tap elements |
+| flip | flips it's input |
+| grid | combines a grid of inputs into one output |
+| text | converts text into volumetric layout |
+| font | converts text intos fixed-size fonts pixels |
+| button | makes a pressable button from it's input |
+| dirpad | directional pad of pressable arrows, outputs presses |
+| keyboard | pressable keyboard for typing |
+| host | base type for apps that host multiple sub-apps |
+| terminal | interactive command prompt |
+| values | generic visualizer |
+| editor | basic text editor |
+| laptop | combines keyboard and terminal |
+| properties | shows object properties and sub properties |
+| kernel | basic CPU kernel for low-level simulation |
+
 
 ## Example App
 
