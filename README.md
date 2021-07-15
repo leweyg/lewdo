@@ -5,7 +5,7 @@ https://leweyg.github.io/lewdo/index.html
 
 <a href="https://leweyg.github.io/lewdo/index.html">![lewdo](lewdo/lewdo.png)</a>
 
-SDK/source-code consists of a [shape library](lewdo/js/apps/shapes) over a [minimal 3d process system](lewdo/js/system) over [platform extentions](lewdo/js/platforms).
+SDK/source-code consists of a [shape library](lewdo/js/apps/shapes) over a [minimal 3d process system](lewdo/js/system) over [platform extentions](lewdo/js/system/platforms).
 
 # Introduction
 'lewdo' is a text-based 3D windowing and application environment. Both the output display and input systems are modelled as simply 3d buffers of text with update events (see [string3](#string3)). Much as UNIX processes have 'standard in' and 'standard out' file streams associated with each, [lewdo applications](#lewdo_app) use a 3d buffer (with frame update events) to model both the standard input and standard output streams of the application. Sub-processes can then be created to host inner content, such as buttons or labels, and user interfaces can be naturally built out there-by. Currently it is hosted within an HTML page as pure CSS; WebGL/XR and Unity versions are in the works.
@@ -59,12 +59,9 @@ This application outputs a 3D "Hello World" to the display, with "Hello" at the 
 
 For an example app which reads it's input and repeats it back volumetrically, see [repeatMe.js](lewdo/js/system/script/examples/repeatMe.js)
 
-
-# C++ Reference
-
-See [lewdo.h](lewdo/cpp/include/lewdo.h) which includes [string3.h](lewdo/cpp/include/string3.h) and [size3_t.h](lewdo/cpp/include/size3_t.h)
-
 # JavaScript Reference
+
+See [shape library](lewdo/js/apps/shapes) built over [minimal app model in lewdo.js](lewdo/js/system/lewdo.js) and subscribable volumetric buffers in [string3.js](lewdo/js/system/string3.js), and related [platform extentions](lewdo/js/system/platforms).
 
 ## lewdo.app
 
@@ -124,4 +121,9 @@ And associated methods:
 | copy | (xyz) | copies another xyz |
 | set | (x,y,z) | changes the x, y and z values |
 | clone | () | returns a new object with the same xyz values |
+
+
+# C++ Reference
+
+See [lewdo.h](lewdo/cpp/include/lewdo.h) which includes [string3.h](lewdo/cpp/include/string3.h) and [size3_t.h](lewdo/cpp/include/size3_t.h)
 
