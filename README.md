@@ -16,29 +16,29 @@ Designing a 3D interface is a complex problem; 'lewdo' attempts to tackle a subs
 
 Also yes, the author ( <a href="http://www.lewcid.com/lg/aboutme.html">Lewey Geselowitz</a> ), is aware that non-text-based 3D interfaces exist and provide additional levels of control than ASCII allows (he generally works on AR/MR/VR and even <a href="http://www.4dprocess.com/4d/index.html">4D interfaces</a>). This effort is mostly just a test of the idea of an XR system-terminal interface within which both the input and output are similarly typed 3d 'scenes' (as AR/XR get more complex, the description of the input scene and output scene formats are tending towards unification; see his work on <a href="https://unity.com/products/unity-mars">Unity MARS</a>, a useful tool for simulating complex environments as application inputs); plus it reminds him of the old-days when every letter mattered; while also providing space to really explore 3D interaction in a pure context.
 
-## Shape Library
+## Standard Shape Library
 
-The source code [shape library](lewdo/js/apps/shapes) includes key shapes useful in transforming data and forming user interfaces:
+The source code [shape library](lewdo/js/apps/shapes) includes key shapes useful in transforming data and forming user interfaces. Each shape is expressed as platform independant 'lewdo apps' in javascript (string3-to-string3 volumetric stream processors):
 
-| Shape | Description |
-| ----- | ----------- |
-| cube | wraps a cube around it's input |
+| Shape | Description |  |
+| ----- | ----------- | ---- |
+| cube | wraps a cube around it's input | [demo](https://leweyg.github.io/lewdo/index.html?cube)
 | stack | combines multiple apps into a stack in x/y/z |
+| grid | combines a grid of inputs into one output |
+| text | converts text into volumetric layout | [demo](https://leweyg.github.io/lewdo/index.html?text)
 | flat | flatten a volumetric string3 to it's top tap elements |
 | flip | flips it's input |
-| grid | combines a grid of inputs into one output |
-| text | converts text into volumetric layout |
-| font | converts text intos fixed-size fonts pixels |
-| button | makes a pressable button from it's input |
-| dirpad | directional pad of pressable arrows, outputs presses |
-| keyboard | pressable keyboard for typing |
+| font | converts text intos fixed-size fonts pixels | [demo](https://leweyg.github.io/lewdo/index.html?font)
+| button | makes a pressable button from it's input | [demo](https://leweyg.github.io/lewdo/index.html?button)
+| dirpad | directional pad of pressable arrows, outputs presses | [demo](https://leweyg.github.io/lewdo/index.html?dirpad)
+| keyboard | pressable keyboard for typing | [demo](https://leweyg.github.io/lewdo/index.html?keyboard)
 | host | base type for apps that host multiple sub-apps |
-| terminal | interactive command prompt |
+| terminal | interactive command prompt | [demo](https://leweyg.github.io/lewdo/index.html?terminal)
 | values | generic visualizer |
-| editor | basic text editor |
-| laptop | combines keyboard and terminal |
-| properties | shows object properties and sub properties |
-| kernel | basic CPU kernel for low-level simulation |
+| editor | basic text editor | [demo](https://leweyg.github.io/lewdo/index.html?editor)
+| laptop | combines keyboard and terminal | [demo](https://leweyg.github.io/lewdo/index.html?laptop)
+| properties | shows object properties and sub properties | [demo](https://leweyg.github.io/lewdo/index.html?properties)
+| kernel | basic CPU kernel for low-level simulation | [demo](https://leweyg.github.io/lewdo/index.html?kernel)
 
 
 ## Example App
