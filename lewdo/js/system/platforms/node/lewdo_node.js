@@ -33,7 +33,7 @@ var lewdo_node = {
         if (needsFlatten) {
             mainAppInst = mainAppInst.pipedInto( lewdo_flat.app() );
         }
-        process.stdout.write( mainAppInst.app_out.toString() );
+        process.stdout.write( mainAppInst.app_out.toString() + "\n" );
 
         if (false) {
             var srcFile = "lewdo/system/script/examples/helloworld.js";// './lewdo/system/lewdo.js';
