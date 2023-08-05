@@ -29,12 +29,48 @@ function string3(initial,w,h,d) {
     return ans;
 }
 
+var observer_string3_prototype = {
+    onvalue : null,
+    ondisposed : null,
+    onexception : null,
+    is_disposed : false,
+    create_observer : function(whenValue, whenDisposed) {
+        var ans = Object.create(observer_string3_prototype);
+        ans.onvalue = whenValue;
+        ans.ondisposed = whenDisposed;
+        return ans;
+    },
+    recieve_value : function(val) {
+        if (this.is_disposed) return;
+        if (this.onvalue) {
+            this.onvalue(val);
+        }
+    },
+    recieve_dispose : function() {
+        this.dispose();
+    },
+    recieve_exception : function(ex) {
+        if (this.is_disposed) return;
+        if (this.onexception) {
+            this.onexception(ex);
+        }
+    },
+    dispose : function() {
+        if (this.is_disposed) return;
+        this.is_disposed = true;
+        if (this.ondisposed) {
+            this.ondisposed();
+        }
+    },
+};
+
 var string3_prototype = {
     array1d : "",
     width : 0,
     height : 0,
     depth : 0,
     frame : 0,
+    is_disposed : false,
     subscribers : [],
     _outOfBoundsWarnings : function(pos){
         throw "out of bounds:" + pos;
@@ -77,19 +113,39 @@ var string3_prototype = {
     frameStep : function() {
         this.frame = this.frame + 1;
         for (var si in this.subscribers) {
-            var sub = this.subscribers[si];
+            var obser = this.subscribers[si];
             if (!this._catchFrameExceptions) {
-                sub(this);
+                obser.recieve_value(this);
             } else {
                 try {
-                    sub(this);
-                } catch (ex) { console.log(ex); }
+                    obser.recieve_value(this);
+                } catch (ex) { 
+                    obser.recieve_exception(ex);
+                    console.log(ex);
+                }
             }
         }
     },
-    subscribe : function(callback) {
-        this.subscribers.push(callback);
-        callback(this);
+    frameDone : function() {
+        this.dispose();
+    },
+    subscribe : function(callback,whenDisposed) {
+        var ob = observer_string3_prototype.create_observer(callback, whenDisposed);
+        this.subscribers.push(ob);
+        ob.recieve_value(this);
+        return ob;
+    },
+    dispose : function () {
+        if (this.subscribers && (this.subscribers.length > 0))
+        {
+            var disposeThese = this.subscribers;
+            this.subscribers = [];
+            for (var di in disposeThese)
+            {
+                disposeThese[di].dispose();
+            }
+        }
+        this.is_disposed = true;
     },
     setSize : function(w,h,d,fill) {
         this.width = w || 0;
