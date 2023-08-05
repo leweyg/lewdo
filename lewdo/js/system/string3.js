@@ -112,17 +112,23 @@ var string3_prototype = {
     },
     frameStep : function() {
         this.frame = this.frame + 1;
+        this.updateSubscribers();
+    },
+    updateSubscribers : function() {
         for (var si in this.subscribers) {
             var obser = this.subscribers[si];
-            if (!this._catchFrameExceptions) {
+            this.updateObserver(obser);
+        }
+    },
+    updateObserver : function(obser) {
+        if (!this._catchFrameExceptions) {
+            obser.recieve_value(this);
+        } else {
+            try {
                 obser.recieve_value(this);
-            } else {
-                try {
-                    obser.recieve_value(this);
-                } catch (ex) { 
-                    obser.recieve_exception(ex);
-                    console.log(ex);
-                }
+            } catch (ex) { 
+                obser.recieve_exception(ex);
+                console.log(ex);
             }
         }
     },
@@ -131,8 +137,12 @@ var string3_prototype = {
     },
     subscribe : function(callback,whenDisposed) {
         var ob = observer_string3_prototype.create_observer(callback, whenDisposed);
-        this.subscribers.push(ob);
-        ob.recieve_value(this);
+        this.updateObserver(ob);
+        if (this.is_disposed) {
+            ob.recieve_dispose();
+        } else {
+            this.subscribers.push(ob);
+        }
         return ob;
     },
     dispose : function () {

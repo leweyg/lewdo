@@ -44,6 +44,10 @@ var lewdo_app_prototype = {
         this.app_in.scroll = string3_utils.xyz();
         this.app_out = string3();
         this.app_out.max = string3_utils.xyz(80,24,6);
+        this.app_in.subscribe(()=>{}, ()=>{
+            // when the input is done, also finish the output.
+            this.app_out.dispose();
+        });
     },
     app_in_reset : function(size=0) {
         this.app_in.offset.set(0,0,0);
@@ -55,6 +59,8 @@ var lewdo_app_prototype = {
         this.app_out.subscribe((output) => {
             otherApp.app_in.copy(output);
             otherApp.app_in.frameStep();
+        }, () => {
+            otherApp.app_in.dispose();
         });
         return otherApp;
     }
