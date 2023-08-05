@@ -13,27 +13,30 @@ var lewdo_host = {
                 host.pushApp(initialApps[si]);
             }
         }
-        host.redraw();
         app.app_in.subscribe((input) => {
             host.recieveInput(input);
         }, () => {
             host.recieveInputDone();
         });
+        host.redraw();
         return host;
     },
     _lewdo_host_prototype : {
         stackedApps : [],
         app : lewdo_app(),
+        debug : false,
         currentFocusItem : lewdo_app(),
         _isUpdating : false,
         _needsRedraw : false,
         _skippedRedraws : 0,
+        _tempInput : null,
         setup : function(app) {
             this.stackedApps = [];
             this.app = app;
             this.currentFocusItem = null;
         },
         pushAppBase : function(app) {
+            console.assert(app.app_in);
             var item = {
                 app:app,
                 index:(this.stackedApps.length),
@@ -65,6 +68,7 @@ var lewdo_host = {
             this._needsRedraw = false;
             this.layout();
             this.render();
+            this.checkDebug();
         },
         layout : function() {
             // customize
@@ -75,6 +79,15 @@ var lewdo_host = {
                 var sapp = this.stackedApps[si];
                 this.app.app_out.drawString3XYZ(sapp.app.app_out,sapp.offset);
             }
+        },
+        checkDebug : function() {
+            if (!this.debug) return;
+            var status = "";
+            for (var si in this.stackedApps) {
+                var sapp = this.stackedApps[si];
+                status += "appX" + sapp.app.app_out.sizeXYZ().toString() + "@" + sapp.offset.toString() + "|";
+            }
+            console.log(status);
         },
         render : function() {
             this.renderBase();
@@ -122,23 +135,31 @@ var lewdo_host = {
                 this._clearCurrentFocus();
                 return;
             }
-            for (var si in this.stackedApps) {
-                var stackItem = this.stackedApps[si];
-                var sapp = stackItem.app;
-                var aout = stackItem.app.app_out;
-                t.copy(input.offset);
-                t.minus(stackItem.offset);
-                if (aout.isValidXYZ(t)) {
-                    didSend = true;
-                    if (this.currentFocusItem != stackItem) {
-                        this._clearCurrentFocus();
+            if (input.width == 1) {
+                for (var si in this.stackedApps) {
+                    var stackItem = this.stackedApps[si];
+                    var sapp = stackItem.app;
+                    var aout = stackItem.app.app_out;
+                    t.copy(input.offset);
+                    t.minus(stackItem.offset);
+                    if (aout.isValidXYZ(t)) {
+                        didSend = true;
+                        if (this.currentFocusItem != stackItem) {
+                            this._clearCurrentFocus();
+                        }
+                        this.currentFocusItem = stackItem;
+                        if (!this._tempInput) {
+                            this._tempInput = input.clone();
+                        }
+                        this._tempInput.copy(input);
+                        this._tempInput.offset = t;
+                        sapp.app_in.copy(this._tempInput);
+                        sapp.app_in.frameStep();
                     }
-                    this.currentFocusItem = stackItem;
-                    input.offset = t;
-                    sapp.app_in.copy(input);
-                    sapp.app_in.frameStep();
-                    input.offset = originalOffset;
                 }
+            }
+            if (input.width > 1) {
+                console.log("Input > 1: ");
             }
             if (!didSend) {
                 this._clearCurrentFocus();

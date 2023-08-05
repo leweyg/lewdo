@@ -22,11 +22,13 @@ var lewdo_editor = {
             var textEditor = all_shapes.text(null);//,"Hello World!\n-lewdo");
             var aroundText = all_shapes.cube(null, textEditor.app );
             var blades = all_shapes.stack(null,[ fileList.app, aroundText.app ],"x");
+            //blades.debug = true;
 
             var topStack = all_shapes.stack(null, [ 
                 blades.app,
                 keyboard.app
             ], "y" );
+            //topStack.debug = true;
             this.app.pipeThrough(topStack.app);
         },
 

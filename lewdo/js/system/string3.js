@@ -156,7 +156,7 @@ var string3_prototype = {
         if (this.is_disposed) return;
         this.is_disposed = true;
 
-        var isLogWhenDisposed = true;
+        var isLogWhenDisposed = false;
         if (isLogWhenDisposed) {
             console.log("DisposingOf:" + this.toString());
         }
