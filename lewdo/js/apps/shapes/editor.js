@@ -11,7 +11,6 @@ var lewdo_editor = {
     },
     lewdo_editor_prototype : {
         app : lewdo_app(),
-        topStack : lewdo_app(),
         allApps : [],
 
         setup : function(_app) {
@@ -24,11 +23,11 @@ var lewdo_editor = {
             var aroundText = all_shapes.cube(null, textEditor.app );
             var blades = all_shapes.stack(null,[ fileList.app, aroundText.app ],"x");
 
-            this.topStack = all_shapes.stack(this.app, [ 
+            var topStack = all_shapes.stack(null, [ 
                 blades.app,
                 keyboard.app
             ], "y" );
-        
+            this.app.pipeThrough(topStack.app);
         },
 
         // end of lewdo_editor_prototype

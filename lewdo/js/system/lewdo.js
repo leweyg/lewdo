@@ -63,7 +63,11 @@ var lewdo_app_prototype = {
             otherApp.app_in.dispose();
         });
         return otherApp;
-    }
+    },
+    pipeThrough : function(otherApp) {
+        this.app_in.pipeInto(otherApp.app_in);
+        otherApp.app_out.pipeInto(this.app_out);
+    },
 };
 
 var lewdo_this_app = null;

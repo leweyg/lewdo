@@ -161,6 +161,18 @@ var string3_prototype = {
             console.log("DisposingOf:" + this.toString());
         }
     },
+    pipeInto : function(str3) {
+        str3.pipeFrom(this);
+    },
+    pipeFrom : function(str3) {
+        var _this = this;
+        str3.subscribe((val) => {
+            _this.copy(val);
+            _this.frameStep();
+        }, () => {
+            _this.dispose();
+        });
+    },
     setSize : function(w,h,d,fill) {
         this.width = w || 0;
         this.height = h || 0;

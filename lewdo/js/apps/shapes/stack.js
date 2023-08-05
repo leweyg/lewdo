@@ -4,7 +4,7 @@ var lewdo_stack = {
         var stack = lewdo.apps.shapes.host(app);
         stack.axis = (axis || "x");
         stack.pushApp = lewdo_stack._pushApp;
-        stack.layout = lewdo_stack._layoutAndRender;
+        stack.layout = lewdo_stack._layoutStack;
         stack.redraw();
         return stack;
     },
@@ -26,7 +26,7 @@ var lewdo_stack = {
         res.align = align;
         return res;
     },
-    _layoutAndRender : function(isRender) {
+    _layoutStack : function(isRender) {
         // first measure:
         var maxSizes = string3_utils.xyz(1,1,1);
         var sumSizes = string3_utils.xyz(1,1,1);
@@ -39,7 +39,7 @@ var lewdo_stack = {
         finalSize[this.axis] = sumSizes[this.axis];
         var maxSize = finalSize.clone();
 
-        // then draw
+        // then layout
         var to = this.app.app_out;
         to.resize(finalSize.x,finalSize.y,finalSize.z, ' ');
         var runningOffset = string3_utils.xyz(0,0,0);
@@ -63,8 +63,8 @@ var lewdo_stack = {
                 throw new "Unknown alignment type '" + stackItem.align + "' ";
             }
             drawOffset.add(runningOffset);
-
             stackItem.offset.copy(drawOffset);
+
             runningOffset[this.axis] += srcSize[this.axis];
         }
     },
