@@ -16,6 +16,8 @@ var lewdo_host = {
         host.redraw();
         app.app_in.subscribe((input) => {
             host.recieveInput(input);
+        }, () => {
+            host.recieveInputDone();
         });
         return host;
     },
@@ -36,16 +38,22 @@ var lewdo_host = {
                 app:app,
                 index:(this.stackedApps.length),
                 offset : string3_utils.xyz(),
+                obser : null,
             }
             this.stackedApps.push(item);
             var _this = this;
-            app.app_out.subscribe(() => {
+            item.obser = app.app_out.subscribe(() => {
                 _this._needsRedraw = true;
                 if (!_this._isUpdating) {
                     _this.redraw();
                 } else {
                     // skipping redraw for now...
                     _this._skippedRedraws++;
+                }
+            }, () => {
+                if (item.obser) {
+                    item.obser.dispose();
+                    item.obser = null;
                 }
             });
             return item;
@@ -82,6 +90,12 @@ var lewdo_host = {
             if (this._needsRedraw) {
                 this._needsRedraw = false;
                 this.redraw();
+            }
+        },
+        recieveInputDone : function() {
+            for (var si in this.stackedApps) {
+                var item = this.stackedApps[si];
+                item.app.app_in.dispose();
             }
         },
         _recieveInputInner : function(input) {

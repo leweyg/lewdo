@@ -39,6 +39,8 @@ var lewdo_button_app = function(app,content,callback) {
         var drawOffset = lewdo.xyz(0,0,depthOffset);
         app.app_out.drawString3XYZ(coreContent,drawOffset);
         app.app_out.frameStep();
+    }, () => {
+        app.app_out.dispose();
     });
     return state;
 }

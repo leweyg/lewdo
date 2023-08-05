@@ -132,9 +132,6 @@ var string3_prototype = {
             }
         }
     },
-    frameDone : function() {
-        this.dispose();
-    },
     subscribe : function(callback,whenDisposed) {
         var ob = observer_string3_prototype.create_observer(callback, whenDisposed);
         this.updateObserver(ob);
@@ -150,9 +147,10 @@ var string3_prototype = {
         {
             var disposeThese = this.subscribers;
             this.subscribers = [];
-            for (var di in disposeThese)
-            {
-                disposeThese[di].dispose();
+            // dispose in reverse order then subscribed:
+            var n = disposeThese.length;
+            for (var i=n-1; i>=0; i--) {
+                disposeThese[i].dispose();
             }
         }
         this.is_disposed = true;
