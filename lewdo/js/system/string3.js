@@ -153,7 +153,13 @@ var string3_prototype = {
                 disposeThese[i].dispose();
             }
         }
+        if (this.is_disposed) return;
         this.is_disposed = true;
+
+        var isLogWhenDisposed = true;
+        if (isLogWhenDisposed) {
+            console.log("DisposingOf:" + this.toString());
+        }
     },
     setSize : function(w,h,d,fill) {
         this.width = w || 0;

@@ -10,6 +10,7 @@ var lewdo_terminal_prototype = {
     app : null,
 
     hosted_app : null,
+    hosted_obser : null,
 
     selected_index : 0,
     selected_app : null,
@@ -28,9 +29,11 @@ var lewdo_terminal_prototype = {
                     || (input.array1d[0]=="~")
                     || (input.array1d[0]=="x")
                     || (input.array1d[0]=="`")) {
-                this.hosted_app = null;
-                this.selected_index = 0;
-                this.redraw();
+                console.log("Exiting app...");
+                if (this.hosted_app) {
+                    this.hosted_app.app_in.dispose();
+                    console.assert(this.hosted_app == null);
+                }
                 return;
             }
             if (this.hosted_app) {
@@ -71,6 +74,9 @@ var lewdo_terminal_prototype = {
                 return;
             this.app.app_out.copy(app_inst.app_out);
             this.app.app_out.frameStep();
+        }, () => {
+            this.hosted_app = null;
+            this.redraw();
         });
     },
 
