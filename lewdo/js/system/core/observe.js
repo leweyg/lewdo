@@ -1,6 +1,6 @@
 
 
-var observe = {
+export var observe = {
     version : "observe.v0.2",
     observable : (initialValue) => {
         return observe.prototypes.observable.create_observable(initialValue);
@@ -238,6 +238,8 @@ var observe = {
         process : {
             input : "observable_dictionary<string,value>",
             output : "observable_dictionary<string,value>",
+            in : "observable<string3>",
+            out : "observable<string3>",
             connections : "observable<process_link>",
             is_updated : false,
             connect : (otherApp,outName=null,inName=null) => {
@@ -249,9 +251,22 @@ var observe = {
                 }
                 this.is_updated = true;
             },
-            inner_connect : (inObser=null,outObser=null) => {
-                // todo: if args are strings, map to observables
-                
+            namedInputToOutput : (inObser,outObser,doAct) => {
+                if (inObser && (typeof(inObser)=="string")) {
+                    inObser = this.input[inObser];
+                }
+                if (outObser && (typeof(outObser)=="string")) {
+                    outObser = this.input[outObser];
+                }
+                if (inObser) {
+                    inObser.subscribe(
+                        () => {},
+                        (updated) => {
+                            outObser.setValue(doAct(updatedValue));
+                        },
+                        () => { outObser.dispose(); } );
+                }
+                return outObser;
             },
             create_process : () => {
                 return (new Object(observe.prototypes.process)).initialize();
@@ -260,17 +275,13 @@ var observe = {
                 this.input = observe.dictionary();
                 this.output = observe.dictionary();
                 this.connections = observe.array();
+                this.in = this.input.in;
+                this.out = this.output.out;
 
                 return this;
             }
         },
     },
 };
-
-try {
-    module.exports = { observe:observe };
-} catch {
-    
-}
 
 

@@ -2,7 +2,7 @@
 // using hacky eval(file) approach to allow non-module code:
 var fs = require('fs');
 
-var string3_system = require('../../string3');
+var string3_system = require('../../core/string3');
 var string3 = string3_system.string3;
 var string3_utils = string3_system.string3_utils;
 
