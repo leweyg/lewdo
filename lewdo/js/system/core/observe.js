@@ -18,7 +18,7 @@ export var observe = {
             subscribers : null, // [ observer(s) ]
             is_disposed : false,
             create_observable : function(initialValue) {
-                console.log("Create create_observable...");
+                //console.log("Create create_observable...");
                 var ob = Object.create(observe.prototypes.observable);
                 ob.initialize(initialValue);
                 return ob;
@@ -185,7 +185,7 @@ export var observe = {
             isObservableDictionary : true,
             state : "observable",
             create_observable_dictionary : ((innerDict = {}) => {
-                console.log("Create create_observable_dictionary...");
+                //console.log("Create create_observable_dictionary...");
                 var target = Object.create(observe.prototypes.observable_dictionary);
                 target.state = observe.prototypes.observable.create_observable(innerDict);
                 var ans = new Proxy( target, observe.prototypes.observable_dictionary_proxy );
@@ -195,7 +195,7 @@ export var observe = {
         observable_dictionary_proxy : {
             isObservableDictionaryProxy : true,
             set: function(target, prop, value) {
-                console.log("Create observable_dictionary_proxy...");
+                //console.log("Create observable_dictionary_proxy...");
                 var obser = target.state;
                 var dict = target.state.getValue();
                 if (prop in dict) {
