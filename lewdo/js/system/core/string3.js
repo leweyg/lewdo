@@ -1,5 +1,5 @@
 
-function string3(initial,w,h,d) {
+export function string3(initial,w,h,d) {
     if (string3_utils.isString3(initial)) {
         return initial;
     }
@@ -65,6 +65,7 @@ var observer_string3_prototype = {
 };
 
 var string3_prototype = {
+    isString3 : true,
     array1d : "",
     width : 0,
     height : 0,
@@ -76,7 +77,6 @@ var string3_prototype = {
         throw "out of bounds:" + pos;
     },
     _catchFrameExceptions : false,
-    isString3 : true,
 
     copy : function(other) {
         this.copyShallow(other);
@@ -427,7 +427,7 @@ var string3_prototype = {
     },
 };
 
-var string3_utils = {
+export var string3_utils = {
     _xyz_zero : null, // xyz()
     _tempVec1 : null, // xyz()
     _tempVec2 : null, // xyz()
@@ -672,12 +672,6 @@ var string3_utils = {
 };
 
 string3_utils._internal_setup();
-
-try {
-    module.exports = { string3:string3, string3_utils:string3_utils };
-} catch {
-    
-}
 
 
 

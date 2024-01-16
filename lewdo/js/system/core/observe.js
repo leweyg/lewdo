@@ -1,5 +1,4 @@
 
-
 export var observe = {
     version : "observe.v0.2",
     observable : (initialValue) => {
@@ -13,19 +12,21 @@ export var observe = {
     },
     prototypes : {
         observable : {
+            isObservable : true,
             value : null,
             key : null,
-            subscribers : [],
+            subscribers : null, // [ observer(s) ]
             is_disposed : false,
             create_observable : function(initialValue) {
-                var ob = new Object(observe.prototypes.observable);
+                console.log("Create create_observable...");
+                var ob = Object.create(observe.prototypes.observable);
                 ob.initialize(initialValue);
                 return ob;
             },
             initialize : function(initialValue,initialKey) {
                 this.value = initialValue;
                 this.key = initialKey;
-                this.subscribers = [];
+                this.subscribers = [ ];
                 return this;
             },
             getValue : function() {
@@ -38,7 +39,7 @@ export var observe = {
                 return this;
             },
             subscribe : function(onEnter,onUpdate,onExit) {
-                var ob = observer_string3_prototype.create_observer(onEnter,onUpdate,onExit);
+                var ob = observe.prototypes.observer.create_observer(onEnter,onUpdate,onExit);
                 this.enterObserver(ob);
                 if (this.is_disposed) {
                     ob.recieve_dispose();
@@ -108,8 +109,19 @@ export var observe = {
                     }
                 }
             },
+            copyFrom : function(otherObservable) {
+                this.setValue(otherObservable.value);
+            },
+            subscribeFrom : function(otherObservable) {
+                var _this = this;
+                return otherObservable.subscribe(
+                    (initial) => { _this.setValue(initial); },
+                    (update) => { _this.setValue(update); },
+                    () => { _this.dispose(); } );
+            },
         },
         observer : {
+            isObserver : true,
             onenter : null,
             onupdate : null,
             onexit : null,
@@ -170,16 +182,20 @@ export var observe = {
             },
         },
         observable_dictionary : {
+            isObservableDictionary : true,
             state : "observable",
             create_observable_dictionary : ((innerDict = {}) => {
-                var target = new Object(observe.prototypes.observable_dictionary);
+                console.log("Create create_observable_dictionary...");
+                var target = Object.create(observe.prototypes.observable_dictionary);
                 target.state = observe.prototypes.observable.create_observable(innerDict);
                 var ans = new Proxy( target, observe.prototypes.observable_dictionary_proxy );
                 return ans;
             }),
         },
         observable_dictionary_proxy : {
+            isObservableDictionaryProxy : true,
             set: function(target, prop, value) {
+                console.log("Create observable_dictionary_proxy...");
                 var obser = target.state;
                 var dict = target.state.getValue();
                 if (prop in dict) {
@@ -191,14 +207,13 @@ export var observe = {
                 }
             },
             get: function(target, prop, receiver) {
-                var obser = target.state;
                 var dict = target.state.getValue();
                 if (prop in dict) {
                     return dict[prop];
                 }
                 var newObser = observe.observable();
                 dict[prop] = newObser;
-                obser.setValue(newObser,prop);
+                target.state.setValue(dict);
                 return newObser;
             },
             has: function(target,prop) {
@@ -210,9 +225,10 @@ export var observe = {
             },
         },
         observable_array : {
+            isObservableArray : true,
             state : "observable<[]>",
             create_observable_array : ((innerArray = []) => {
-                var target = new Object(observe.prototypes.observable_dictionary);
+                var target = Object.create(observe.prototypes.observable_dictionary);
                 target.state = observe.prototypes.observable.create_observable(innerArray);
                 var ans = new Proxy( target, observe.prototypes.observable_dictionary_proxy );
                 return ans;
@@ -236,13 +252,14 @@ export var observe = {
             observer : "observer",
         },
         process : {
+            isObservableProcess : true,
             input : "observable_dictionary<string,value>",
             output : "observable_dictionary<string,value>",
             in : "observable<string3>",
             out : "observable<string3>",
             connections : "observable<process_link>",
             is_updated : false,
-            connect : (otherApp,outName=null,inName=null) => {
+            connect : function (otherApp,outName=null,inName=null) {
                 todo();
             },
             update : function() {
@@ -251,37 +268,64 @@ export var observe = {
                 }
                 this.is_updated = true;
             },
-            namedInputToOutput : (inObser,outObser,doAct) => {
+            create_process : () => {
+                return (Object.create(observe.prototypes.process)).initialize();
+            },
+            initialize : function () {
+                this.input = observe.dictionary();
+                this.output = observe.dictionary();
+                this.in = this.input.in;
+                this.out = this.output.out;
+                return this;
+            },
+
+            // helper methods:
+            setInOutSync : function (doAct,inObser,outObser) {
                 if (inObser && (typeof(inObser)=="string")) {
                     inObser = this.input[inObser];
+                }
+                if (!inObser) {
+                    inObser = this.in;
                 }
                 if (outObser && (typeof(outObser)=="string")) {
                     outObser = this.input[outObser];
                 }
-                if (inObser) {
-                    inObser.subscribe(
-                        () => {},
-                        (updated) => {
-                            outObser.setValue(doAct(updatedValue));
+                if (!outObser) {
+                    outObser = this.out;
+                }
+
+                if (doAct) {
+                    return inObser.subscribe(
+                        (firstValue) => {
+                            if (firstValue) {
+                                var toValue = doAct(firstValue);
+                                outObser.setValue(toValue);
+                            }
+                        },
+                        (updatedValue) => {
+                            var toValue = doAct(updatedValue);
+                            outObser.setValue(toValue);
                         },
                         () => { outObser.dispose(); } );
                 }
-                return outObser;
+                return null;
             },
-            create_process : () => {
-                return (new Object(observe.prototypes.process)).initialize();
-            },
-            initialize : () => {
-                this.input = observe.dictionary();
-                this.output = observe.dictionary();
-                this.connections = observe.array();
-                this.in = this.input.in;
-                this.out = this.output.out;
-
-                return this;
+            setInOutAsync : function(doAsync) {
+                return this.in.subscribe(
+                    (firstVal) => {
+                        if (firstVal) {
+                            doAsync(firstVal, (res) => {
+                                this.out.setValue(res);
+                            })
+                        }
+                    }, (newVal) => {
+                        doAsync(newVal, (res)=> {
+                            this.out.setValue(res);
+                        })
+                    }, () => {});
             }
+
         },
     },
 };
-
 

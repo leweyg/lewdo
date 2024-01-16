@@ -1,0 +1,87 @@
+<html>
+    <head><title>lewdo2</title></head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .lewdo_keybutton {
+            color : black;
+            background-color: lightgrey;
+            border-color: lightgray;
+            font-size: 24pt;
+        }
+        code {
+            font-family: Menlo, Monaco, 'Courier New', monospace;
+        }
+        /*
+        .page_slice {
+            background-color: rgba(211, 211, 211, 0.459);
+        }
+        .page_sizer {
+            background-color: rgba(112, 64, 64, 0.459);
+        }
+        .page_top {
+            background-color: rgba(211, 211, 211, 0.301);
+        }
+        */
+    </style>
+    <body style='width:100%;font-size: 48px; max-width: 90%;'  oncontextmenu="return false;">
+        <code><h3 id="main_title" style="cursor: pointer;" onclick="window.location.href = 'https://github.com/leweyg/lewdo';">lewdo<img style="height: 25px;" src="lewdo/lewdo.png"></img> </h3></code>
+
+        <script type="importmap">
+			{
+				"imports": {
+					"lewdo": "./lewdo/js/system/core/lewdo2.js"
+				}
+			}
+		</script>
+        
+        <div id="main_lewdo_element"> 
+            <p>Loading...</p>
+        </div>
+        <br/>
+        <script type="module">
+            import { lewdo } from "./lewdo/js/system/core/lewdo2.js";
+
+            // App instance
+            
+            var mainApp = lewdo.main;
+
+            mainApp.setInOutSync((txt)=> {
+                return (txt ? txt.toString().toUpperCase() : "?" );
+            });
+            mainApp.in.setValue("Hello\nWorld\v\n     !");
+
+            function updateMainOut(txt) {
+                main_lewdo_element.innerHTML = txt.toString();
+            }
+            mainApp.out.subscribe((txt)=>updateMainOut(txt),
+                (txt)=>updateMainOut(txt), () => {});
+
+        </script>
+
+        <div id="main_key_holder" style="width:100%;">
+            <center>
+            <div id="main_keypad" style="width:80%;text-align: center;display: inline-block;">
+
+            </div>
+        </center>
+        </div>
+        <script>
+            /*
+            import { lewdo } from 'lewdo';
+
+            var keypad = lewdo.string3("x↑\n←►→\n ↓\n- +");
+            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad, (letter,x,y,z) => {
+                string3_ui.doAppKeyInput(true,letter);
+            });
+            */
+        </script>
+
+        <script>
+            //lewdo_hike.lewdo_hike_prototype.debugUI_HTML();
+        </script>
+
+        <p style="font-size: 12px;"><code><a href="https://github.com/leweyg/lewdo">lewdo source</a> by <a href="http://lewcid.com/">lewcid systems</a></code></p>
+
+    </body>
+
+</html>
