@@ -75,11 +75,21 @@ export var computedIn3D = {
             },
 
             setupBasicTimes : function() {
+                // Example 'time' going from 'before' to 'after':
                 var time = this.ensureId("time");
                 var before = this.ensureId("before");
                 var after = this.ensureId("after");
                 var start = this.addVertex(before,time,before);
                 var end = this.addVertex(after,time,after);
+                this.addEdge(start, end);
+
+                // Example copy: b = *a;
+                var a = this.ensureId("a");
+                var b = this.ensureId("b");
+                var c = this.ensureId("c");
+                var v1 = this.addVertex(before,a,c);
+                var v2 = this.addVertex(after,b,c);
+                this.addEdge(v1, v2);
             },
 
 
