@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <title>lewdo.to.d3.svg</title>
+</head>
+<body>
+    <h3>VCI</h3>
+    <p>Volumetric Computational Identity</p>
+    <p> while (true) { *p == &p; p++; }  </p>
+
+    <div id="main_output">
+    <table>
+        <tr>
+            <td></td>
+            <td>Before / During / After</td>
+        </tr>
+        <tr>
+            <td>Time</td>
+            <td><input type="range" min="0" max="2" step="1" /></td>
+        </tr>
+        <tr>
+            <td>S1</td>
+            <td><input type="range" min="0" max="2" step="1" /></td>
+        </tr>
+    </table>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "vci": "./vci.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import { computedIn3D } from "vci";
+
+        var op = computedIn3D.computation();
+        var writer = computedIn3D.html_writer(op);
+
+        op.setupBasicTimes();
+        main_output.innerHTML = writer.write_table();
+    </script>
+
+
+    
+</body>
