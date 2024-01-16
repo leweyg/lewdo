@@ -24,7 +24,16 @@
         */
     </style>
     <body style='width:100%;font-size: 48px; max-width: 90%;'  oncontextmenu="return false;">
-        <code><h3 id="main_title" style="cursor: pointer;" onclick="window.location.href = 'https://github.com/leweyg/lewdo';">lewdo2<img style="height: 25px;" src="lewdo/lewdo.png"></img> </h3></code>
+        <code>
+            <h3 id="main_title" style="cursor: pointer;" onclick="window.location.href = 'https://github.com/leweyg/lewdo';">
+                lewdo2<!--
+                --><img style="height: 25px;" src="lewdo/lewdo.png"></img>
+            </h3></code>
+        
+        <div id="main_lewdo_element"> 
+            <p>Loading...</p>
+        </div>
+        <br/>
 
         <script type="importmap">
 			{
@@ -33,13 +42,8 @@
 				}
 			}
 		</script>
-        
-        <div id="main_lewdo_element"> 
-            <p>Loading...</p>
-        </div>
-        <br/>
         <script type="module">
-            import { lewdo } from "./lewdo/js/system/core/lewdo2.js";
+            import { lewdo } from "lewdo";
 
             // App instance
             
@@ -53,8 +57,10 @@
             function updateMainOut(txt) {
                 main_lewdo_element.innerHTML = txt.toString();
             }
-            mainApp.out.subscribe((txt)=>updateMainOut(txt),
-                (txt)=>updateMainOut(txt), () => {});
+            mainApp.out.subscribe(
+                (txt)=>updateMainOut(txt),
+                (txt)=>updateMainOut(txt),
+                () => {});
 
         </script>
 
@@ -65,20 +71,6 @@
             </div>
         </center>
         </div>
-        <script>
-            /*
-            import { lewdo } from 'lewdo';
-
-            var keypad = lewdo.string3("x↑\n←►→\n ↓\n- +");
-            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad, (letter,x,y,z) => {
-                string3_ui.doAppKeyInput(true,letter);
-            });
-            */
-        </script>
-
-        <script>
-            //lewdo_hike.lewdo_hike_prototype.debugUI_HTML();
-        </script>
 
         <p style="font-size: 12px;"><code><a href="https://github.com/leweyg/lewdo">lewdo source</a> by <a href="http://lewcid.com/">lewcid systems</a></code></p>
 
