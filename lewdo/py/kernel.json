@@ -1,0 +1,154 @@
+{
+    "kernel":{
+        "layers":[
+            "k0_tape",
+            "k1_thread"
+            "k2_stack",
+            "k3_tokenizer",
+            "k4_interpreter"],
+        "k0_tape":{
+            "struct" : {
+                "opcode":"opcode",
+                "dst":"register",
+                "src":"register",
+                "cnst":"value"
+            },
+            "opcode" : [
+                "tape_ptr_read", // dst = r_thread_ptr
+                "read", // dst = [ src + offset ]
+                "write", // [ src + offset ] = dst
+                "add", // dst = [ src + # ]
+                "adde", // dst += #
+                "debug" // console.log( latest_symbol );
+            ],
+        },
+        "k1_thread":{
+            "struct" : [
+                "rt_register_ptr",
+                "rt_instruction_ptr",
+                "rt_stack_ptr",
+                "rt_heap_ptr"
+            ],
+            "opcodes":[
+                "nop", // no operation { }
+                "thread_step",
+                "thread_exit",
+                "jump", // ins_ptr = dst
+                "jump_if", // if (src == #) ins_ptr = dst
+                "jump_op", // ins_ptr = @dst
+            ],
+        },
+        "k2_stack":{
+            "struct" : [
+                "r_zero",
+                "r_thread",
+                "r_ins_ptr",
+                "r_stack_ptr",
+                "r_reg_ptr",
+                "r_op_code",
+                "r_temp_0",
+                "r_temp_regid"
+            ],
+            "source" : [
+                "@ kernel_init",
+        
+                // read current instruction:
+                "tape_ptr_read r_thread",
+                "read r_ins_ptr, r_thread, rt_instruction_ptr",
+                "read r_stack_ptr, r_thread, rt_stack_ptr",
+                "read r_reg_ptr, r_thread, rt_register_ptr",
+        
+                // read instruction and jump to it:
+                "@ kernel_main",
+                "read r_op_code, r_ins_ptr, 0",
+                "debug r_ins_ptr",
+                "add r_ins_ptr, r_ins_ptr, 1",
+                "jump_op r_op_code", // goto label below
+        
+                // return statement:
+                "@ kernel_return",
+                "write r_ins_ptr, r_thread, rt_instruction_ptr",
+                "write r_stack_ptr, r_thread, rt_stack_ptr",
+                "kernel_flush",
+                "jump @kernel_main",
+        
+                // push immediate
+                "@ push_i",
+                "read r_temp_0, r_ins_ptr, 0",
+                "add r_ins_ptr, r_ins_ptr, 1",
+                "write r_temp_0, r_stack_ptr, 0", // write
+                "debug r_stack_ptr",
+                "add r_stack_ptr, r_stack_ptr, 1",
+                "jump @kernel_return",
+        
+                // pop register
+                "@ pop",
+                "read r_temp_regid, r_ins_ptr, 0",
+                "adde r_temp_regid, r_reg_ptr, 0",
+                "add r_ins_ptr, r_ins_ptr, 1",
+                "read r_temp_0, r_stack_ptr, -1", // read
+                "write r_temp_0, r_temp_regid", // write
+                "debug r_temp_regid",
+                "add r_stack_ptr, r_stack_ptr, -1",
+                "jump @kernel_return",
+        
+                // push register
+                "@ push",
+                "read r_temp_regid, r_ins_ptr, 0",
+                "adde r_temp_regid, r_reg_ptr, 0",
+                "add r_ins_ptr, r_ins_ptr, 1",
+                "read r_temp_0, r_temp_regid", // read
+                "debug r_temp_regid",
+                "write r_temp_0, r_stack_ptr, 0", // write
+                "add r_stack_ptr, r_stack_ptr, 1",
+                "jump @kernel_return",
+        
+                // peek register
+                "@ peek",
+                "read r_temp_regid, r_ins_ptr, 0",
+                "adde r_temp_regid, r_reg_ptr, 0",
+                "add r_ins_ptr, r_ins_ptr, 1",
+                "read r_temp_0, r_stack_ptr, -1", // read
+                "write r_temp_0, r_temp_regid", // write
+                "debug r_temp_regid",
+                //"add r_stack_ptr, r_stack_ptr, 1", // dont move stack
+                "jump @kernel_return",
+        
+                "@ exit",
+                "thread_exit",
+                "thread_exit",
+        
+                // return
+            ],
+            "instructions" : [
+                "nop",
+                "var", // id, initial
+                "exit",
+                "kernel_init",
+                "kernel_main",
+                "kernel_return",
+                "return",
+                "push_i", // #
+                "push", // src
+                "pop", // dst
+                "peek", // dst
+            ],
+
+        },
+        "k2_stack":{
+            "test_asm" : [
+                "var row",
+                "var col",
+                "push_i 777",
+                "push_i 888",
+                "peek row",
+                "push_i 999",
+                "pop col",
+                "push col",
+                "peek row",
+                "exit",
+            ],
+        }
+        
+    }
+}
