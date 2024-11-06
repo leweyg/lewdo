@@ -13,6 +13,39 @@
                 lewdo.org</a> - three.js
 		</div>
 
+
+        <script src="lewdo/js/system/string3.js"></script>
+        <script src="lewdo/js/system/lewdo.js"></script>
+
+        <script src="lewdo/js/apps/shapes/host.js"></script>
+        <script src="lewdo/js/apps/shapes/cube.js"></script>
+        <script src="lewdo/js/apps/shapes/values.js"></script>
+        <script src="lewdo/js/apps/shapes/grid.js"></script>
+        <script src="lewdo/js/apps/shapes/font.js"></script>
+        <script src="lewdo/js/apps/shapes/button.js"></script>
+        <script src="lewdo/js/apps/shapes/flip.js"></script>
+        <script src="lewdo/js/apps/shapes/stack.js"></script>
+        <script src="lewdo/js/apps/shapes/text.js"></script>
+        <script src="lewdo/js/apps/shapes/code.js"></script>
+        <script src="lewdo/js/apps/shapes/cache.js"></script>
+        <script src="lewdo/js/apps/shapes/kernel.js"></script>
+        <script src="lewdo/js/apps/shapes/properties.js"></script>
+        <script src="lewdo/js/apps/shapes/dirpad.js"></script>
+        <script src="lewdo/js/apps/shapes/keyboard.js"></script>
+        <script src="lewdo/js/apps/shapes/terminal.js"></script>
+        <script src="lewdo/js/apps/shapes/editor.js"></script>
+        <script src="lewdo/js/apps/shapes/laptop.js"></script>
+
+        <script src="lewdo/js/apps/games/connect4.js"></script>
+        <script src="lewdo/js/apps/games/hike.js"></script>
+        <script src="lewdo/js/apps/games/soduko.js"></script>
+
+        <script src="lewdo/js/system/platforms/three/string3_ui_three.js"></script>
+        
+        <script src="lewdo/js/system/script/examples/helloworld.js"></script>
+        <script src="lewdo/js/system/script/examples/repeatMe.js"></script>
+
+
 		<script type="importmap">
 			{
 				"imports": { 
@@ -31,9 +64,23 @@
 
 			let lightProbe;
 
-			init();
+			init_three();
 
-			function init() {
+            function init_lewdo() {
+
+                // App instance
+                var mainApp = lewdo_app();
+
+                var mainTerminal = lewdo_terminal( mainApp ); 
+
+                //mainApp.app_out.copy( string3( example_string3_json ) );
+
+                // Connect to web page UI:
+                string3_three.setMainApp( scene, mainApp );
+
+            }
+
+			function init_three() {
 
 				// renderer
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -73,6 +120,8 @@
                     const mesh = new THREE.Mesh( geometry, material );
                     scene.add( mesh );
                 }
+
+                init_lewdo();
 
 				// listener
 				window.addEventListener( 'resize', onWindowResize );
