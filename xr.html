@@ -74,7 +74,7 @@
             //mainApp.app_out.copy( string3( example_string3_json ) );
 
             // Connect to web page UI:
-            string3_ui.setMainApp( main_lewdo, mainApp );
+            string3_three.setMainApp( main_lewdo, mainApp );
 
             if (window.location.search) {
                 var appName = window.location.search.replace("?","");
@@ -103,8 +103,8 @@
         </div>
         <script>
             var keypad = string3("x↑\n←►→\n ↓\n- +");
-            main_keypad.innerHTML = string3_ui.toHTML_Buttons(keypad, (letter,x,y,z) => {
-                string3_ui.doAppKeyInput(true,letter);
+            main_keypad.innerHTML = string3_three.toHTML_Buttons(keypad, (letter,x,y,z) => {
+                string3_three.doAppKeyInput(true,letter);
             });
         </script>
 

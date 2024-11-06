@@ -1,28 +1,28 @@
 
-var string3_ui = {
+var string3_three = {
     _topChildren : {
         "elementPtr":{ element:null, source3:null, pageElements:[], pageContents:[] },
     },
     _mainApp : null,
     setMainApp : function(parentElement,app) {
-        string3_ui._mainApp = app;
-        string3_ui.setInnerString3(parentElement,app.app_out);
+        string3_three._mainApp = app;
+        string3_three.setInnerString3(parentElement,app.app_out);
     },
     setInnerString3 : function(parent,str3) {
         var name = "";
-        var html = string3_ui.toHTML(str3, function(elName){name = elName;});
+        var html = string3_three.toHTML(str3, function(elName){name = elName;});
         parent.innerHTML = html;
         var element = document.getElementById(name);
-        string3_ui._setup_element(element,str3);
+        string3_three._setup_element(element,str3);
         return element;
     },
     toHTML : function(str3, nameGetter) {
         var ans = "";  
-        var myname = "string3_element_" + (string3_ui._global_elementCount++);
+        var myname = "string3_element_" + (string3_three._global_elementCount++);
         if (nameGetter) nameGetter(myname);
 
-        var events = " ";// " onmousemove='string3_ui.onMouseMoveTop(event,this)' "; 
-        document.onmousemove = ((event) => { string3_ui.onMouseMoveTop(event,document.getElementById(myname)); });
+        var events = " ";// " onmousemove='string3_three.onMouseMoveTop(event,this)' "; 
+        document.onmousemove = ((event) => { string3_three.onMouseMoveTop(event,document.getElementById(myname)); });
         document.onmousedown = ((event) => {
             if (event.buttons==2) {
                 this._rotationDisabled = !this._rotationDisabled;
@@ -84,8 +84,8 @@ var string3_ui = {
     _previousPageSize : string3_utils.xyz(),
     _updatePageText : function(element) {
         if (!element) {
-            for (var ei in string3_ui._topChildren) {
-                var eInfo = string3_ui._topChildren[ei];
+            for (var ei in string3_three._topChildren) {
+                var eInfo = string3_three._topChildren[ei];
                 if (eInfo.element) {
                     element = eInfo.element;
                     break;
@@ -93,7 +93,7 @@ var string3_ui = {
             }
             console.assert(element);
         }
-        var info = string3_ui._topChildren[element];
+        var info = string3_three._topChildren[element];
         var str3 = info.source3;
         element.style["font-size"] = this.fontSizeForString3(str3);
         var pageContents = info.pageContents;
@@ -172,7 +172,7 @@ var string3_ui = {
             var content = content_list[0];
             pageContents.push(content);
         }
-        string3_ui._topChildren[element] = { 
+        string3_three._topChildren[element] = { 
             element:element, 
             source3:str3, 
             pageElements:pageElements,
@@ -181,20 +181,20 @@ var string3_ui = {
 
             var isAllowNormalKeyPresses = false;
         document.onkeydown = (event) => { 
-            string3_ui.onKeyChange(true,event,element);
+            string3_three.onKeyChange(true,event,element);
             return isAllowNormalKeyPresses; };
         document.onkeyup = (event) => { 
-            string3_ui.onKeyChange(false,event,element);
+            string3_three.onKeyChange(false,event,element);
             return isAllowNormalKeyPresses; };
 
         element.ontouchstart = (evnt) => { 
-            string3_ui.onTouchEventTop(evnt,element,true); 
+            string3_three.onTouchEventTop(evnt,element,true); 
             return false; };
         element.ontouchmove = (evnt) => { 
-            string3_ui.onTouchEventTop(evnt,element,true); 
+            string3_three.onTouchEventTop(evnt,element,true); 
             return false; };
         element.ontouchend = (evnt) => { 
-            string3_ui.onTouchEventTop(evnt,element,false); 
+            string3_three.onTouchEventTop(evnt,element,false); 
             return false; };
 
         var supportLewdoTouch = true; // TODO: set to true
@@ -235,12 +235,12 @@ var string3_ui = {
             //this._updatePageText(element,str3);
         });
 
-        //element.addEventListener("ontouchmove",(event) => { string3_ui.onTouchEventTop(event,element,true); return false; }, { passive: false } );
-        //element.addEventListener("ontouchend",(event) => { string3_ui.onTouchEventTop(event,element,false); return false; }, { passive: false } );
-        //document.ontouchmove = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),true); });
-        //document.ontouchend = ((event) => { string3_ui.onTouchEventTop(event,document.getElementById(myname),false); });
+        //element.addEventListener("ontouchmove",(event) => { string3_three.onTouchEventTop(event,element,true); return false; }, { passive: false } );
+        //element.addEventListener("ontouchend",(event) => { string3_three.onTouchEventTop(event,element,false); return false; }, { passive: false } );
+        //document.ontouchmove = ((event) => { string3_three.onTouchEventTop(event,document.getElementById(myname),true); });
+        //document.ontouchend = ((event) => { string3_three.onTouchEventTop(event,document.getElementById(myname),false); });
 
-        //string3_ui.onMouseMoveTop({},element);
+        //string3_three.onMouseMoveTop({},element);
     },
     _processTopElementCache : {
         posXYZ : string3_utils.xyz(),
@@ -272,27 +272,27 @@ var string3_ui = {
     },
     _valuesByName : {},
     nameByValue : function(value) {
-        var name = "_named_id" + ( Object.keys(string3_ui._valuesByName).length );
-        string3_ui._valuesByName[name] = value;
+        var name = "_named_id" + ( Object.keys(string3_three._valuesByName).length );
+        string3_three._valuesByName[name] = value;
         return name;
     },
     valueByName : function(name) {
-        return string3_ui._valuesByName[name];
+        return string3_three._valuesByName[name];
     },
     _doButtonCallback : function(cbName,letter,x,y,z) {
-        var callback = string3_ui.valueByName(cbName);
+        var callback = string3_three.valueByName(cbName);
         callback(letter,x,y,z);
     },
     toHTML_Buttons : function(str3,callback) {
         var ans = "<center><table >";
-        var callbackName = string3_ui.nameByValue(callback);
+        var callbackName = string3_three.nameByValue(callback);
         str3.visitEach((letter,x,y,z) => {
             if (x == 0) {
                 ans += "<tr >";
             } 
             ans += "<td >";
             if (letter != " ") {
-                var act = " onclick=\"string3_ui._doButtonCallback('" + callbackName + "','" + letter + "'," + x + "," + y + "," + z + ");\" ";
+                var act = " onclick=\"string3_three._doButtonCallback('" + callbackName + "','" + letter + "'," + x + "," + y + "," + z + ");\" ";
                 var styles = "style='width:100%;' class='lewdo_keybutton' ";
                 ans += "<input type='button' " + act + " value='" + letter + "' " + styles + " ></input>";
             }
@@ -339,12 +339,12 @@ var string3_ui = {
         "+":string3_utils.xyz(0,0,1),
     },
     doAppKeyInput : function(isDown,key) {
-        var app = string3_ui._mainApp;
+        var app = string3_three._mainApp;
 
         if (isDown) {
-            if (key in string3_ui.keyDirectionToXYZ) {
+            if (key in string3_three.keyDirectionToXYZ) {
                 app.app_in_reset(0);
-                app.app_in.scroll.copy( string3_ui.keyDirectionToXYZ[key] );
+                app.app_in.scroll.copy( string3_three.keyDirectionToXYZ[key] );
                 app.app_in.frameStep();
             } else {
                 app.app_in_reset(1);
@@ -369,7 +369,7 @@ var string3_ui = {
 
         this._updateBegin();
 
-        var app = string3_ui._mainApp;
+        var app = string3_three._mainApp;
         app.app_in_reset(1);
         app.app_in.array1d[0] = (isDown ? lewdo.letter.touch : lewdo.letter.hover );
         app.app_in.offset.copy(xyz);
