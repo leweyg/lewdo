@@ -66,6 +66,10 @@
 
 			init_three();
 
+            function request_redraw() {
+                render();
+            }
+
             function init_lewdo() {
 
                 // App instance
@@ -76,6 +80,7 @@
                 //mainApp.app_out.copy( string3( example_string3_json ) );
 
                 // Connect to web page UI:
+                string3_three.setupThree( THREE, request_redraw, lewdo_font_fixed )
                 string3_three.setMainApp( scene, mainApp );
 
             }
@@ -110,9 +115,9 @@
 				lightProbe = new THREE.LightProbe();
 				scene.add( lightProbe );
 
-                if (true) {
+                if (false) {
                     const loader = new THREE.TextureLoader()
-                    const texture = loader.load( 'lewdo/lewdo.png', () => { render(); } )
+                    const texture = loader.load( 'lewdo/lewdo.png', () => { request_redraw(); } )
 				    texture.colorSpace = THREE.SRGBColorSpace;
 
                     const geometry = new THREE.BoxGeometry();

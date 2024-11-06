@@ -1,66 +1,52 @@
 
+var THREEJS = null;
+var THREE_UPDATE_CALLBACK = (()=>{});
+
 var string3_three = {
     _topChildren : {
         "elementPtr":{ element:null, source3:null, pageElements:[], pageContents:[] },
     },
     _mainApp : null,
-    setMainApp : function(parentElement,app) {
+    _font_fixed : null,
+    _mainScene : null,
+    setFont : function(_font_fixed) {
+        this._font_fixed = _font_fixed
+    },
+    setupThree(threeItself, redraw_callback, font_fixed) {
+        THREEJS = threeItself;
+        THREE_UPDATE_CALLBACK = redraw_callback;
+        this.font_fixed = font_fixed;
+    },
+    setMainApp : function(parentElement,app,_font_fixed) {
         string3_three._mainApp = app;
+        //string3_three.setFont(_font_fixed);
         string3_three.setInnerString3(parentElement,app.app_out);
     },
     setInnerString3 : function(parent,str3) {
-        console.assert(false); // TODO
+        //console.assert(false); // TODO
+        const THREE = THREEJS;
+
+        if (!this._mainScene) {
+            this._mainScene = new THREEJS.Group()
+            this._mainScene.name = "lewdo_three_scene";
+            parent.add(this._mainScene);
+        }
+        const scene = this._mainScene;
+
+        const loader = new THREE.TextureLoader()
+        const texture = loader.load( 'lewdo/lewdo.png', () => {
+            THREE_UPDATE_CALLBACK();
+        } )
+        texture.colorSpace = THREE.SRGBColorSpace;
+
+        const geometry = new THREE.PlaneGeometry(1,1);
+        const material = new THREE.MeshBasicMaterial( { map: texture } );
+        const mesh = new THREE.Mesh( geometry, material );
+        scene.add( mesh );
     },
     _previousPageSize : string3_utils.xyz(),
     _updatePageText : function(element) {
-        if (!element) {
-            for (var ei in string3_three._topChildren) {
-                var eInfo = string3_three._topChildren[ei];
-                if (eInfo.element) {
-                    element = eInfo.element;
-                    break;
-                }
-            }
-            console.assert(element);
-        }
-        var info = string3_three._topChildren[element];
-        var str3 = info.source3;
-        element.style["font-size"] = this.fontSizeForString3(str3);
-        var pageContents = info.pageContents;
-        //console.assert(pageContents.length == str3.depth);
-        for (var z=0; z<pageContents.length; z++) {
-            if (z >= str3.depth) {
-                pageContents[z].style.display = "none";
-                continue;
-            }
-            var ans = "";
-            for (var y=0; y<str3.height; y++) {
-                for (var x=0; x<str3.width; x++) {
-                    var i = str3.indexFromSeperateXYZ(x,y,z);
-                    var v = str3.array1d[i];
-                    ans += v;
-                }
-                ans += "\n";
-                //ans += "<br/>";
-            }
-            pageContents[z].innerHTML = ans;
-            pageContents[z].style.display = "inline";
-        }
-        if ((this._previousPageSize.x != str3.width)
-            || (this._previousPageSize.y != str3.height)) {
-            this._previousPageSize.set(str3.width, str3.height, str3.depth);
-
-            // page contents:
-            if (info.pageSpacer) {
-                var line = string3_utils.repeatString(" ",str3.width) + "\n";
-                var rows = string3_utils.repeatString(line,str3.height);
-                info.pageSpacer.innerHTML = rows;
-            }
-
-
-            // update the rendering:
-            this._updatePageTransforms(element);
-        }
+        console.assert(false); // todo
     },
     _update_isDirty : false,
     _update_isUpdating : false,
@@ -124,48 +110,7 @@ var string3_three = {
         var callback = string3_three.valueByName(cbName);
         callback(letter,x,y,z);
     },
-    toHTML_Buttons : function(str3,callback) {
-        var ans = "<center><table >";
-        var callbackName = string3_three.nameByValue(callback);
-        str3.visitEach((letter,x,y,z) => {
-            if (x == 0) {
-                ans += "<tr >";
-            } 
-            ans += "<td >";
-            if (letter != " ") {
-                var act = " onclick=\"string3_three._doButtonCallback('" + callbackName + "','" + letter + "'," + x + "," + y + "," + z + ");\" ";
-                var styles = "style='width:100%;' class='lewdo_keybutton' ";
-                ans += "<input type='button' " + act + " value='" + letter + "' " + styles + " ></input>";
-            }
-            ans += "</td>";
-            if (x == str3.width-1) {
-                ans += "</tr>";
-            }
-        });
-        ans += "</table></center>";
-        return ans;
-    },
     _global_elementCount : 0,
-    toHTML_Text : function(str3) {
-        var ans = "<div><p><pre><code>";
-        var x=0, y=0, z=0;
-        str3.visitEach((c,fx,fy,fz) => { 
-            if (z != fz) {
-
-                ans += "\n--layer--\n";
-
-                z = fz;
-                y = fy;
-            }
-            else if (y != fy) {
-                ans += "\n";
-                y = fy;
-            }
-            ans += c; 
-        });
-        ans += "</code></pre></p></div>";
-        return ans;
-    },
     keyDirectionToXYZ : {
         //←→↑↓\n←►\n 
         "ArrowLeft":string3_utils.xyz(-1,0,0),
